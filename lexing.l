@@ -31,13 +31,10 @@ extern int sym_type(const char *);  /* returns type from symbol table */
 
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
-static void comment(void);
 static int check_type(void);
 %}
 
 %%
-"/*"                                    { comment(); }
-"//".*                                    { /* consume //-comment */ }
 
 "auto"					{ return(AUTO); }
 "break"					{ return(BREAK); }
@@ -156,25 +153,6 @@ static int check_type(void);
 int yywrap(void)        /* called at end of input */
 {
     return 1;           /* terminate now */
-}
-
-static void comment(void)
-{
-    int c;
-
-    while ((c = input()) != 0)
-        if (c == '*')
-        {
-            while ((c = input()) == '*')
-                ;
-
-            if (c == '/')
-                return;
-
-            if (c == 0)
-                break;
-        }
-    yyerror("unterminated comment");
 }
 
 static int check_type(void)
