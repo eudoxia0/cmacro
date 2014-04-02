@@ -14,11 +14,6 @@ primary_expression
 constant
 	: I_CONSTANT		/* includes character_constant */
 	| F_CONSTANT
-	| ENUMERATION_CONSTANT	/* after it has been defined as such */
-	;
-
-enumeration_constant		/* before it has been defined as such */
-	: IDENTIFIER
 	;
 
 string
@@ -226,7 +221,6 @@ type_specifier
 	| IMAGINARY	  	/* non-mandated extension */
 	| atomic_type_specifier
 	| struct_or_union_specifier
-	| enum_specifier
 	| TYPEDEF_NAME		/* after it has been defined as such */
 	;
 
@@ -268,24 +262,6 @@ struct_declarator
 	: ':' constant_expression
 	| declarator ':' constant_expression
 	| declarator
-	;
-
-enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM '{' enumerator_list ',' '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list ',' '}'
-	| ENUM IDENTIFIER
-	;
-
-enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
-	;
-
-enumerator	/* identifiers must be flagged as ENUMERATION_CONSTANT */
-	: enumeration_constant '=' constant_expression
-	| enumeration_constant
 	;
 
 atomic_type_specifier
