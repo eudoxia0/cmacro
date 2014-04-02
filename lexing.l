@@ -38,7 +38,7 @@ WS  [ \t\v\n\f]
 
 %{
 #include <stdio.h>
-#include "parsing.tab.h"
+#include "grammar.tab.h"
 
 extern void yyerror(const char *);  /* prints grammar violation message */
 
