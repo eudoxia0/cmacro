@@ -5,20 +5,35 @@
 %a  1213
 %o  1117
 
+/* Octal digits */
 O   [0-7]
+/* Decimal digits */
 D   [0-9]
+/* Positive decimal digits */
 NZ  [1-9]
+/* Letters and underscore */
 L   [a-zA-Z_]
+/* Alphanumeric */
 A   [a-zA-Z_0-9]
+/* Hexadecimal */
 H   [a-fA-F0-9]
+/* Hexadecimal prefix */
 HP  (0[xX])
+/* Exponential notation */
 E   ([Ee][+-]?{D}+)
+/* P-notation? */
 P   ([Pp][+-]?{D}+)
+/* Real-number suffixes */
 FS  (f|F|l|L)
+/* Integer suffixes */
 IS  (((u|U)(l|L|ll|LL)?)|((l|L|ll|LL)(u|U)?))
+/* Character prefixes */
 CP  (u|U|L)
+/* String prefixes */
 SP  (u8|u|U|L)
+/* Some kind of suffix */
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
+/* Whitespace */
 WS  [ \t\v\n\f]
 
 %{
