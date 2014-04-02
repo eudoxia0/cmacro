@@ -14,6 +14,7 @@ primary_expression
 constant
 	: I_CONSTANT		/* includes character_constant */
 	| F_CONSTANT
+        | STRING_LITERAL
 	;
 
 string
