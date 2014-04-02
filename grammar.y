@@ -44,9 +44,6 @@ unary_expression
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_name ')'
-	| ALIGNOF '(' type_name ')'
 	;
 
 unary_operator
@@ -397,9 +394,6 @@ statement
 	: labeled_statement
 	| compound_statement
 	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
 	;
 
 labeled_statement
@@ -426,29 +420,6 @@ block_item
 expression_statement
 	: ';'
 	| expression ';'
-	;
-
-selection_statement
-	: IF '(' expression ')' statement ELSE statement
-	| IF '(' expression ')' statement
-	| SWITCH '(' expression ')' statement
-	;
-
-iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
-	| FOR '(' declaration expression_statement ')' statement
-	| FOR '(' declaration expression_statement expression ')' statement
-	;
-
-jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
 	;
 
 translation_unit
