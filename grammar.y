@@ -3,21 +3,21 @@
 %start translation_unit
 %%
 
-primary_expression
-	: IDENTIFIER
+primary_expression:
+        | IDENTIFIER
 	| constant
 	| string
 	| '(' expression ')'
 	;
 
-constant
-	: I_CONSTANT		/* includes character_constant */
+constant:
+	| I_CONSTANT		/* includes character_constant */
 	| F_CONSTANT
         | STRING_LITERAL
 	;
 
-string
-	: STRING_LITERAL
+string:
+	| STRING_LITERAL
 	| FUNC_NAME
 	;
 
@@ -69,8 +69,6 @@ declaration
 	;
 
 declaration_specifiers
-	: storage_class_specifier declaration_specifiers
-	| storage_class_specifier
 	| type_specifier declaration_specifiers
 	| type_specifier
 	| type_qualifier declaration_specifiers
@@ -91,14 +89,9 @@ init_declarator
 	| declarator
 	;
 
-storage_class_specifier
-	: TYPEDEF	/* identifiers must be flagged as TYPEDEF_NAME */
-	| EXTERN
-	| STATIC
-	| THREAD_LOCAL
-	| AUTO
-	| REGISTER
-	;
+expression_type_specifier:
+        | IDENTIFIER '(' IDENTIFIER ')'
+        ;
 
 type_specifier
 	: VOID
@@ -114,19 +107,9 @@ type_specifier
 	| COMPLEX
 	| IMAGINARY	  	/* non-mandated extension */
 	| atomic_type_specifier
-	| struct_or_union_specifier
+	| identifier_list '{' struct_declaration_list '}'
+        | identifier_list IDENTIFIER
 	| TYPEDEF_NAME		/* after it has been defined as such */
-	;
-
-struct_or_union_specifier
-	: struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
-	;
-
-struct_or_union
-	: STRUCT
-	| UNION
 	;
 
 struct_declaration_list
