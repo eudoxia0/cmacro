@@ -1,0 +1,7 @@
+enum yytokentype {
+  IDENTIFIER = 258,
+  I_CONSTANT = 259,
+  F_CONSTANT = 260,
+  STRING_LITERAL = 261,
+  OPERATOR = 162,
+};
