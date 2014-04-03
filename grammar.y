@@ -93,23 +93,9 @@ expression_type_specifier:
         | IDENTIFIER '(' IDENTIFIER ')'
         ;
 
-type_specifier
-	: VOID
-	| CHAR
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| BOOL
-	| COMPLEX
-	| IMAGINARY	  	/* non-mandated extension */
-	| atomic_type_specifier
+type_specifier:
 	| identifier_list '{' struct_declaration_list '}'
         | identifier_list IDENTIFIER
-	| TYPEDEF_NAME		/* after it has been defined as such */
 	;
 
 struct_declaration_list
