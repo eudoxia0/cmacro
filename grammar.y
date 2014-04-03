@@ -73,8 +73,6 @@ declaration_specifiers
 	| type_specifier
 	| type_qualifier declaration_specifiers
 	| type_qualifier
-	| function_specifier declaration_specifiers
-	| function_specifier
 	| alignment_specifier declaration_specifiers
 	| alignment_specifier
 	;
@@ -136,11 +134,6 @@ type_qualifier
 	| RESTRICT
 	| VOLATILE
 	| ATOMIC
-	;
-
-function_specifier
-	: INLINE
-	| NORETURN
 	;
 
 alignment_specifier
