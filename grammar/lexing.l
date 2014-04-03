@@ -38,9 +38,7 @@ WS  [ \t\v\n\f]
 
 %{
 #include <stdio.h>
-#include "grammar.tab.h"
-
-extern void yyerror(const char *);  /* prints grammar violation message */
+#include "tokens.h"
 
 %}
 
@@ -62,7 +60,7 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 ({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{ return STRING_LITERAL; }
 
-"..."                                   { return ELLIPSIS; }
+"..."                                   { return OPERATOR; }
 [\W|WS]+                                { return OPERATOR; }	
 
 
@@ -71,8 +69,23 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 %%
 
+#include <stdio.h>
+
 int yywrap(void)        /* called at end of input */
 {
     return 1;           /* terminate now */
 }
 
+void yyerror(const char *s)
+{
+  fflush(stdout);
+  fprintf(stderr, "*** %s\n", s);
+}
+
+int main(int argc, char **argv)
+{
+  int tok;
+  while(tok = yylex()) {
+    printf("%d:%s\n", tok, yytext);
+  }
+}
