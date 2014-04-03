@@ -21,6 +21,18 @@ string:
 	| FUNC_NAME
 	;
 
+/* A list of identifiers, with not assignments, ie ATOMIC(type) and similar */
+identifier_list:
+        | IDENTIFIER
+	| identifier_list ',' IDENTIFIER
+	;
+
+/* Attributes can be type or function specifiers/qualifiers */
+attribute:
+        | IDENTIFIER '(' identifier_list ')'
+        | IDENTIFIER
+        ;
+
 postfix_expression
 	: primary_expression
 	| postfix_expression '[' expression ']'
@@ -190,11 +202,6 @@ parameter_declaration
 	: declaration_specifiers declarator
 	| declaration_specifiers abstract_declarator
 	| declaration_specifiers
-	;
-
-identifier_list
-	: IDENTIFIER
-	| identifier_list ',' IDENTIFIER
 	;
 
 type_name
