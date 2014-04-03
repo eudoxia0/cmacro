@@ -35,6 +35,10 @@ SP  (u8|u|U|L)
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 /* Whitespace */
 WS  [ \t\v\n\f]
+/* Symbols */
+SEP [\,\;\(\)\[\]\{\}]
+SYM [^ \t\v\n\f\,\;\(\)\[\]\{\}]
+
 
 %{
 #include <stdio.h>
@@ -61,11 +65,11 @@ WS  [ \t\v\n\f]
 ({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{ return STRING_LITERAL; }
 
 "..."                                   { return OPERATOR; }
-[\W|WS]+                                { return OPERATOR; }	
-
 
 {WS}					{ /* whitespace separates tokens */ }
-.					{ /* discard bad characters */ }
+{SEP}                                   { return OPERATOR; }
+{SYM}+                                  { return OPERATOR; }
+
 
 %%
 
