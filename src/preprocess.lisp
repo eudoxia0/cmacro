@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage cmacro.preprocess
   (:use :cl)
+  (:import-from :split-sequence
+                :split-sequence)
   (:export :process-data
            :process-pathname))
 (in-package :cmacro.preprocess)
@@ -20,13 +22,20 @@
      ,@body))
 
 (defun preprocess (data)
+  "Call the C preprocessor to handle includes and C macros."
   (with-command (+preproc-cmd+
                  data
                  :on-error (progn
                              (format t "An error occurred during preprocessing:~&")
                              (format t "~A" stderr)
                              (sb-ext:quit)))
-    stdout))
+    ;; Remove leftovers lines that start with a #
+    (reduce #'(lambda (line next-line)
+                (concatenate 'string line (string #\Newline) next-line))
+            (remove-if #'(lambda (line)
+                           (if (> (length line) 0)
+                               (char= #\# (elt line 0))))
+                       (split-sequence #\Newline stdout)))))
 
 (defparameter +cmc-lexer-bin+
   (first
