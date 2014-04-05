@@ -3,7 +3,11 @@
   (:use :cl :anaphora))
 (in-package :cmacro.parse)
 
-(defstruct token
+(defstruct (token
+            (:print-function
+             (lambda (tok stream d)
+               (declare (ignore d))
+               (format stream "~A" (token-text tok)))))
   type
   text)
 
@@ -46,7 +50,7 @@
           ;; Separator token
           (if (eq :open (cdr (token-text tok)))
               ;; Opening token
-              (push (list) context)
+              (push (list (car (token-text tok))) context)
               ;; Closing token
               (let ((cur-context (pop context)))
                 (setf (first context)
