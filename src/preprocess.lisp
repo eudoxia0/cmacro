@@ -57,7 +57,9 @@
     stdout))
 
 (defun process-data (data)
-  (lex (preprocess data)))
+  (remove-if #'(lambda (line) (eql (length line) 0))
+             (split-sequence #\Newline
+                             (lex (preprocess data)))))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
