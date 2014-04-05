@@ -73,8 +73,6 @@ SYM [^ \t\v\n\f\,\;\(\)\[\]\{\}]
 
 %%
 
-#include <stdio.h>
-
 int yywrap(void)        /* called at end of input */
 {
     return 1;           /* terminate now */
@@ -90,6 +88,6 @@ int main(int argc, char **argv)
 {
   int tok;
   while(tok = yylex()) {
-    printf("%d:%s\n", tok, yytext);
+    printf("%s:%s\n", map_tok_type(tok), yytext);
   }
 }

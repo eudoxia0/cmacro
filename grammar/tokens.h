@@ -5,3 +5,9 @@ enum yytokentype {
   STRING_LITERAL = 261,
   OPERATOR = 262,
 };
+
+const char* identifier_names[] = {"idn","int","flt","str","opr"};
+
+const char* map_tok_type(int type) {
+  return identifier_names[type-258];
+}
