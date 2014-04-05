@@ -17,7 +17,9 @@
                (:module "src"
                 :serial t
                 :components
-                ((:file "cmacro"))))
+                ((:file "preprocess")
+                 (:file "parse")
+                 (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description
   #.(with-open-file (stream (merge-pathnames
