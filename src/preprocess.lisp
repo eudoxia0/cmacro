@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage cmacro.preprocess
-  (:use :cl))
+  (:use :cl)
+  (:export :process-data
+           :process-pathname))
 (in-package :cmacro.preprocess)
 
 
@@ -44,3 +46,16 @@
                    (format t "~A" stderr)
                    (sb-ext:quit)))
     stdout))
+
+(defun process-data (data)
+  (lex (preprocess data)))
+
+(defun slurp-file (path)
+  ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
+  (with-open-file (stream path)
+    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
+      (setf (fill-pointer seq) (read-sequence seq stream))
+      seq)))
+
+(defun process-pathname (pathname)
+  (process-data (slurp-file pathname)))
