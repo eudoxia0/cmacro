@@ -8,7 +8,9 @@
   :author "Fernando Borretti"
   :license "MIT"
   :defsystem-depends-on (:asdf-linguist)
-  :depends-on (:trivial-shell
+  :depends-on (:split-sequence
+               :anaphora
+               :trivial-shell
                :cl-emb)
   :components ((:module "grammar"
                 :components
