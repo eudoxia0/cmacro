@@ -28,7 +28,7 @@
                  :on-error (progn
                              (format t "An error occurred during preprocessing:~&")
                              (format t "~A" stderr)
-                             (sb-ext:quit)))
+                             (sb-ext:exit)))
     ;; Remove leftovers lines that start with a #
     (reduce #'(lambda (line next-line)
                 (concatenate 'string line (string #\Newline) next-line))
@@ -53,7 +53,7 @@
                  (progn
                    (format t "An error occurred during lexing:~&")
                    (format t "~A" stderr)
-                   (sb-ext:quit)))
+                   (sb-ext:exit)))
     stdout))
 
 (defun process-data (data)
