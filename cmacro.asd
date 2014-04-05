@@ -13,7 +13,7 @@
   :components ((:module "grammar"
                 :components
                 ((:flex "lexing" :output "lexing.yy")
-                 (:c->bin "lexing.yy" :output "parser" :link ("fl"))))
+                 (:c->bin "lexing.yy" :output "cmc-lexer" :link ("fl"))))
                (:module "src"
                 :serial t
                 :components
