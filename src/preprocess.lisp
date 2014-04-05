@@ -33,7 +33,7 @@
     (reduce #'(lambda (line next-line)
                 (concatenate 'string line (string #\Newline) next-line))
             (remove-if #'(lambda (line)
-                           (if (> (length line) 0)
+                           (or (= (length line) 0)
                                (char= #\# (elt line 0))))
                        (split-sequence #\Newline stdout)))))
 
