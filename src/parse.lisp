@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
-  (:use :cl :anaphora))
+  (:use :cl :anaphora)
+  (:export :parse))
 (in-package :cmacro.parse)
 
 (defstruct (token
@@ -59,4 +60,4 @@
           (setf (first context)
                 (append (first context)
                         (list tok)))))
-    context))
+    (car context)))
