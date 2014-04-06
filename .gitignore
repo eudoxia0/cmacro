@@ -7,3 +7,4 @@
 *~
 .#*
 grammar/cmc-lexer
+grammar/lexing.yy.c
