@@ -3,15 +3,19 @@
   (:use :cl)
   (:import-from :split-sequence
                 :split-sequence)
-  (:export :process-data
+  (:export :+var-identifier+
+           :process-data
            :process-pathname))
 (in-package :cmacro.preprocess)
 
 
 (defparameter +cc+ "gcc")
 
+(defparameter +var-identifier+ "CMACRO__VAR"
+  "The identifier used to prefix variables.")
+
 (defparameter +preproc-extras+
-  "#define $(x) CMACRO__VAR #x")
+  (concatenate 'string "#define $(x) " +var-identifier+ " #x"))
 
 (defparameter +preproc-cmd+
   (format nil "~A -xc - -E"
@@ -45,14 +49,15 @@
                        (split-sequence #\Newline stdout)))))
 
 (defparameter +cmc-lexer-bin+
-  "The pathname to the lexer binary."
-  (first
-   (remove-if #'null
-              (mapcar #'probe-file
-                      (list #p"/usr/bin/cmc-lexer"
-                            (merge-pathnames
-                             #p"grammar/cmc-lexer"
-                             (asdf:component-pathname (asdf:find-system :cmacro))))))))
+  (namestring
+   (first
+    (remove-if #'null
+               (mapcar #'probe-file
+                       (list #p"/usr/bin/cmc-lexer"
+                             (merge-pathnames
+                              #p"grammar/cmc-lexer"
+                              (asdf:component-pathname (asdf:find-system :cmacro))))))))
+    "The pathname to the lexer binary.")
 
 (defun lex (data)
   "Call the lexer with preprocessed C code."
