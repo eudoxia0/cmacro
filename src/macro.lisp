@@ -23,14 +23,20 @@
   (gethash name macros))
 
 (defun macroexpand-ast (ast, macros)
-  (loop for expression in ast do
-    (if (listp expression)
-        ;; Recur
-        (macroexpand-ast (rest ast) macros)
-        ;; A regular expression, possibly an identifier
-        (if (and (eq (tok-type expression) :ident)
-                 (macro-call-p (tok-text expression)))
-            ;; Expand the macro
-            
-            ;; Let it go
-            expression))))
+  (loop for sub-ast on ast do
+    (let ((expression (first sub-ast)))
+      (if (listp expression)
+          ;; Recur
+          (macroexpand-ast (rest expression) macros)
+          ;; An ordinary expression, possibly an identifier
+          (aif (and (eq (tok-type expression) :ident)
+                    (macro-call-p (tok-text expression)))
+               ;; Expand the macro
+               (aif (macro-match it sub-ast)
+                    ;; The macro matches one of the clauses, so we replace the
+                    ;; part of `sub-ast` that matched with the macro output
+                    ...
+                    ;; The macro didn't match. Signal an error.
+                    ...)
+               ;; Let it go
+               expression)))))
