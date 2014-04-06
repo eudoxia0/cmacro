@@ -10,11 +10,15 @@
 
 (defparameter +cc+ "gcc")
 
+(defparameter +preproc-extras+
+  "#define $(x) CMACRO__VAR #x")
+
 (defparameter +preproc-cmd+
   (format nil "~A -xc - -E"
           +cc+))
 
 (defmacro with-command ((cmd input &key on-error) &rest body)
+  "Call an external command, binding stdout, stderr and exit-code."
   `(multiple-value-bind (stdout stderr exit-code)
        (trivial-shell:shell-command ,cmd :input ,input)
      (when (not (eql exit-code 0))
@@ -24,7 +28,10 @@
 (defun preprocess (data)
   "Call the C preprocessor to handle includes and C macros."
   (with-command (+preproc-cmd+
-                 data
+                 (concatenate 'string
+                              +preproc-extras+
+                              (string #\Newline)
+                              data)
                  :on-error (progn
                              (format t "An error occurred during preprocessing:~&")
                              (format t "~A" stderr)
@@ -38,6 +45,7 @@
                        (split-sequence #\Newline stdout)))))
 
 (defparameter +cmc-lexer-bin+
+  "The pathname to the lexer binary."
   (first
    (remove-if #'null
               (mapcar #'probe-file
@@ -47,6 +55,7 @@
                              (asdf:component-pathname (asdf:find-system :cmacro))))))))
 
 (defun lex (data)
+  "Call the lexer with preprocessed C code."
   (with-command (+cmc-lexer-bin+
                  data
                  :on-error
@@ -57,6 +66,7 @@
     stdout))
 
 (defun process-data (data)
+  "Preprocess and lex a string."
   (remove-if #'(lambda (line) (eql (length line) 0))
              (split-sequence #\Newline
                              (lex (preprocess data)))))
@@ -69,4 +79,5 @@
       seq)))
 
 (defun process-pathname (pathname)
+  "Preprocess and lex a file."
   (process-data (slurp-file pathname)))
