@@ -42,6 +42,18 @@ macro forEach {
 
 # Building
 
+# Acknowledgments
+
+The [lex](http://www.quut.com/c/ANSI-C-grammar-l-2011.html) and
+[yacc](http://www.quut.com/c/ANSI-C-grammar-y.html) grammars were originally
+posted by Jeff Lee in 1985, and rescued and updated to the recent standards by
+[Jutta Degener](mailto:jutta@pobox.com).
+
+The syntax for macro definition was inspired by Mozilla's great
+[sweet.js](http://sweetjs.org/) library. Originally I considered multiple
+different ways of defining them, including external YAML files or just piping
+the AST to an XSLT program, but this seemed like the best way.
+
 # License
 
 Copyright (c) 2014 Fernando Borretti (eudoxiahp@gmail.com)
