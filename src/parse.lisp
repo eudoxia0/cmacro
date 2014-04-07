@@ -12,15 +12,18 @@
   type
   text)
 
+(defun opening-token-p (tok)
+  (eq :open (cdr (token-text tok))))
+
+(defun closing-token-p (tok)
+  (eq :close (cdr (token-text tok))))
+
 (defparameter +token-type-map+
   '(("idn" . :ident)
     ("int" . :integer)
     ("flt" . :float)
     ("str" . :string)
     ("opr" . :op)))
-
-(defun map-token-type (tok-type)
-  (cdr (assoc tok-type +token-type-map+ :test #'equal)))
 
 (defparameter +separator-map+
   '(("(" . (:list . :open))
@@ -29,6 +32,9 @@
     ("]" . (:array . :close))
     ("{" . (:block . :open))
     ("}" . (:block . :close))))
+
+(defun map-token-type (tok-type)
+  (cdr (assoc tok-type +token-type-map+ :test #'equal)))
 
 (defun map-separator (sep)
   (cdr (assoc sep +separator-map+ :test #'equal)))
@@ -49,7 +55,7 @@
     (loop for tok in tokens do
       (if (listp (token-text tok))
           ;; Separator token
-          (if (eq :open (cdr (token-text tok)))
+          (if (opening-token-p tok)
               ;; Opening token
               (push (list (car (token-text tok))) context)
               ;; Closing token
