@@ -10,6 +10,7 @@
   :defsystem-depends-on (:asdf-linguist)
   :depends-on (:split-sequence
                :anaphora
+               :alexandria
                :trivial-shell
                :cl-emb)
   :components ((:module "grammar"
@@ -21,6 +22,7 @@
                 :components
                 ((:file "preprocess")
                  (:file "parse")
+                 (:file "var")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description
