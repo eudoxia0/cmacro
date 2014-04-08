@@ -1,7 +1,7 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
   (:use :cl :anaphora)
-  (:export :token:
+  (:export :token
            :token-text
            :token-type
            :ident-eql
