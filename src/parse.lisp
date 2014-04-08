@@ -67,10 +67,6 @@
                         (list tok)))))
     (car context)))
 
-(defun print-list (list stream)
-  (loop for item in list do
-    (print-expression item stream)))
-
 (defun print-expression (expression stream)
   (if (listp expression)
       ;; Block
@@ -78,9 +74,8 @@
         ;; Print the separator, then, if it's a curly brace, print
         ;; a newline
         (print-expression (car expression) stream)
-        (if (block-p (car expression))
-            (print-list (cdr expression) stream)
-            (print-list (cdr expression) stream)))
+        (loop for item in (cdr expression) do
+          (print-expression item stream)))
       ;; Regular token
       (progn
         (write-string (token-text expression)
