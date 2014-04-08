@@ -15,8 +15,8 @@
                 :token-text
                 :ident-eql)
   (:import-from :cmacro.error
-                :bad-match-definition
-                :bad-macro))
+                :bad-macro-definition
+                :bad-match))
 (in-package :cmacro.macro)
 
 (defun block-text (block)
