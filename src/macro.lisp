@@ -17,9 +17,9 @@
 (in-package :cmacro.macro)
 
 (defun parse-macro-definition (ast)
-  )
+  ast)
 
-(defun extract-macro-definitions (ast)
+(defun extract-macro-definitions% (ast)
   (loop for sub-ast on ast collecting
     (let ((node (first sub-ast)))
       (if (listp node)
@@ -31,6 +31,9 @@
               (parse-macro-definition (cadr sub-ast))
               ;; Nope
               nil)))))
+
+(defun extract-macro-definitions (ast)
+  (remove-if #'null (alexandria:flatten (extract-macro-definitions% ast))))
 
 (defun macro-call-p (name macros)
   "Determine if an identifier is making a call to a macro."
