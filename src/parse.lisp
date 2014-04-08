@@ -18,6 +18,9 @@
 (defun closing-token-p (tok)
   (eq :close (cdr (token-text tok))))
 
+(defun compound-token-p (tok)
+  (listp (token-text tok)))
+
 (defparameter +token-type-map+
   '(("idn" . :ident)
     ("int" . :integer)
@@ -53,7 +56,7 @@
 (defun parse (tokens)
   (let ((context (list nil)))
     (loop for tok in tokens do
-      (if (listp (token-text tok))
+      (if (compound-token-p tok)
           ;; Separator token
           (if (opening-token-p tok)
               ;; Opening token
