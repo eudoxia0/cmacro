@@ -16,7 +16,7 @@
                 :ident-eql))
 (in-package :cmacro.macro)
 
-(defun parse-macro-definition (block)
+(defun parse-macro-definition (ast)
   )
 
 (defun extract-macro-definitions (ast)
@@ -30,14 +30,13 @@
               ;; Parse the macro definition
               (parse-macro-definition (cadr sub-ast))
               ;; Nope
-              nil)))))          
+              nil)))))
 
-(defun defcmacro (name cases))
-
-(defun macro-call-p (name, macros)
-  """Determine if an identifier is making a call to a macro."""
+(defun macro-call-p (name macros)
+  "Determine if an identifier is making a call to a macro."
   (gethash name macros))
 
+#|
 (defun macroexpand-ast (ast macros)
   (loop for sub-ast on ast do
     (let ((expression (first sub-ast)))
@@ -56,3 +55,4 @@
                     ...)
                ;; Let it go
                expression)))))
+|#

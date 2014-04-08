@@ -1,3 +1,4 @@
+
 (in-package :cl-user)
 (defpackage cmacro-asd
   (:use :cl :asdf))
@@ -24,6 +25,7 @@
                  (:file "parse")
                  (:file "var")
                  (:file "error")
+                 (:file "macro")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description
