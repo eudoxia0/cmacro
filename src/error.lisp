@@ -9,6 +9,13 @@
 (defparameter +bad-match-msg+
   "Error trying to macroexpand '~A': The input didn't match any cases.")
 
+(define-condition bad-macro-definition ()
+  ((text :initarg :text :reader text))
+
+  (:report
+   (lambda (condition stream)
+     (format stream "Bad macro definition: ~A." (text condition)))))
+
 (define-condition bad-match ()
   ((token :initarg :token :reader token))
 
