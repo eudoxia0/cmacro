@@ -12,9 +12,25 @@
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :token-type
-                :token-text))
+                :token-text
+                :ident-eql))
 (in-package :cmacro.macro)
 
+(defun parse-macro-definition (block)
+  )
+
+(defun extract-macro-definitions (ast)
+  (loop for sub-ast on ast collecting
+    (let ((node (first sub-ast)))
+      (if (listp node)
+          ;; Recur
+          (extract-macro-definitions (cdr node))
+          ;; Is it a macro definition?
+          (if (ident-eql node "macro")
+              ;; Parse the macro definition
+              (parse-macro-definition (cadr sub-ast))
+              ;; Nope
+              nil)))))          
 
 (defun defcmacro (name cases))
 
