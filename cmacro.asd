@@ -23,6 +23,7 @@
                 ((:file "preprocess")
                  (:file "parse")
                  (:file "var")
+                 (:file "error")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description
