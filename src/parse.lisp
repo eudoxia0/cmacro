@@ -1,7 +1,11 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
   (:use :cl :anaphora)
-  (:export :parse
+  (:export :token:
+           :token-text
+           :token-type
+           :ident-eql
+           :parse
            :print-ast))
 (in-package :cmacro.parse)
 
@@ -38,6 +42,10 @@
 (defun blockp (tok)
   (or (equal (token-text tok) "{")
       (equal (token-text tok) "}")))
+
+(defun ident-eql (tok text)
+  (and (eq (token-type expression) :ident)
+       (equal text (token-text expression))))
 
 (defun process (lexemes)
   (mapcar 
