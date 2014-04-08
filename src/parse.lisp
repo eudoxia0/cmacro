@@ -4,6 +4,18 @@
   (:export :parse))
 (in-package :cmacro.parse)
 
+(defparameter +token-type-map+
+  '(("idn" . :ident)
+    ("int" . :integer)
+    ("flt" . :float)
+    ("str" . :string)
+    ("opr" . :op)))
+
+(defparameter +opening-separators+ (list "(" "[" "{"))
+(defparameter +closing-separators+ (list ")" "]" "}"))
+(defparameter +separators+ (union +opening-separators+
+                                  +closing-separators+))
+
 (defstruct (token
             (:print-function
              (lambda (tok stream d)
@@ -12,45 +24,25 @@
   type
   text)
 
+
 (defun opening-token-p (tok)
-  (eq :open (cdr (token-text tok))))
+  (member (token-text tok) +opening-separators+ :test #'equal))
 
 (defun closing-token-p (tok)
-  (eq :close (cdr (token-text tok))))
+  (member (token-text tok) +closing-separators+ :test #'equal))
 
 (defun compound-token-p (tok)
-  (listp (token-text tok)))
+  (member (token-text tok) +separators+ :test #'equal))
 
-(defparameter +token-type-map+
-  '(("idn" . :ident)
-    ("int" . :integer)
-    ("flt" . :float)
-    ("str" . :string)
-    ("opr" . :op)))
-
-(defparameter +separator-map+
-  '(("(" . (:list . :open))
-    (")" . (:list . :close))
-    ("[" . (:array . :open))
-    ("]" . (:array . :close))
-    ("{" . (:block . :open))
-    ("}" . (:block . :close))))
-
-(defun map-token-type (tok-type)
-  (cdr (assoc tok-type +token-type-map+ :test #'equal)))
-
-(defun map-separator (sep)
-  (cdr (assoc sep +separator-map+ :test #'equal)))
 
 (defun process (lexemes)
   (mapcar 
    #'(lambda (lexeme)
-       (let ((tok-type (map-token-type (subseq lexeme 0 3)))
+       (let ((tok-type (assoc (subseq lexeme 0 3)
+                              +token-type-map+
+                              :test #'equal))
              (tok-text (subseq lexeme 4)))
-         (aif (and (eq tok-type :op)
-                   (map-separator tok-text))
-              (make-token :type :op :text it)
-              (make-token :type tok-type :text tok-text))))
+         (make-token :type tok-type :text tok-text)))
    lexemes))
 
 (defun parse (tokens)
@@ -60,7 +52,7 @@
           ;; Separator token
           (if (opening-token-p tok)
               ;; Opening token
-              (push (list (car (token-text tok))) context)
+              (push (list (token-text tok)) context)
               ;; Closing token
               (let ((cur-context (pop context)))
                 (setf (first context)
