@@ -13,11 +13,64 @@
   (:import-from :cmacro.parse
                 :token-type
                 :token-text
-                :ident-eql))
+                :ident-eql)
+  (:import-from :cmacro.error
+                :bad-match-definition
+                :bad-macro))
 (in-package :cmacro.macro)
 
+(defun block-text (block)
+  (subseq block 1 (1- (length block))))
+
+(defun parse-case (ast)
+  (let ((matching (list))
+        template
+        toplevel
+        external)        
+    (loop for sub-ast on ast by #'cddr do
+      (let ((directive (first sub-ast))
+            (code (second sub-ast)))
+        (unless code
+          (error 'bad-macro-definition
+                 :text "Uneven number of elements in macro case."))
+        (cond
+          ((ident-eql directive "match")
+           (push (block-text code) matching))
+          ((ident-eql directive "template")
+           (if template
+               ;; Can't have two template directives in one case
+               (error 'bad-macro-definition
+                      :text "Repeated template directives.")
+               (setf template (block-text code))))
+          ((ident-eql directive "toplevel")
+           (if toplevel
+               (error 'bad-macro-definition
+                      :text "Repeated toplevel directives.")
+               (setf toplevel (block-text code))))
+          ((ident-eql directive "external")
+           (if external
+               (error 'bad-macro-definition
+                      :text "Repeated external directives.")
+               (setf external (block-text code)))))))
+    (when (and template external)
+      (error 'bad-macro-definition
+             :text "Can't have both template and external directives."))
+    (list :matching matching
+          :template template
+          :toplevel toplevel
+          :external external)))
+
 (defun parse-macro-definition (ast)
-  ast)
+  (loop for sub-ast on ast by #'cddr collecting
+    (let ((case-directive (first sub-ast))
+          (case-code (second sub-ast)))
+      (unless case-code
+        (error 'bad-macro-definition
+               :text "Uneven number of elements in macro definition."))
+      (unless (ident-eql case-directive "case")
+        (error 'bad-macro-definition
+               :text "Unknown directive in macro definition."))
+      (parse-case case-code))))
 
 (defun extract-macro-definitions% (ast)
   (loop for sub-ast on ast collecting
