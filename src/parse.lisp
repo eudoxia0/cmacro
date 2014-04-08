@@ -1,7 +1,8 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
   (:use :cl :anaphora)
-  (:export :parse))
+  (:export :parse
+           :print-ast))
 (in-package :cmacro.parse)
 
 (defparameter +token-type-map+
@@ -20,7 +21,7 @@
             (:print-function
              (lambda (tok stream d)
                (declare (ignore d))
-               (format stream "~A" (token-text tok)))))
+               (write-string (token-text tok) stream))))
   type
   text)
 
@@ -41,9 +42,9 @@
 (defun process (lexemes)
   (mapcar 
    #'(lambda (lexeme)
-       (let ((tok-type (assoc (subseq lexeme 0 3)
-                              +token-type-map+
-                              :test #'equal))
+       (let ((tok-type (cdr (assoc (subseq lexeme 0 3)
+                                   +token-type-map+
+                                   :test #'equal)))
              (tok-text (subseq lexeme 4)))
          (make-token :type tok-type :text tok-text)))
    lexemes))
