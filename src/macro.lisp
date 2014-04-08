@@ -9,7 +9,10 @@
 (defpackage cmacro.macro
   (:use :cl)
   (:import-from :cmacro.preprocess
-                :+var-identifier+))
+                :+var-identifier+)
+  (:import-from :cmacro.parse
+                :token-type
+                :token-text))  
 (in-package :cmacro.macro)
 
 (defun parse-case (ast)
@@ -29,8 +32,8 @@
           ;; Recur
           (macroexpand-ast (rest expression) macros)
           ;; An ordinary expression, possibly an identifier
-          (aif (and (eq (tok-type expression) :ident)
-                    (macro-call-p (tok-text expression)))
+          (aif (and (eq (token-type expression) :ident)
+                    (macro-call-p (token-text expression) macros))
                ;; Expand the macro
                (aif (macro-match it sub-ast)
                     ;; The macro matches one of the clauses, so we replace the
