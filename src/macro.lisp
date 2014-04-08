@@ -12,12 +12,9 @@
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :token-type
-                :token-text))  
+                :token-text))
 (in-package :cmacro.macro)
 
-(defun parse-case (ast)
-  "Extract variables from the AST of a case clause."
-  )
 
 (defun defcmacro (name cases))
 
@@ -25,7 +22,7 @@
   """Determine if an identifier is making a call to a macro."""
   (gethash name macros))
 
-(defun macroexpand-ast (ast, macros)
+(defun macroexpand-ast (ast macros)
   (loop for sub-ast on ast do
     (let ((expression (first sub-ast)))
       (if (listp expression)
