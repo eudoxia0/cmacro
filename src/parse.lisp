@@ -68,7 +68,6 @@
     (car context)))
 
 (defun print-list (list stream)
-  (format t "List: ~A~&" list)
   (loop for item in list do
     (print-expression item stream)))
 
