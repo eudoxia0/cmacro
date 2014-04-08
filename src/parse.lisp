@@ -31,12 +31,12 @@
 (defun closing-token-p (tok)
   (member (token-text tok) +closing-separators+ :test #'equal))
 
-(defun compound-token-p (tok)
+(defun separator-token-p (tok)
   (member (token-text tok) +separators+ :test #'equal))
 
-(defun opening-block-p (tok)
-  (equal (token-text tok) "{"))
-
+(defun blockp (tok)
+  (or (equal (token-text tok) "{")
+      (equal (token-text tok) "}")))
 
 (defun process (lexemes)
   (mapcar 
@@ -51,7 +51,7 @@
 (defun parse (tokens)
   (let ((context (list nil)))
     (loop for tok in tokens do
-      (if (compound-token-p tok)
+      (if (separator-token-p tok)
           ;; Separator token
           (if (opening-token-p tok)
               ;; Opening token
@@ -59,7 +59,8 @@
               ;; Closing token
               (let ((cur-context (pop context)))
                 (setf (first context)
-                      (append (first context) (list cur-context)))))
+                      (append (first context)
+                              (list cur-context tok)))))
           ;; Common token
           (setf (first context)
                 (append (first context)
@@ -67,6 +68,7 @@
     (car context)))
 
 (defun print-list (list stream)
+  (format t "List: ~A~&" list)
   (loop for item in list do
     (print-expression item stream)))
 
@@ -74,19 +76,20 @@
   (if (listp expression)
       ;; Block
       (progn
-        ;; Print the separator, then, if it's an opening curly brace, print
+        ;; Print the separator, then, if it's a curly brace, print
         ;; a newline
         (print-expression (car expression) stream)
-        (if (opening-block-p (car expression))
-            (progn
-              (write-char #\Newline stream)
-              (print-list (cdr expression) stream))
+        (if (block-p (car expression))
+            (print-list (cdr expression) stream)
             (print-list (cdr expression) stream)))
       ;; Regular token
       (progn
         (write-string (token-text expression)
                       stream)
-        (write-char #\Space stream))))
+        (unless (separator-token-p expression)
+          (write-char #\Space stream))
+        (when (blockp expression)
+          (write-char #\Newline stream)))))
 
 (defun print-ast (ast)
   (let ((stream (make-string-output-stream)))
