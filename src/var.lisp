@@ -7,7 +7,10 @@
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :token-type
-                :token-text))
+                :token-text)
+  (:export :var
+           :var-text
+           :extract-vars))
 (in-package :cmacro.var)
 
 (defstruct var () text)
