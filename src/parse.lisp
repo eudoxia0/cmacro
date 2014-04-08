@@ -44,8 +44,8 @@
       (equal (token-text tok) "}")))
 
 (defun ident-eql (tok text)
-  (and (eq (token-type expression) :ident)
-       (equal text (token-text expression))))
+  (and (eq (token-type tok) :ident)
+       (equal text (token-text tok))))
 
 (defun process (lexemes)
   (mapcar 
