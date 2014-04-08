@@ -52,7 +52,7 @@
           ;; Separator token
           (if (opening-token-p tok)
               ;; Opening token
-              (push (list (token-text tok)) context)
+              (push (list tok) context)
               ;; Closing token
               (let ((cur-context (pop context)))
                 (setf (first context)
@@ -62,3 +62,14 @@
                 (append (first context)
                         (list tok)))))
     (car context)))
+
+(defun print-ast (ast stream)
+  (loop for sub-ast on ast do
+    (let ((expression (first sub-ast)))
+      (if (listp expression)
+          ;; Block
+          (print-ast expression stream)
+          ;; Regular token
+          (write-string (token-text expression)
+                        stream))
+      (write-char #\Space stream))))
