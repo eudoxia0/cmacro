@@ -34,6 +34,9 @@
 (defun compound-token-p (tok)
   (member (token-text tok) +separators+ :test #'equal))
 
+(defun opening-block-p (tok)
+  (equal (token-text tok) "{"))
+
 
 (defun process (lexemes)
   (mapcar 
@@ -63,13 +66,29 @@
                         (list tok)))))
     (car context)))
 
-(defun print-ast (ast stream)
-  (loop for sub-ast on ast do
-    (let ((expression (first sub-ast)))
-      (if (listp expression)
-          ;; Block
-          (print-ast expression stream)
-          ;; Regular token
-          (write-string (token-text expression)
-                        stream))
-      (write-char #\Space stream))))
+(defun print-list (list stream)
+  (loop for item in list do
+    (print-expression item stream)))
+
+(defun print-expression (expression stream)
+  (if (listp expression)
+      ;; Block
+      (progn
+        ;; Print the separator, then, if it's an opening curly brace, print
+        ;; a newline
+        (print-expression (car expression) stream)
+        (if (opening-block-p (car expression))
+            (progn
+              (write-char #\Newline stream)
+              (print-list (cdr expression) stream))
+            (print-list (cdr expression) stream)))
+      ;; Regular token
+      (progn
+        (write-string (token-text expression)
+                      stream)
+        (write-char #\Space stream))))
+
+(defun print-ast (ast)
+  (let ((stream (make-string-output-stream)))
+    (print-expression ast stream)
+    (get-output-stream-string stream)))
