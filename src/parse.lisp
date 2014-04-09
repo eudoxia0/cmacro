@@ -48,6 +48,8 @@
        (equal text (token-text tok))))
 
 (defun process (lexemes)
+  "Turn a list of lexemes into a list of tokens. Each lexeme is of the form:
+    '[three letter type identifier]:[text]'"
   (mapcar 
    #'(lambda (lexeme)
        (let ((tok-type (cdr (assoc (subseq lexeme 0 3)
@@ -58,6 +60,7 @@
    lexemes))
 
 (defun parse (tokens)
+  "Parse a flat list of tokens into a nested data structure."
   (let ((context (list nil)))
     (loop for tok in tokens do
       (if (separator-token-p tok)
@@ -77,6 +80,7 @@
     (car context)))
 
 (defun print-expression (expression stream)
+  "Print an AST into a given stream."
   (if (listp expression)
       ;; Block
       (progn
@@ -95,6 +99,7 @@
           (write-char #\Newline stream)))))
 
 (defun print-ast (ast)
+  "Turn an AST into a list."
   (let ((stream (make-string-output-stream)))
     (print-expression ast stream)
     (get-output-stream-string stream)))
