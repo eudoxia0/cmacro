@@ -13,14 +13,15 @@
   (:import-from :cmacro.parse
                 :token-type
                 :token-text
-                :ident-eql)
+                :ident-eql
+                :print-ast)
   (:import-from :cmacro.error
                 :bad-macro-definition
                 :bad-match))
 (in-package :cmacro.macro)
 
 (defun block-text (block)
-  (subseq block 1 (1- (length block))))
+  (print-ast (subseq block 1 (1- (length block)))))
 
 (defun parse-case (ast)
   (let ((matching (list))
