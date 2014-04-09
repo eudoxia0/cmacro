@@ -10,7 +10,7 @@
                :fiveam)
   :components ((:module "t"
                 :components
-                ((:test-file "cmacro"))))
+                ((:file "cmacro"))))
 
   :defsystem-depends-on (:cl-test-more)
   :perform (test-op :after (op c)
