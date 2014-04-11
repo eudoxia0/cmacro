@@ -73,7 +73,7 @@
               (let ((cur-context (pop context)))
                 (setf (first context)
                       (append (first context)
-                              (list cur-context tok)))))
+                              (list cur-context)))))
           ;; Common token
           (setf (first context)
                 (append (first context)
@@ -97,7 +97,14 @@
         ;; a newline
         (print-expression (car expression) stream)
         (loop for item in (cdr expression) do
-          (print-expression item stream)))
+          (print-expression item stream))
+        ;; Print the matching closing separator
+        (print (car expression))
+        (print-expression (nth (position (car expression)
+                                         +opening-separators+
+                                         :test #'equal)
+                               +closing-separators+)
+                          stream))
       ;; Regular token
       (progn
         (write-string (token-text expression)
