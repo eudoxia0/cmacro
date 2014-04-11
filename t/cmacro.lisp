@@ -35,6 +35,20 @@
 
 ;; Macro definition
 
-  
+(test macro-case
+  (is
+    (cmacro.macro::parse-case
+     (cmacro.parse:parse-data
+      "match {
+         nil
+       }
+       template {
+         1 2 3;
+       }"))
+    (list :matching (list (list (cmacro.parse:make-token :type :ident
+                                                         :text "nil")))
+          :template "1 2 3 ; "
+          :toplevel nil
+          :external nil)))
 
 (run! 'tests)
