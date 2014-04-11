@@ -39,7 +39,7 @@
                  :text "Uneven number of elements in macro case."))
         (cond
           ((ident-eql directive "match")
-           (push (block-text code) matching))
+           (push (cdr code) matching))
           ((ident-eql directive "template")
            (if template
                ;; Can't have two template directives in one case
