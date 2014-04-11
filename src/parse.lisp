@@ -1,11 +1,12 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
   (:use :cl :anaphora)
-  (:export :token
+  (:export :make-token
            :token-text
            :token-type
            :ident-eql
-           :parse
+           :parse-data
+           :parse-pathname
            :print-ast))
 (in-package :cmacro.parse)
 
@@ -78,6 +79,14 @@
                 (append (first context)
                         (list tok)))))
     (car context)))
+
+
+(defun parse-data (data)
+  (parse (process (cmacro.preprocess:process-data data))))
+
+(defun parse-pathname (pathname)
+  (parse (process (cmacro.preprocess:process-pathname pathname))))
+
 
 (defun print-expression (expression stream)
   "Print an AST into a given stream."
