@@ -24,8 +24,17 @@
   (finishes
     (cmacro.preprocess:process-pathname +sample-file+)))
 
+;; Parsing
+
 (test parse
   (is (list (cmacro.parse:make-token :type :int :text "10"))
-      (cmacro.parse:parse-data "10")))
+      (cmacro.parse:parse-data "10"))
+  (is (list (cmacro.parse:make-token :type :op :text "{")
+            (cmacro.parse:make-token :type :int :text "10"))
+      (cmacro.parse:parse-data "{ 10 }")))
+
+;; Macro definition
+
+  
 
 (run! 'tests)
