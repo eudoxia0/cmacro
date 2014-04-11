@@ -21,7 +21,10 @@
 (in-package :cmacro.macro)
 
 (defun block-text (block)
-  (print-ast (subseq block 1 (1- (length block)))))
+  (reduce #'(lambda (a b)
+              (concatenate 'string a b))
+          (loop for exp in (cdr block) collecting
+            (cmacro.parse:print-ast exp))))
 
 (defun parse-case (ast)
   (let ((matching (list))
