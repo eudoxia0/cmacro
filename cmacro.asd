@@ -13,7 +13,7 @@
                :anaphora
                :alexandria
                :trivial-shell
-               :cl-emb)
+               :cl-mustache)
   :components ((:module "grammar"
                 :components
                 ((:flex "lexing" :output "lexing.yy")
@@ -25,6 +25,7 @@
                  (:file "parse")
                  (:file "var")
                  (:file "error")
+                 (:file "db")
                  (:file "macro")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
