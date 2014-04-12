@@ -12,11 +12,11 @@
 macro aif {
   case {
     match {
-      aif $cond:list$
+      aif $(cond:list)
     }
     template {
-      typeof($cond$) it = $cond$;
-      if it $true-branch$
+      typeof({{cond}}) it = {{cond}};
+      if(it)
     }
   }
 }
@@ -28,12 +28,12 @@ macro aif {
 macro forEach {
   case {
     match {
-      forEach($item:ident$,$collection$)
+      forEach($(item:ident),$(collection))
     }
     template {
-      for(typeof($item$) $item$ = $collection$.begin();
-          $item$ != $collection$.end();
-          ++$item$)
+      for(typeof({{item}}) {{item}} = {{collection}}.begin();
+          {{item}} != {{collection}}.end();
+          ++{{item}})
     }
   }
 }
