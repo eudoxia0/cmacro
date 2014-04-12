@@ -7,7 +7,8 @@
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :token-type
-                :token-text)
+                :token-text
+                :token-equal)
   (:export :var
            :var-text
            :extract-vars))
@@ -22,8 +23,16 @@
       (if (and (eq (token-type node) :ident)
                (equal (token-text node) +var-identifier+))
           ;; The next token is a variable
-          (make-var :text (token-text (cadr sub-ast)))
-          nil))))
+          (prog1
+            (make-var :text (token-text (cadr sub-ast)))
+            ;; Make sure we skip the actual var string
+            (setf sub-ast (cdr sub-ast)))
+          node))))
 
 (defun extract-vars (ast)
   (remove-if #'null (parse-case ast)))
+
+(defun match-token (case-tok input-tok)
+  (if (var-p case-tok)
+      (match-var case-tok input-tok)
+      (token-equal case-tok input-tok)))
