@@ -102,9 +102,10 @@
     (list (extract-macro-definitions% ast table)
           table)))
 
-(defun macro-call-p (name macros)
+(defun macro-call-p (token macros)
   "Determine if an identifier is making a call to a macro."
-  (gethash name macros))
+  (and (token-p token)
+       (gethash (token-text token) macros)))
 
 #|
 (defun macroexpand-ast (ast macros)

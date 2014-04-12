@@ -26,6 +26,7 @@
                  (:file "var")
                  (:file "error")
                  (:file "db")
+                 (:file "template")
                  (:file "macro")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
