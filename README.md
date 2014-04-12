@@ -54,6 +54,9 @@ The syntax for macro definition was inspired by Mozilla's great
 different ways of defining them, including external YAML files or just piping
 the AST to an XSLT program, but this seemed like the best way.
 
+Peter Norvig's **Paradigms of Artificial Intelligence Programming** chapter on
+Eliza was used as a reference for the pattern-matching engine.
+
 # License
 
 Copyright (c) 2014 Fernando Borretti (eudoxiahp@gmail.com)
