@@ -44,6 +44,12 @@
 (test vars
   (finishes (cmacro.var:extract-vars (cmacro.parse:parse-data +vars+))))
 
+;; Variable creation
+
+(test var-creation
+  (is (equalp (cmacro.var:make-var :name "my-var" :qualifiers nil)
+              (cmacro.var::extract-var "my-var"))))
+
 ;; Variable matching
 
 (test tok-match

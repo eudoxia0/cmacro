@@ -3,20 +3,42 @@
   (:use :cl)
   (:import-from :alexandria
                 :flatten)
+  (:import-from :split-sequence
+                :split-sequence)
   (:import-from :cmacro.preprocess
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :token-type
                 :token-text
                 :token-equal)
-  (:export :var
-           :var-text
+  (:export :make-var
+           :var-name
+           :var-qualifiers
            :extract-vars
            :match-var
            :match-token))
 (in-package :cmacro.var)
 
-(defstruct var () text)
+(defstruct var () name qualifiers)
+
+(defparameter +var-type-map+
+  '(("ident"  . :ident)
+    ("const"  . :const)
+    ("int"    . :integer)
+    ("float"  . :float)
+    ("num"    . :num)
+    ("string" . :string)
+    ("op"     . :operator)))
+
+(defun map-var-type (type)
+  (cdr (assoc type +var-type-map+ :test #'equal)))
+
+(defun extract-var (string)
+  (let ((split (split-sequence #\: string)))
+    (make-var :name (first split)
+              :qualifiers (if (cdr split)
+                            (append (list (map-var-type (cadr split)))
+                                    (cddr split))))))
 
 (defun parse-case (ast)
   "Extract variables from the AST of a case clause."
@@ -26,7 +48,7 @@
                (equal (token-text node) +var-identifier+))
           ;; The next token is a variable
           (prog1
-            (make-var :text (token-text (cadr sub-ast)))
+            (extract-var (token-text (cadr sub-ast)))
             ;; Make sure we skip the actual var string
             (setf sub-ast (cdr sub-ast)))
           node))))
@@ -35,7 +57,10 @@
   (remove-if #'null (parse-case ast)))
 
 (defun match-var (var token)
-  t)
+  (cond
+    ((null (var-qualifiers var))
+     ;; The variable accepts whatever
+     t)))
 
 (defun match-token (case-tok input-tok)
   (if (var-p case-tok)
