@@ -123,22 +123,33 @@
       (if (listp match)
           (return match)))))
 
-#|
-(defun macroexpand-ast (ast macros)
+(defparameter *found* nil
+  "t if a macro was expanded during the last macroexpansion.")
+
+(defun macroexpand-ast% (ast macros)
   (loop for sub-ast on ast do
     (let ((expression (first sub-ast)))
       (if (listp expression)
           ;; Recur
-          (macroexpand-ast (rest expression) macros)
+          (macroexpand-ast% (rest expression) macros)
           ;; An ordinary expression, possibly an identifier
           (aif (macro-call-p token macros)
                ;; Expand the macro
                (aif (macro-match it sub-ast)
                     ;; The macro matches one of the clauses, so we replace the
                     ;; part of `sub-ast` that matched with the macro output
-                    ...
+                    (progn
+                      (format t "~A~&" it)
+                      (setf *found* t)
+                      expression)
                     ;; The macro didn't match. Signal an error.
-                    ...)
+                    (error 'cmacro.error:bad-match :token expression)
                ;; Let it go
-               expression)))))
-|#
+               expression))))))
+
+(defun macroexpand-ast (ast macros)
+  (let ((ast (macroexpand-ast% ast macros)))
+    (loop while *found* do
+      (setf *found* nil)
+      (setf ast (macroexpand-ast% ast macros)))
+    ast))
