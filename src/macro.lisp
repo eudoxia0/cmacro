@@ -10,6 +10,7 @@
   (:import-from :cmacro.preprocess
                 :+var-identifier+)
   (:import-from :cmacro.parse
+                :make-token
                 :token-type
                 :token-text
                 :ident-eql
@@ -63,6 +64,8 @@
           :toplevel toplevel
           :external external)))
 
+(defstruct macro () cases)
+
 (defun parse-macro-definition (ast)
   (loop for sub-ast on ast by #'cddr collecting
     (let ((case-directive (first sub-ast))
@@ -75,7 +78,7 @@
                :text "Unknown directive in macro definition."))
       (parse-case case-code))))
 
-(defun extract-macro-definitions (ast)
+(defun extract-macro-definitions% (ast table)
   (loop for sub-ast on ast collecting
     (let ((node (first sub-ast)))
       (if (listp node)
@@ -84,12 +87,20 @@
           ;; Is it a macro definition?
           (if (ident-eql node "macro")
               ;; Parse the macro definition
-              (prog1
-                (parse-macro-definition (cdar (cddr sub-ast)))
+              (progn
+                (setf (gethash (token-text (cadr sub-ast)) table)
+                      (make-macro :cases (parse-macro-definition (cdar (cddr sub-ast)))))
                 ;; Remove the macro definition
-                (setf sub-ast (cddr sub-ast)))
+                (setf sub-ast (cddr sub-ast))
+                ;; Replace the macro with a comment
+                (cmacro.parse:make-token :type :ident :text "/**/"))
               ;; Nope
               node)))))
+
+(defun extract-macro-definitions (ast)
+  (let ((table (make-hash-table :test #'equal)))
+    (list (extract-macro-definitions% ast table)
+          table)))
 
 (defun macro-call-p (name macros)
   "Determine if an identifier is making a call to a macro."
