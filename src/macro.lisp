@@ -109,9 +109,20 @@
   (and (token-p token)
        (gethash (token-text token) macros)))
 
-;(defun macro-match (macro ast)
-;  (loop for case in (macro-cases macro) do
-;    (if (cmacro.var:match
+(defun case-match (macro-case ast)
+  (loop for pattern in (macro-case-match macro-case) do
+    (let ((match (cmacro.var:match pattern ast)))
+      (if (eq t (first match))
+          ;; Successful match
+          (return-from 'case-match
+            (list :bindings match
+                  :case macro-case))))))
+
+(defun macro-match (macro ast)
+  (loop for case in (macro-cases macro) do
+    (let ((match (case-match case ast)))
+      (if (listp match)
+          (return-from 'macro-match match)))))
 
 #|
 (defun macroexpand-ast (ast macros)
