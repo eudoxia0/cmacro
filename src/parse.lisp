@@ -4,6 +4,7 @@
   (:export :make-token
            :token-text
            :token-type
+           :token-equal
            :ident-eql
            :parse-data
            :parse-pathname
@@ -30,6 +31,9 @@
   type
   text)
 
+(defun token-equal (a b)
+  (and (eq (token-type a) (token-type b))
+       (equal (token-text a) (token-text b))))
 
 (defun opening-token-p (tok)
   (member (token-text tok) +opening-separators+ :test #'equal))
