@@ -150,4 +150,21 @@
            :toplevel nil
            :external nil))))
 
+(defparameter +code-with-macros+
+"
+derp herp;
+
+macro derp {
+  case {
+    match {
+      nil
+    }
+    template {
+      1 2 3;
+    }
+  }
+}
+
+hurr durr;")
+
 (run! 'tests)
