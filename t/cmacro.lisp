@@ -173,21 +173,20 @@
         }"))
      (cmacro.parse:parse-data "1 ;"))))
 
-(defparameter +code-with-macros+
-"
-derp herp;
-
-macro derp {
+(defparameter +code-with-macros+ "
+macro l {
   case {
     match {
-      nil
+      1
     }
     template {
-      1 2 3;
+      (1 2 3)
     }
   }
-}
+}")
 
-hurr durr;")
+(test macroexpand
+  (finishes
+    (cmacro::extract-and-macroexpand +code-with-macros+)))
 
 (run! 'tests)
