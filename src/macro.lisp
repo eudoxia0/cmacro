@@ -114,15 +114,14 @@
     (let ((match (cmacro.var:match pattern ast)))
       (if (eq t (first match))
           ;; Successful match
-          (return-from 'case-match
-            (list :bindings match
-                  :case macro-case))))))
+          (return (list :bindings match
+                        :case macro-case))))))
 
 (defun macro-match (macro ast)
   (loop for case in (macro-cases macro) do
     (let ((match (case-match case ast)))
       (if (listp match)
-          (return-from 'macro-match match)))))
+          (return match)))))
 
 #|
 (defun macroexpand-ast (ast macros)
