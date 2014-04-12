@@ -14,9 +14,11 @@
   (:export :make-var
            :var-name
            :var-qualifiers
+           :extract-var
            :extract-vars
            :match-var
-           :match-token))
+           :match-token
+           :match))
 (in-package :cmacro.var)
 
 (defstruct var () name qualifiers)
@@ -91,7 +93,7 @@
 (defun append-rest-bindings (pattern input bindings)
   (append-bindings pattern (if (atom input) (list input) input) bindings))
 
-(defun match (pattern input &optional (bindings '(t)))
+(defun match-pattern (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
         ((and (atom pattern) (atom input) (match-token pattern input))
@@ -105,3 +107,6 @@
              (append-rest-bindings (first pattern) input bindings)
              (match (rest pattern) (rest input)
                     (match (first pattern) (first input) bindings)))))))
+
+(defun match (pattern input)
+  (cdr (match-pattern pattern input)))
