@@ -159,6 +159,20 @@
        :toplevel nil
        :external nil))))))
 
+;; Parsing cases and matching them
+(test parse-match-case
+  (finishes
+    (cmacro.macro::case-match
+     (cmacro.macro::parse-case
+      (cmacro.parse:parse-data
+       "match {
+          1
+        }
+        template {
+          1 2 3;
+        }"))
+     (cmacro.parse:parse-data "1 ;"))))
+
 (defparameter +code-with-macros+
 "
 derp herp;
