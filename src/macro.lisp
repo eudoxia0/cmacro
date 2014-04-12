@@ -17,7 +17,9 @@
                 :print-ast)
   (:import-from :cmacro.error
                 :bad-macro-definition
-                :bad-match))
+                :bad-match)
+  (:export :extract-macro-definitions
+           :macroexpand-ast))
 (in-package :cmacro.macro)
 
 (defun block-text (block)
@@ -115,6 +117,7 @@
       (if (eq t (first match))
           ;; Successful match
           (return (list :bindings match
+                        :length (length pattern)
                         :case macro-case))))))
 
 (defun macro-match (macro ast)
@@ -141,7 +144,7 @@
                     (progn
                       (format t "~A~&" it)
                       (setf *found* t)
-                      expression)
+                      expression) ;; This last part here is a placeholder
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression)
                ;; Let it go
