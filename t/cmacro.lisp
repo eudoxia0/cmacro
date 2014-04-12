@@ -33,6 +33,17 @@
             (cmacro.parse:make-token :type :int :text "10"))
       (cmacro.parse:parse-data "{ 10 }")))
 
+;; Variable extraction
+
+(defparameter +vars+
+  "void f() {
+     $(my-variable);
+     $(another-var:int);
+   }")
+
+(test vars
+  (finishes (cmacro.var:extract-vars (cmacro.parse:parse-data +vars+))))
+
 ;; Macro definition
 
 (test macro-case
