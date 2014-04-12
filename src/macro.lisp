@@ -75,21 +75,21 @@
                :text "Unknown directive in macro definition."))
       (parse-case case-code))))
 
-(defun extract-macro-definitions% (ast)
+(defun extract-macro-definitions (ast)
   (loop for sub-ast on ast collecting
     (let ((node (first sub-ast)))
       (if (listp node)
           ;; Recur
-          (extract-macro-definitions (cdr node))
+          (extract-macro-definitions node)
           ;; Is it a macro definition?
           (if (ident-eql node "macro")
               ;; Parse the macro definition
-              (parse-macro-definition (cadr sub-ast))
+              (prog1
+                (parse-macro-definition (cdar (cddr sub-ast)))
+                ;; Remove the macro definition
+                (setf sub-ast (cddr sub-ast)))
               ;; Nope
-              nil)))))
-
-(defun extract-macro-definitions (ast)
-  (remove-if #'null (alexandria:flatten (extract-macro-definitions% ast))))
+              node)))))
 
 (defun macro-call-p (name macros)
   "Determine if an identifier is making a call to a macro."
