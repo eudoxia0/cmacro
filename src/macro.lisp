@@ -26,6 +26,10 @@
           (loop for exp in (cdr block) collecting
             (cmacro.parse:print-ast exp))))
 
+(defstruct macro-case () match template toplevel external)
+
+(defstruct macro () cases)
+
 (defun parse-case (ast)
   (let ((matching (list))
         template
@@ -59,12 +63,10 @@
     (when (and template external)
       (error 'bad-macro-definition
              :text "Can't have both template and external directives."))
-    (list :matching matching
-          :template template
-          :toplevel toplevel
-          :external external)))
-
-(defstruct macro () cases)
+    (make-macro-case :match matching
+                     :template template
+                     :toplevel toplevel
+                     :external external)))
 
 (defun parse-macro-definition (ast)
   (loop for sub-ast on ast by #'cddr collecting
@@ -107,6 +109,10 @@
   (and (token-p token)
        (gethash (token-text token) macros)))
 
+;(defun macro-match (macro ast)
+;  (loop for case in (macro-cases macro) do
+;    (if (cmacro.var:match
+
 #|
 (defun macroexpand-ast (ast macros)
   (loop for sub-ast on ast do
@@ -115,8 +121,7 @@
           ;; Recur
           (macroexpand-ast (rest expression) macros)
           ;; An ordinary expression, possibly an identifier
-          (aif (and (eq (token-type expression) :ident)
-                    (macro-call-p (token-text expression) macros))
+          (aif (macro-call-p token macros)
                ;; Expand the macro
                (aif (macro-match it sub-ast)
                     ;; The macro matches one of the clauses, so we replace the

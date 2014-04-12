@@ -8,23 +8,23 @@
 
 ;; Storing
 (defclass store-tag (non-standalone-tag)
-  ((key :initarg :key :accessor key)
+  ((db-key :initarg :db-key :accessor db-key)
    (data :initarg :store :accessor store)))
 
 (set-mustache-character
   #\<
   (lambda (raw-text arg-text escapep start end)
     (let* ((pos (position #\Space arg-text))
-           (key (subseq arg-text 0 pos))
+           (db-key (subseq arg-text 0 pos))
            (var-name (subseq arg-text (1+ pos))))
-    (make-instance 'store-tag :key key :data var-name))))
+    (make-instance 'store-tag :db-key db-key :data var-name))))
 
 (defmethod render-token ((token store-tag) context template)
   ;; Extract the named variable and store it
   (print-data "" t context))
 
 (defclass retrieve-tag (non-standalone-tag)
-  ((key :initarg :key :accessor key)
+  ((db-key :initarg :db-key :accessor db-key)
    (default :initarg :default :accessor default :initform nil)))
 
 (set-mustache-character
@@ -33,11 +33,11 @@
     (let ((pos (position #\Space arg-text)))
       (if pos
           ;; We have a default value
-          (let ((key (subseq arg-text 0 pos))
+          (let ((db-key (subseq arg-text 0 pos))
                 (default (subseq arg-text (1+ pos))))
-            (make-instance 'retrieve-tag :key key :default default))
-          ;; Just retrieve the key
-          (make-instance 'retrieve-tag :key key)))))
+            (make-instance 'retrieve-tag :db-key db-key :default default))
+          ;; Just retrieve the db-key
+          (make-instance 'retrieve-tag :db-key db-key)))))
 
 (defmethod render-token ((token retrieve-tag) context template)
-  (print-data (cmacro.db:retrieve (key token) (default token)) t context))
+  (print-data (cmacro.db:retrieve (db-key token) (default token)) t context))
