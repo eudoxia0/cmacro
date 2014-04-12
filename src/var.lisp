@@ -21,7 +21,7 @@
            :match))
 (in-package :cmacro.var)
 
-(defstruct var () name qualifiers)
+(defstruct var name qualifiers)
 
 (defparameter +var-type-map+
   '(("ident"  . :ident)
@@ -94,7 +94,7 @@
 (defun append-rest-bindings (pattern input bindings)
   (append-bindings pattern (if (atom input) (list input) input) bindings))
 
-(defun match (pattern input &optional (bindings '(t)))
+(defun match% (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
         ((and (atom pattern) (atom input) (not (var-p pattern))
@@ -108,5 +108,12 @@
         ((listp pattern)
          (if (restp (first pattern))
              (append-rest-bindings (first pattern) input bindings)
-             (match (rest pattern) (rest input)
-                    (match (first pattern) (first input) bindings)))))))
+             (match% (rest pattern) (rest input)
+                     (match% (first pattern) (first input) bindings)))))))
+
+(defun match (pattern input)
+  (if (and (listp pattern) (listp input))
+      (if (> (length pattern) (length input))
+          nil
+          (match% pattern (subseq input 0 (length pattern))))
+      (match% pattern input)))

@@ -26,9 +26,9 @@
           (loop for exp in (cdr block) collecting
             (cmacro.parse:print-ast exp))))
 
-(defstruct macro-case () match template toplevel external)
+(defstruct macro-case match template toplevel external)
 
-(defstruct macro () cases)
+(defstruct macro cases)
 
 (defun parse-case (ast)
   (let ((matching (list))
