@@ -28,7 +28,7 @@
     ("float"  . :float)
     ("num"    . :num)
     ("string" . :string)
-    ("op"     . :operator)))
+    ("op"     . :op)))
 
 (defun map-var-type (type)
   (cdr (assoc type +var-type-map+ :test #'equal)))
@@ -56,11 +56,26 @@
 (defun extract-vars (ast)
   (remove-if #'null (parse-case ast)))
 
+(defun eql-qualifier (qualifier token-type)
+  (or (eq qualifier token-type)
+      (and (eq qualifier :const)
+           (or (eq token-type :integer)
+               (eq token-type :float)
+               (eq token-type :string)))
+      (and (eq qualifier :num)
+           (or (eq token-type :integer)
+               (eq token-type :float)))))
+
 (defun match-var (var token)
   (cond
     ((null (var-qualifiers var))
      ;; The variable accepts whatever
-     t)))
+     t)
+    ((eql-qualifier (first (var-qualifiers var))
+                    (token-type token))
+     ;; Qualifier match
+     t)
+    (t nil)))
 
 (defun match-token (case-tok input-tok)
   (if (var-p case-tok)
