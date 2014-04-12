@@ -104,6 +104,7 @@
 
 (test macro-case
   (is
+   (equalp
     (cmacro.macro::parse-case
      (cmacro.parse:parse-data
       "match {
@@ -112,43 +113,51 @@
        template {
          1 2 3;
        }"))
-    (list :matching (list (list (cmacro.parse:make-token :type :ident
-                                                         :text "nil")))
-          :template "1 2 3 ; "
-          :toplevel nil
-          :external nil)))
+    (cmacro.macro::make-macro-case
+     :match (list (list (cmacro.parse:make-token :type :ident
+                                                 :text "nil")))
+     :template "1 2 3 ; "
+     :toplevel nil
+     :external nil))))
 
 (test macro-def
   (is
-    (cmacro.macro::parse-macro-definition
-     (cmacro.parse:parse-data
-      "case {
-         match {
-           NUL
+   (equalp
+    (cmacro.macro::make-macro
+     :cases
+     (cmacro.macro::parse-macro-definition
+      (cmacro.parse:parse-data
+        "case {
+           match {
+             NUL
+           }
+           template {
+             1 2 3;
+           }
          }
-         template {
-           1 2 3;
-         }
-       }
-       case {
-         match {
-           1
-         }
-         template {
-           1 2 3;
-         }
-       }"))
-    (list
-     (list :matching (list (list (cmacro.parse:make-token :type :ident
-                                                         :text "nil")))
-           :template "1 2 3 ; "
-           :toplevel nil
-           :external nil)
-     (list :matching (list (list (cmacro.parse:make-token :type :integer
-                                                         :text "1")))
-           :template "1 2 3 ; "
-           :toplevel nil
-           :external nil))))
+         case {
+           match {
+             1
+           }
+           template {
+             1 2 3;
+           }
+         }")))
+    (cmacro.macro::make-macro
+     :cases
+     (list
+      (cmacro.macro::make-macro-case
+       :match (list (list (cmacro.parse:make-token :type :ident
+                                                   :text "NUL")))
+       :template "1 2 3 ; "
+       :toplevel nil
+       :external nil)
+      (cmacro.macro::make-macro-case
+       :match (list (list (cmacro.parse:make-token :type :integer
+                                                   :text "1")))
+       :template "1 2 3 ; "
+       :toplevel nil
+       :external nil))))))
 
 (defparameter +code-with-macros+
 "
