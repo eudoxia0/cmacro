@@ -11,7 +11,9 @@
                 :token-equal)
   (:export :var
            :var-text
-           :extract-vars))
+           :extract-vars
+           :match-var
+           :match-token))
 (in-package :cmacro.var)
 
 (defstruct var () text)
@@ -31,6 +33,9 @@
 
 (defun extract-vars (ast)
   (remove-if #'null (parse-case ast)))
+
+(defun match-var (var token)
+  t)
 
 (defun match-token (case-tok input-tok)
   (if (var-p case-tok)

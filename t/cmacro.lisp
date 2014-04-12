@@ -44,6 +44,16 @@
 (test vars
   (finishes (cmacro.var:extract-vars (cmacro.parse:parse-data +vars+))))
 
+;; Variable matching
+
+(test tok-match
+  (is-false (cmacro.var:match-token
+             (cmacro.parse:make-token :type :ident :text "derp")
+             (cmacro.parse:make-token :type :op :text "")))
+  (is-false (cmacro.var:match-token
+             (cmacro.parse:make-token :type :int :text "derp")
+             (cmacro.parse:make-token :type :int :text "herp"))))
+
 ;; Macro definition
 
 (test macro-case
