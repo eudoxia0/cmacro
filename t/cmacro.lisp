@@ -57,8 +57,23 @@
              (cmacro.parse:make-token :type :ident :text "derp")
              (cmacro.parse:make-token :type :op :text "")))
   (is-false (cmacro.var:match-token
-             (cmacro.parse:make-token :type :int :text "derp")
-             (cmacro.parse:make-token :type :int :text "herp"))))
+             (cmacro.parse:make-token :type :integer :text "derp")
+             (cmacro.parse:make-token :type :integer :text "herp")))
+  (is-true (cmacro.var:match-token
+             (cmacro.parse:make-token :type :integer :text "derp")
+             (cmacro.parse:make-token :type :integer :text "derp")))
+  (is-true (cmacro.var:match-token
+             (cmacro.var::extract-var "my-var")
+             (cmacro.parse:make-token :type :integer :text "10")))
+  (is-true (cmacro.var:match-token
+             (cmacro.var::extract-var "my-var:int")
+             (cmacro.parse:make-token :type :integer :text "10")))
+  (is-true (cmacro.var:match-token
+             (cmacro.var::extract-var "my-var:float")
+             (cmacro.parse:make-token :type :float :text "3.14")))
+  (is-true (cmacro.var:match-token
+             (cmacro.var::extract-var "my-var:string")
+             (cmacro.parse:make-token :type :string :text "\"derp\""))))
 
 ;; Macro definition
 
