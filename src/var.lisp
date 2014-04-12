@@ -40,6 +40,9 @@
                             (append (list (map-var-type (cadr split)))
                                     (cddr split))))))
 
+(defun restp (variable)
+  (eq (first (var-qualifiers variable)) :rest))
+
 (defun parse-case (ast)
   "Extract variables from the AST of a case clause."
   (loop for sub-ast on (flatten ast) collecting
@@ -77,7 +80,28 @@
      t)
     (t nil)))
 
-(defun match-token (case-tok input-tok)
-  (if (var-p case-tok)
-      (match-var case-tok input-tok)
-      (token-equal case-tok input-tok)))
+(defun match-token (pattern input)
+  (if (var-p pattern)
+      (match-var pattern input)
+      (token-equal pattern input)))
+
+(defun append-bindings (pattern input bindings)
+  (append bindings (list (list pattern input))))
+
+(defun append-rest-bindings (pattern input bindings)
+  (append-bindings pattern (if (atom input) (list input) input) bindings))
+
+(defun match (pattern input &optional (bindings '(t)))
+  (if bindings
+      (cond
+        ((and (atom pattern) (atom input) (match-token pattern input))
+         bindings)
+        ((restp pattern)
+         (append-rest-bindings pattern input bindings))
+        ((var-p pattern)
+         (append-bindings pattern input bindings))
+        ((listp pattern)
+         (if (restp (first pattern))
+             (append-rest-bindings (first pattern) input bindings)
+             (match (rest pattern) (rest input)
+                    (match (first pattern) (first input) bindings)))))))
