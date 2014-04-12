@@ -6,11 +6,12 @@
 
 (in-package :cl-user)
 (defpackage cmacro.macro
-  (:use :cl)
+  (:use :cl :anaphora)
   (:import-from :cmacro.preprocess
                 :+var-identifier+)
   (:import-from :cmacro.parse
                 :make-token
+                :token-p
                 :token-type
                 :token-text
                 :ident-eql
@@ -130,13 +131,13 @@
   "t if a macro was expanded during the last macroexpansion.")
 
 (defun macroexpand-ast% (ast macros)
-  (loop for sub-ast on ast do
+  (loop for sub-ast on ast collecting
     (let ((expression (first sub-ast)))
       (if (listp expression)
           ;; Recur
           (macroexpand-ast% (rest expression) macros)
           ;; An ordinary expression, possibly an identifier
-          (aif (macro-call-p token macros)
+          (aif (macro-call-p expression macros)
                ;; Expand the macro
                (aif (macro-match it sub-ast)
                     ;; The macro matches one of the clauses, so we replace the
@@ -146,9 +147,9 @@
                       (setf *found* t)
                       expression) ;; This last part here is a placeholder
                     ;; The macro didn't match. Signal an error.
-                    (error 'cmacro.error:bad-match :token expression)
+                    (error 'cmacro.error:bad-match :token expression))
                ;; Let it go
-               expression))))))
+               expression)))))
 
 (defun macroexpand-ast (ast macros)
   (let ((ast (macroexpand-ast% ast macros)))
