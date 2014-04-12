@@ -118,4 +118,36 @@
           :toplevel nil
           :external nil)))
 
+(test macro-def
+  (is
+    (cmacro.macro::parse-macro-definition
+     (cmacro.parse:parse-data
+      "case {
+         match {
+           NUL
+         }
+         template {
+           1 2 3;
+         }
+       }
+       case {
+         match {
+           1
+         }
+         template {
+           1 2 3;
+         }
+       }"))
+    (list
+     (list :matching (list (list (cmacro.parse:make-token :type :ident
+                                                         :text "nil")))
+           :template "1 2 3 ; "
+           :toplevel nil
+           :external nil)
+     (list :matching (list (list (cmacro.parse:make-token :type :integer
+                                                         :text "1")))
+           :template "1 2 3 ; "
+           :toplevel nil
+           :external nil))))
+
 (run! 'tests)

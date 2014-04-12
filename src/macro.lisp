@@ -2,7 +2,6 @@
 ;;;; following:
 ;;;; * Extraction of `macro` forms from the AST
 ;;;; * Searching the AST for macro calls
-;;;; * Pattern matching of macro case clauses on the AST
 ;;;; * Macro expansion
 
 (in-package :cl-user)
@@ -67,7 +66,7 @@
 (defun parse-macro-definition (ast)
   (loop for sub-ast on ast by #'cddr collecting
     (let ((case-directive (first sub-ast))
-          (case-code (second sub-ast)))
+          (case-code (cdr (second sub-ast))))
       (unless case-code
         (error 'bad-macro-definition
                :text "Uneven number of elements in macro definition."))
