@@ -43,7 +43,8 @@
                                     (cddr split))))))
 
 (defun restp (variable)
-  (eq (first (var-qualifiers variable)) :rest))
+  (and (var-p variable)
+       (eq (first (var-qualifiers variable)) :rest)))
 
 (defun parse-case (ast)
   "Extract variables from the AST of a case clause."
@@ -96,7 +97,9 @@
 (defun match (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
-        ((and (atom pattern) (atom input) (match-token pattern input))
+        ((and (atom pattern) (atom input) (not (var-p pattern))
+              (or (and (null pattern) (null input))
+                  (match-token pattern input)))
          bindings)
         ((restp pattern)
          (append-rest-bindings pattern input bindings))

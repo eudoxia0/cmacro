@@ -75,6 +75,31 @@
              (cmacro.var:extract-var "my-var:string")
              (cmacro.parse:make-token :type :string :text "\"derp\""))))
 
+;; Pattern matching
+
+(test pat-match
+  ;; Atoms
+  (is-true (cmacro.var:match
+             (cmacro.var:extract-var "my-var:int")
+             (cmacro.parse:make-token :type :integer :text "10")))
+  (is-true (cmacro.var:match
+             (cmacro.var:extract-var "my-var:float")
+             (cmacro.parse:make-token :type :float :text "3.14")))
+  (is-true (cmacro.var:match
+             (cmacro.var:extract-var "my-var:string")
+             (cmacro.parse:make-token :type :string :text "\"derp\"")))
+  ;; Lists
+  (is
+    (cmacro.var:match
+      (list
+       (cmacro.parse:make-token :type :integer :text "1")
+       (cmacro.var:extract-var "my-var:int"))
+      (list
+       (cmacro.parse:make-token :type :integer :text "1")
+       (cmacro.parse:make-token :type :integer :text "2")))
+    (list t (list (make-var :name "my-var" :qualifiers (:integer))
+                  (cmacro.parse:make-token :type :integer :text "2")))))
+
 ;; Macro definition
 
 (test macro-case
