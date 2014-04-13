@@ -119,7 +119,8 @@
     (cmacro.macro::make-macro-case
      :match (list (list (cmacro.parse:make-token :type :ident
                                                  :text "nil")))
-     :template "1 2 3 ; "
+     :template " 1 2 3 ;
+"
      :toplevel nil
      :external nil))))
 
@@ -152,13 +153,15 @@
       (cmacro.macro::make-macro-case
        :match (list (list (cmacro.parse:make-token :type :ident
                                                    :text "NUL")))
-       :template "1 2 3 ; "
+       :template " 1 2 3 ;
+"
        :toplevel nil
        :external nil)
       (cmacro.macro::make-macro-case
        :match (list (list (cmacro.parse:make-token :type :integer
                                                    :text "1")))
-       :template "1 2 3 ; "
+       :template " 1 2 3 ;
+"
        :toplevel nil
        :external nil))))))
 
@@ -228,5 +231,21 @@ macro b {
             (cmacro.preprocess::slurp-file
              (merge-pathnames #p"t/bad-macros/2.c"
                               +cmacro-path+)))))
+
+;; Good macro definitions
+
+(test good-macros
+  (finishes
+   (print (cmacro.parse:print-ast
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/good-macros/0.c"
+                              +cmacro-path+))))))
+  (finishes
+   (print (cmacro.parse:print-ast
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/good-macros/anaphoric-if.c"
+                              +cmacro-path+)))))))
 
 (run! 'tests)
