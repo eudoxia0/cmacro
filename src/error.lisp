@@ -3,7 +3,8 @@
   (:use :cl)
   (:import-from :cmacro.parse
                 :token-text)
-  (:export :bad-match))
+  (:export :bad-macro-definition
+           :bad-match))
 (in-package :cmacro.error)
 
 (defparameter +bad-match-msg+

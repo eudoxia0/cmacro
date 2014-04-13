@@ -3,10 +3,13 @@
   (:use :cl :fiveam))
 (in-package :cmacro-test)
 
+(defparameter +cmacro-path+
+  (asdf:component-pathname (asdf:find-system :cmacro-test)))
+
 (defparameter +sample-file+
   (merge-pathnames
    #p"t/test.c"
-   (asdf:component-pathname (asdf:find-system :cmacro-test))))
+   +cmacro-path+))
 
 (def-suite tests
   :description "General tests.")
@@ -194,5 +197,24 @@ macro l {
     (cmacro::extract-and-macroexpand +code-with-macro-def+))
   (finishes
     (cmacro::extract-and-macroexpand +code-with-macro-call+)))
+
+;; Bad macro definitions
+
+(test bad-macros
+  (signals cmacro.error:bad-macro-definition
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/bad-macros/0.c"
+                              +cmacro-path+))))
+  (signals cmacro.error:bad-macro-definition
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/bad-macros/1.c"
+                              +cmacro-path+))))
+  (signals cmacro.error:bad-macro-definition
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/bad-macros/2.c"
+                              +cmacro-path+)))))
 
 (run! 'tests)
