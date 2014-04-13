@@ -103,19 +103,22 @@
         (loop for item in (cdr expression) do
           (print-expression item stream))
         ;; Print the matching closing separator
-        (aif (position (token-text (car expression))
-                       +opening-separators+
-                       :test #'equal)
+        (aif (and (token-p (car expression))
+                  (position (token-text (car expression))
+                            +opening-separators+
+                            :test #'equal))
              (print-expression
               (make-token :type :op :text (nth it +closing-separators+))
               stream)))
       ;; Regular token
       (progn
-        (write-string (token-text expression)
-                      stream)
         (unless (separator-token-p expression)
           (write-char #\Space stream))
-        (when (blockp expression)
+        (write-string (token-text expression)
+                      stream)
+        (when (or (blockp expression)
+                  (and (eq (token-type expression) :op)
+                       (equal (token-text expression) ";")))
           (write-char #\Newline stream)))))
 
 (defun print-ast (ast)

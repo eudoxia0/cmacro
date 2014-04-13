@@ -135,7 +135,7 @@
     (let ((expression (first sub-ast)))
       (if (listp expression)
           ;; Recur
-          (macroexpand-ast% (rest expression) macros)
+          (macroexpand-ast% expression macros)
           ;; An ordinary expression, possibly an identifier
           (aif (macro-call-p expression macros)
                ;; Expand the macro
@@ -145,11 +145,11 @@
                     (progn
                       (setf *found* t)
                       (setf sub-ast (nthcdr (getf it :length) sub-ast))
-                      (first (cmacro.parse:parse-data
-                              (cmacro.template:render-template
-                               (macro-case-template (getf it :case))
-                               (aif (getf it :bindings)
-                                    (cdr it))))))
+                      (cmacro.parse:parse-data
+                       (cmacro.template:render-template
+                        (macro-case-template (getf it :case))
+                        (aif (getf it :bindings)
+                             (cdr it)))))
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression))
                ;; Let it go
