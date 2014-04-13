@@ -113,7 +113,7 @@ from a template clause, and turn them back to cl-mustache tags."
 (defun match% (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
-        ((and (atom pattern) (not (var-p pattern))
+        ((and (atom pattern) (atom input) (not (var-p pattern))
               (or (and (null pattern) (null input))
                   (match-token pattern input)))
          bindings)

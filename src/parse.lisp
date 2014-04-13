@@ -55,14 +55,16 @@
 (defun process (lexemes)
   "Turn a list of lexemes into a list of tokens. Each lexeme is of the form:
     '[three letter type identifier]:[text]'"
-  (mapcar 
-   #'(lambda (lexeme)
-       (let ((tok-type (cdr (assoc (subseq lexeme 0 3)
-                                   +token-type-map+
-                                   :test #'equal)))
-             (tok-text (subseq lexeme 4)))
-         (make-token :type tok-type :text tok-text)))
-   lexemes))
+  (remove-if #'(lambda (tok)  ;; I am not entirely sure why null tokens happen
+                 (null (token-type tok)))
+             (mapcar 
+              #'(lambda (lexeme)
+                  (let ((tok-type (cdr (assoc (subseq lexeme 0 3)
+                                              +token-type-map+
+                                              :test #'equal)))
+                        (tok-text (subseq lexeme 4)))
+                    (make-token :type tok-type :text tok-text)))
+              lexemes)))
 
 (defun parse (tokens)
   "Parse a flat list of tokens into a nested data structure."
