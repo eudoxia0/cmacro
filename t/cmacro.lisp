@@ -173,7 +173,7 @@
         }"))
      (cmacro.parse:parse-data "1 ;"))))
 
-(defparameter +code-with-macros+ "
+(defparameter +code-with-macro-def+ "
 macro l {
   case {
     match {
@@ -185,8 +185,14 @@ macro l {
   }
 }")
 
+(defparameter +code-with-macro-call+
+  (concatenate 'string +code-with-macro-def+
+               "l 1;"))
+
 (test macroexpand
   (finishes
-    (cmacro::extract-and-macroexpand +code-with-macros+)))
+    (cmacro::extract-and-macroexpand +code-with-macro-def+))
+  (finishes
+    (cmacro::extract-and-macroexpand +code-with-macro-call+)))
 
 (run! 'tests)
