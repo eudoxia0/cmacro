@@ -139,13 +139,15 @@
           ;; An ordinary expression, possibly an identifier
           (aif (macro-call-p expression macros)
                ;; Expand the macro
-               (aif (macro-match it sub-ast)
+               (aif (macro-match it (cdr sub-ast))
                     ;; The macro matches one of the clauses, so we replace the
                     ;; part of `sub-ast` that matched with the macro output
                     (progn
-                      (format t "~A~&" it)
                       (setf *found* t)
-                      expression) ;; This last part here is a placeholder
+                      (setf sub-ast (nthcdr (getf it :length) sub-ast))
+                      (first (cmacro.parse:parse-data
+                              (cmacro.template:render-template
+                               (macro-case-template (getf it :case)) nil))))
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression))
                ;; Let it go

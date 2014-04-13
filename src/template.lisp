@@ -41,3 +41,12 @@
 
 (defmethod render-token ((token retrieve-tag) context template)
   (print-data (cmacro.db:retrieve (db-key token) (default token)) t context))
+
+(in-package :cl-user)
+(defpackage cmacro.template
+  (:use :cl)
+  (:export :render-template))
+(in-package :cmacro.template)
+
+(defun render-template (template variables)
+  (mustache:mustache-render-to-string template variables))
