@@ -54,4 +54,5 @@
   (mustache:mustache-render-to-string
    template
    (loop for pair in variables collecting
-                               (cons (var-name (car pair)) (cdr pair)))))
+                               (cons (var-name (car pair))
+                                     (cmacro.parse:print-ast (cdr pair))))))
