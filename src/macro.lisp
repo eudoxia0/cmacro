@@ -88,7 +88,7 @@
     (let ((node (first sub-ast)))
       (if (listp node)
           ;; Recur
-          (extract-macro-definitions node)
+          (extract-macro-definitions% node table)
           ;; Is it a macro definition?
           (if (ident-eql node "macro")
               ;; Parse the macro definition
