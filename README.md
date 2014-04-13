@@ -15,7 +15,7 @@ macro aif {
       aif $(cond:list)
     }
     template {
-      typeof({{cond}}) it = {{cond}};
+      typeof($(cond)) it = $(cond);
       if(it)
     }
   }
@@ -31,14 +31,13 @@ macro forEach {
       forEach($(item:ident),$(collection))
     }
     template {
-      for(typeof({{item}}) {{item}} = {{collection}}.begin();
-          {{item}} != {{collection}}.end();
-          ++{{item}})
+      for(typeof($(item)) $(item) = $(collection).begin();
+          $(item) != $(collection).end();
+          ++$(item))
     }
   }
 }
 ```
-    
 
 # Building
 
