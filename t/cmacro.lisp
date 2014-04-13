@@ -177,7 +177,7 @@
      (cmacro.parse:parse-data "1 ;"))))
 
 (defparameter +code-with-macro-def+ "
-macro l {
+macro a {
   case {
     match {
       1
@@ -186,17 +186,29 @@ macro l {
       (1 2 3)
     }
   }
-}")
+}
+
+macro b {
+  case {
+    match {
+      $(derp) 2 ;
+    }
+    template {
+      $(derp)
+    }
+  }
+}
+")
 
 (defparameter +code-with-macro-call+
   (concatenate 'string +code-with-macro-def+
-               "l 1;"))
+               "a 1; b 1 2 ;"))
 
 (test macroexpand
   (finishes
-    (cmacro::extract-and-macroexpand +code-with-macro-def+))
+    (print (cmacro::extract-and-macroexpand +code-with-macro-def+)))
   (finishes
-    (cmacro::extract-and-macroexpand +code-with-macro-call+)))
+    (print (cmacro::extract-and-macroexpand +code-with-macro-call+))))
 
 ;; Bad macro definitions
 
