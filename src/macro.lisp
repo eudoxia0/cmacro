@@ -46,13 +46,13 @@
                  :text "Uneven number of elements in macro case."))
         (cond
           ((ident-eql directive "match")
-           (push (cdr code) matching))
+           (push (cmacro.var:extract-vars (cdr code)) matching))
           ((ident-eql directive "template")
            (if template
                ;; Can't have two template directives in one case
                (error 'bad-macro-definition
                       :text "Repeated template directives.")
-               (setf template (block-text code))))
+               (setf template (block-text (cmacro.var:parse-template code)))))
           ((ident-eql directive "toplevel")
            (if toplevel
                (error 'bad-macro-definition
@@ -147,7 +147,9 @@
                       (setf sub-ast (nthcdr (getf it :length) sub-ast))
                       (first (cmacro.parse:parse-data
                               (cmacro.template:render-template
-                               (macro-case-template (getf it :case)) nil))))
+                               (macro-case-template (getf it :case))
+                               (aif (getf it :bindings)
+                                    (cdr it))))))
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression))
                ;; Let it go

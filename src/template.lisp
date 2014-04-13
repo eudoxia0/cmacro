@@ -45,8 +45,13 @@
 (in-package :cl-user)
 (defpackage cmacro.template
   (:use :cl)
+  (:import-from :cmacro.var
+                :var-name)
   (:export :render-template))
 (in-package :cmacro.template)
 
 (defun render-template (template variables)
-  (mustache:mustache-render-to-string template variables))
+  (mustache:mustache-render-to-string
+   template
+   (loop for pair in variables collecting
+                               (cons (var-name (car pair)) (cdr pair)))))

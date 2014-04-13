@@ -16,6 +16,7 @@
            :var-qualifiers
            :extract-var
            :extract-vars
+           :parse-template
            :match-var
            :match-token
            :match))
@@ -36,7 +37,7 @@
   (cdr (assoc type +var-type-map+ :test #'equal)))
 
 (defun extract-var (string)
-  (let ((split (split-sequence #\: string)))
+  (let ((split (split-sequence #\: (remove #\Space (remove #\" string)))))
     (make-var :name (first split)
               :qualifiers (if (cdr split)
                             (append (list (map-var-type (cadr split)))
@@ -46,21 +47,36 @@
   (and (var-p variable)
        (eq (first (var-qualifiers variable)) :rest)))
 
-(defun parse-case (ast)
-  "Extract variables from the AST of a case clause."
-  (loop for sub-ast on (flatten ast) collecting
-    (let ((node (first sub-ast)))
-      (if (and (eq (token-type node) :ident)
-               (equal (token-text node) +var-identifier+))
-          ;; The next token is a variable
-          (prog1
-            (extract-var (token-text (cadr sub-ast)))
-            ;; Make sure we skip the actual var string
-            (setf sub-ast (cdr sub-ast)))
-          node))))
-
 (defun extract-vars (ast)
-  (remove-if #'null (parse-case ast)))
+  "Extract variables from the AST of a case clause."
+  (loop for sub-ast on ast collecting
+    (let ((node (first sub-ast)))
+      (if (listp node)
+          (extract-vars node)
+          (if (cmacro.parse:ident-eql node +var-identifier+)
+              ;; The next token is a variable
+              (prog1
+                  (extract-var (token-text (cadr sub-ast)))
+                ;; Make sure we skip the actual var string
+                (setf sub-ast (cdr sub-ast)))
+              node)))))
+ 
+(defun parse-template% (ast)
+  (loop for node in ast collecting
+        (if (listp node)
+            (parse-template% node)
+            (if (var-p node)
+                (cmacro.parse:make-token :type :ident
+                                         :text (format nil
+                                                       "{{~A}}"
+                                                       (var-name node)))
+                node))))
+
+(defun parse-template (ast)
+  "Template tags use the same syntax as variables, since raw cl-mustache tags
+would be converted to blocks and that is such a hassle. So we extract variables
+from a template clause, and turn them back to cl-mustache tags."
+  (parse-template% (extract-vars ast)))
 
 (defun eql-qualifier (qualifier token-type)
   (or (eq qualifier token-type)
@@ -89,7 +105,7 @@
       (token-equal pattern input)))
 
 (defun append-bindings (pattern input bindings)
-  (append bindings (list (list pattern input))))
+  (append bindings (list (cons pattern input))))
 
 (defun append-rest-bindings (pattern input bindings)
   (append-bindings pattern (if (atom input) (list input) input) bindings))
