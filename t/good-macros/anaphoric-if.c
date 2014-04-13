@@ -1,7 +1,7 @@
 macro aif {
   case {
     match {
-      $(cond) ;
+      $(cond)
     }
     template {
       typeof($(cond)) it = $(cond);
@@ -11,6 +11,6 @@ macro aif {
 }
 
 int main() {
-  aif var ;
+  aif (5 > 1)
     return it;
 }
