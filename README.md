@@ -53,6 +53,10 @@ The syntax for macro definition was inspired by Mozilla's great
 different ways of defining them, including external YAML files or just piping
 the AST to an XSLT program, but this seemed like the best way.
 
+The Makefile is largely based on that of
+[Dimitri Fontaine](http://tapoueh.org/)'s
+[pgloader](https://github.com/dimitri/pgloader) utility.
+
 Peter Norvig's **Paradigms of Artificial Intelligence Programming** chapter on
 Eliza was used as a reference for the pattern-matching engine.
 
