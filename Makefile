@@ -3,8 +3,9 @@ LISPOPTS = --no-sysinit --no-userinit
 
 BUILD = build
 
+NAME = cmacro
 BUILDAPP = $(BUILD)/buildapp
-CMACRO = $(BUILD)/cmc
+BIN = $(BUILD)/cmc
 LEXER = grammar/cmc-lexer
 
 LIBS = $(BUILD)/.reqs
@@ -21,14 +22,14 @@ default: all
 $(BUILD):
 	mkdir -p $(QLDIR)
 
-$(QLDIR): $(BUILD)
+$(QLSETUP): $(BUILD)
 	@echo "Install Quicklisp"
 	curl -o $(QLFILE) $(QLURL)
 	$(LISP) $(LISPOPTS) --load $(QLFILE) --eval '(quicklisp-quickstart:install :path "$(QLDIR)")' \
           --quit
 	rm $(QLFILE)
 
-$(BUILDAPP): $(QLDIR)
+$(BUILDAPP): $(QLSETUP)
 	@echo "Install Buildapp"
 	$(LISP_QL) --eval '(ql:quickload :buildapp)' \
 		   --eval '(buildapp:build-buildapp "$(BUILDAPP)")' \
@@ -36,13 +37,18 @@ $(BUILDAPP): $(QLDIR)
 
 $(LIBS):
 	@echo "Downloading requirements"
-	$(LISP_QL) --eval '(ql:quickload :cmacro)'
+	$(LISP_QL) --eval '(ql:quickload :$(NAME))' --quit
 	touch $@
 
-$(CMACRO): $(BUILDAPP) $(LIBS)
-	@echo "Building cmacro"
+$(BIN): $(BUILDAPP) $(LIBS)
+	@echo "Building $(NAME)"
+	$(BUILDAPP) --output $@ \
+		    --asdf-path . \
+		    --asdf-tree $(QLDIR)/dists \
+                    --load-system $(NAME) \
+		    --entry cmacro:main
 
-all: $(CMACRO)
+all: $(BIN)
 
 clean:
 	rm -rf $(BUILD)
