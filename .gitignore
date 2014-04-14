@@ -8,3 +8,4 @@
 .#*
 grammar/cmc-lexer
 grammar/lexing.yy.c
+build
