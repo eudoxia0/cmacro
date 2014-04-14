@@ -13,7 +13,8 @@
                :anaphora
                :alexandria
                :trivial-shell
-               :cl-mustache)
+               :cl-mustache
+               :com.google.flag)
   :components ((:module "grammar"
                 :components
                 ((:flex "lexing" :output "lexing.yy")
