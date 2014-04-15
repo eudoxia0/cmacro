@@ -16,7 +16,24 @@
   (macroexpand-data (cmacro.preprocess::slurp-file pathname)))
 
 (defun get-opt (option args)
-  (first (member option args :test #'equal)))
+  (aif (member option args :test #'equal)
+       (second it)
+       nil))
+
+(defun optp (option)
+  (and (>= (length option) 1)
+       (char= (elt option 0) #\-)))
+
+(defun files (args)
+  (remove-if #'null
+             (loop for sub-args on args collecting
+               (if (optp (first sub-args))
+                   ;; Skip
+                   (progn
+                     (setf sub-args (rest sub-args))
+                     nil)
+                   ;; It's a file
+                   (first sub-args)))))  
 
 (defparameter +help+ 
 "Usage: cmc [file]* [option]*
@@ -27,4 +44,5 @@
   -n,--no-expand  Don't macroexpand, but remove macro definitions")
 
 (defun main (args)
-  )
+  (print args))
+
