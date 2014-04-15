@@ -2,6 +2,20 @@
 
 # Usage
 
+# Installing and Using
+
+1. Install SBCL through your favorite package manager:
+
+```bash
+apt-get install sbcl
+pacman -S sbcl
+yum install sbcl
+brew install sbcl
+```
+
+2. `make`
+3. `sudo make install`
+
 # Examples
 
 ## Lambdas
@@ -38,8 +52,6 @@ macro forEach {
   }
 }
 ```
-
-# Building
 
 # Acknowledgments
 
