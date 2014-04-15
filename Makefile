@@ -4,11 +4,8 @@ LISPOPTS = --no-sysinit --no-userinit
 BUILD = build
 
 NAME = cmacro
-BUILDAPP = $(BUILD)/buildapp
-BIN = $(BUILD)/cmc
 LEXER = grammar/cmc-lexer
-
-LIBS = $(BUILD)/.reqs
+BUILDAPP = $(BUILD)/buildapp
 
 QLDIR = $(BUILD)/quicklisp
 QLURL = http://beta.quicklisp.org/quicklisp.lisp
@@ -19,28 +16,33 @@ LISP_QL = $(LISP) $(LISPOPTS) --load $(QLSETUP)
 
 default: all
 
-$(BUILD):
-	mkdir -p $(QLDIR)
-
-$(QLSETUP): $(BUILD)
+$(QLDIR)/setup.lisp:
 	@echo "Install Quicklisp"
+	mkdir -p $(QLDIR)
 	curl -o $(QLFILE) $(QLURL)
-	$(LISP) $(LISPOPTS) --load $(QLFILE) --eval '(quicklisp-quickstart:install :path "$(QLDIR)")' \
+	$(LISP) $(LISPOPTS) --load $(QLFILE) \
+	  --eval '(quicklisp-quickstart:install :path "$(QLDIR)")' \
           --quit
 	rm $(QLFILE)
 
-$(BUILDAPP): $(QLSETUP)
+quicklisp: $(QLDIR)/setup.lisp ;
+
+$(BUILD)/buildapp: quicklisp
 	@echo "Install Buildapp"
 	$(LISP_QL) --eval '(ql:quickload :buildapp)' \
 		   --eval '(buildapp:build-buildapp "$(BUILDAPP)")' \
 	 	   --quit
 
-$(LIBS):
+buildapp: $(BUILD)/buildapp ;
+
+$(BUILD)/.reqs:
 	@echo "Downloading requirements"
 	$(LISP_QL) --eval '(ql:quickload :$(NAME))' --quit
 	touch $@
 
-$(BIN): $(BUILDAPP) $(LIBS)
+libs: $(BUILD)/.reqs ;
+
+cmc: buildapp libs
 	@echo "Building $(NAME)"
 	$(BUILDAPP) --output $@ \
 		    --asdf-path . \
@@ -48,7 +50,7 @@ $(BIN): $(BUILDAPP) $(LIBS)
                     --load-system $(NAME) \
 		    --entry cmacro:main
 
-all: $(BIN)
+all: cmc
 
 clean:
 	rm -rf $(BUILD)
