@@ -66,8 +66,8 @@
 (defun main (args)
   (let ((files       (mapcar #'parse-namestring
                              (files (cdr args)
-                                    '("-o" "--output" "--dump-json"
-                                      "-l" "--lex" "-n" "--no-expand"))))
+                                    '("--dump-json" "-l" "--lex" "-n"
+                                      "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
         (dump-json-p (get-binary-opt args "--dump-json"))
         (lexp        (get-binary-opt args "-l" "--lex"))
@@ -78,16 +78,18 @@
     (print no-expand-p)
     (unless files
       (error 'cmacro.error:no-input-files))
-    (loop for file in files do
-      (let ((output (process-file file dump-json-p lexp no-expand-p)))
-        (if output-file
-            ;; Write to a file
-            (with-open-file (stream
-                             (parse-namestring output-file)
-                             :direction :output
-                             :if-does-not-exist :create)
-              (write-string output stream))
-            ;; Write to stdout
-            (progn
-              (write-string output)
-              (terpri)))))))
+    (if output-file
+        ;; Write to a file
+        (with-open-file (stream
+                         output-file
+                         :direction :output
+                         :if-does-not-exist :create
+                         :if-exists :supersede)
+          (loop for file in files do
+            (write-string (process-file file dump-json-p lexp no-expand-p)
+                          stream)))
+        ;; Write to stdout
+        (progn
+          (loop for file in files do
+            (write-string (process-file file dump-json-p lexp no-expand-p)))
+          (terpri)))))
