@@ -31,7 +31,7 @@
 (defun get-opt-value (args &rest options)
   (get-opt args nil options))
 
-(defun files (args)
+(defun files (args binary-options)
   (flet ((optp (option)
            (and (>= (length option) 1)
                 (char= (elt option 0) #\-))))
@@ -40,7 +40,10 @@
                  (if (optp (first sub-args))
                      ;; Skip
                      (progn
-                       (setf sub-args (rest sub-args))
+                       (unless (member (first sub-args)
+                                       binary-options
+                                       :test #'equal)
+                         (setf sub-args (rest sub-args)))
                        nil)
                      ;; It's a file
                      (first sub-args))))))
@@ -54,15 +57,25 @@
   -n,--no-expand  Don't macroexpand, but remove macro definitions")
 
 (defun process-file (pathname dump-json-p lexp no-expand-p)
-  (format t "Processing ~A~&" pathname)
-  "placeholder")
+  (cond
+    (lexp
+     ;; Just lex the file
+     (format nil "~{~A~%~}"
+             (cmacro.preprocess:process-pathname pathname)))))
 
 (defun main (args)
-  (let ((files       (mapcar #'parse-namestring (files (cdr args))))
+  (let ((files       (mapcar #'parse-namestring
+                             (files (cdr args)
+                                    '("-o" "--output" "--dump-json"
+                                      "-l" "--lex" "-n" "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
         (dump-json-p (get-binary-opt args "--dump-json"))
         (lexp        (get-binary-opt args "-l" "--lex"))
         (no-expand-p (get-binary-opt args "-n" "--no-expand")))
+    (print output-file)
+    (print dump-json-p)
+    (print lexp)
+    (print no-expand-p)
     (unless files
       (error 'cmacro.error:no-input-files))
     (loop for file in files do
@@ -74,7 +87,7 @@
                              :direction :output
                              :if-does-not-exist :create)
               (write-string output stream))
-            ;; Write to stdosut
+            ;; Write to stdout
             (progn
-              (print output)
+              (write-string output)
               (terpri)))))))
