@@ -177,5 +177,7 @@
     (loop while *found* do
       (setf *found* nil)
       (setf ast (macroexpand-ast% ast macros))
-      (print *toplevel-expansions*))
+      ;; Insert toplevel expansions
+      (setf ast (append *toplevel-expansions* ast))
+      (setf *toplevel-expansions* (list)))
     ast))
