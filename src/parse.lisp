@@ -16,7 +16,7 @@
            :parse-data
            :parse-pathname
            :print-ast
-           :ast-to-json
+           :sexp-to-json
            :json-to-ast))
 (in-package :cmacro.parse)
 
@@ -150,7 +150,7 @@
       (encode-object-element "type" (symbol-name (token-type tok)))
       (encode-object-element "text" (token-text tok)))))
 
-(defun ast-to-json (ast)
+(defun sexp-to-json (ast)
   "What it says on the tin."
   (let ((stream (make-string-output-stream)))
     (encode ast stream)
