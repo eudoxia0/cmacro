@@ -71,8 +71,11 @@
     stdout))
 
 (defun process-data (data)
+  (declare (type string data))
   "Preprocess and lex a string."
-  (remove-if #'(lambda (line) (eql (length line) 0))
+  (remove-if #'(lambda (line)
+                 (declare (type string line))
+                 (eql (length line) 0))
              (split-sequence #\Newline
                              (lex (preprocess data)))))
 

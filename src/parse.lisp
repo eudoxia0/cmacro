@@ -28,8 +28,8 @@
              (lambda (tok stream d)
                (declare (ignore d))
                (write-string (token-text tok) stream))))
-  type
-  text)
+  (type nil :type symbol)
+  (text ""  :type string))
 
 (defun token-equal (a b)
   (and (eq (token-type a) (token-type b))
@@ -55,6 +55,7 @@
 (defun process (lexemes)
   "Turn a list of lexemes into a list of tokens. Each lexeme is of the form:
     '[three letter type identifier]:[text]'"
+  (declare (type list lexemes))
   (remove-if #'(lambda (tok)  ;; I am not entirely sure why null tokens happen
                  (null (token-type tok)))
              (mapcar 
