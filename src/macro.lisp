@@ -57,7 +57,7 @@
            (if toplevel
                (error 'bad-macro-definition
                       :text "Repeated toplevel directives.")
-               (setf toplevel (block-text code))))
+               (setf toplevel (block-text (cmacro.var:parse-template code)))))
           ((ident-eql directive "external")
            (if external
                (error 'bad-macro-definition
@@ -83,6 +83,9 @@
                :text "Unknown directive in macro definition."))
       (parse-case case-code))))
 
+(defun void-token ()
+  (cmacro.parse:make-token :type :ident :text "/**/"))
+
 (defun extract-macro-definitions% (ast table)
   (loop for sub-ast on ast collecting
     (let ((node (first sub-ast)))
@@ -98,7 +101,7 @@
                 ;; Remove the macro definition
                 (setf sub-ast (cddr sub-ast))
                 ;; Replace the macro with a comment
-                (cmacro.parse:make-token :type :ident :text "/**/"))
+                (void-token))
               ;; Nope
               node)))))
 
@@ -130,12 +133,12 @@
 (defparameter *found* nil
   "t if a macro was expanded during the last macroexpansion.")
 
-(defun macroexpand-ast% (ast macros)
+(defun macroexpand-ast% (ast macros toplevel-expansions)
   (loop for sub-ast on ast collecting
     (let ((expression (first sub-ast)))
       (if (listp expression)
           ;; Recur
-          (macroexpand-ast% expression macros)
+          (macroexpand-ast% expression macros toplevel-expansions)
           ;; An ordinary expression, possibly an identifier
           (aif (macro-call-p expression macros)
                ;; Expand the macro
@@ -145,19 +148,33 @@
                     (progn
                       (setf *found* t)
                       (setf sub-ast (nthcdr (getf it :length) sub-ast))
-                      (cmacro.parse:parse-data
-                       (cmacro.template:render-template
-                        (macro-case-template (getf it :case))
-                        (aif (getf it :bindings)
-                             (cdr it)))))
+                      (let* ((template (macro-case-template (getf it :case)))
+                             (toplevel (macro-case-toplevel (getf it :case)))
+                             (toplevel-render
+                               (if toplevel
+                                   (cmacro.parse:parse-data
+                                    (cmacro.template:render-template
+                                     toplevel
+                                     (aif (getf it :bindings)
+                                          (cdr it))))
+                                   (void-token))))
+                        (push toplevel-render toplevel-expansions)
+                        (if template
+                            (cmacro.parse:parse-data
+                             (cmacro.template:render-template
+                              template
+                              (aif (getf it :bindings)
+                                   (cdr it))))
+                            (void-token))))                            
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression))
                ;; Let it go
                expression)))))
 
 (defun macroexpand-ast (ast macros)
-  (let ((ast (macroexpand-ast% ast macros)))
+  (let* ((toplevel-expansions (list))
+         (ast (macroexpand-ast% ast macros toplevel-expansions)))
     (loop while *found* do
       (setf *found* nil)
-      (setf ast (macroexpand-ast% ast macros)))
+      (setf ast (macroexpand-ast% ast macros toplevel-expansions)))
     ast))
