@@ -61,7 +61,9 @@
     (lexp
      ;; Just lex the file
      (format nil "~{~A~%~}"
-             (cmacro.preprocess:process-pathname pathname)))))
+             (cmacro.preprocess:process-pathname pathname)))
+    (t
+     (macroexpand-pathname pathname)))) 
 
 (defun main (args)
   (let ((files       (mapcar #'parse-namestring
@@ -83,10 +85,10 @@
                          :if-does-not-exist :create
                          :if-exists :supersede)
           (loop for file in files do
-            (write-string (process-file file lexp no-expand-p)
+            (write-string (process-file file lexp)
                           stream)))
         ;; Write to stdout
         (progn
           (loop for file in files do
-            (write-string (process-file file lexp no-expand-p)))
+            (write-string (process-file file lexp)))
           (terpri)))))
