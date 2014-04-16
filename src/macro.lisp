@@ -130,6 +130,13 @@
       (if (listp match)
           (return match)))))
 
+(defun external-macroexpansion (command bindings)
+  (cmacro.parse:json-to-ast
+   (trivial-shell:shell-command
+    command
+    :input (cmacro.parse:sexp-to-json
+            (list :bindings bindings)))))
+
 (defparameter *found* nil
   "t if a macro was expanded during the last macroexpansion.")
 (defparameter *toplevel-expansions* (list))
@@ -151,6 +158,7 @@
                       (setf sub-ast (nthcdr (getf it :length) sub-ast))
                       (let* ((template (macro-case-template (getf it :case)))
                              (toplevel (macro-case-toplevel (getf it :case)))
+                             (external (macro-case-external (getf it :case)))
                              (toplevel-render
                                (if toplevel
                                    (cmacro.parse:parse-data
@@ -161,12 +169,19 @@
                                    (void-token))))
                         (push toplevel-render *toplevel-expansions*)
                         (if template
+                            ;; Template the variables and parse the resulting
+                            ;; string
                             (cmacro.parse:parse-data
                              (cmacro.template:render-template
                               template
                               (aif (getf it :bindings)
                                    (cdr it))))
-                            (void-token))))                            
+                            ;; Call an external command, then parse the JSON
+                            ;; back to an AST
+                            (external-macroexpansion
+                             external
+                             (aif (getf it :bindings)
+                                  (cdr it))))))
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match :token expression))
                ;; Let it go
