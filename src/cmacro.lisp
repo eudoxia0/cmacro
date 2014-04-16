@@ -52,11 +52,10 @@
 "Usage: cmc [file]* [option]*
 
   -o, --output    Path to the output file
-  --dump-json     Dump a JSON of the AST
   -l,--lex        Dump the tokens (Without macroexpanding)
   -n,--no-expand  Don't macroexpand, but remove macro definitions")
 
-(defun process-file (pathname dump-json-p lexp no-expand-p)
+(defun process-file (pathname lexp no-expand-p)
   (cond
     (lexp
      ;; Just lex the file
@@ -66,16 +65,10 @@
 (defun main (args)
   (let ((files       (mapcar #'parse-namestring
                              (files (cdr args)
-                                    '("--dump-json" "-l" "--lex" "-n"
-                                      "--no-expand"))))
+                                    '("-l" "--lex" "-n" "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
-        (dump-json-p (get-binary-opt args "--dump-json"))
         (lexp        (get-binary-opt args "-l" "--lex"))
         (no-expand-p (get-binary-opt args "-n" "--no-expand")))
-    (print output-file)
-    (print dump-json-p)
-    (print lexp)
-    (print no-expand-p)
     (unless files
       (error 'cmacro.error:no-input-files))
     (if output-file
@@ -86,10 +79,10 @@
                          :if-does-not-exist :create
                          :if-exists :supersede)
           (loop for file in files do
-            (write-string (process-file file dump-json-p lexp no-expand-p)
+            (write-string (process-file file lexp no-expand-p)
                           stream)))
         ;; Write to stdout
         (progn
           (loop for file in files do
-            (write-string (process-file file dump-json-p lexp no-expand-p)))
+            (write-string (process-file file lexp no-expand-p)))
           (terpri)))))
