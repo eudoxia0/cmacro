@@ -53,7 +53,8 @@
 
   -o, --output    Path to the output file
   -l,--lex        Dump the tokens (Without macroexpanding)
-  -n,--no-expand  Don't macroexpand, but remove macro definitions")
+  -n,--no-expand  Don't macroexpand, but remove macro definitions
+  -h,--help       Print this text")
 
 (defun process-file (pathname lexp no-expand-p)
   (cond
@@ -68,7 +69,11 @@
                                     '("-l" "--lex" "-n" "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
         (lexp        (get-binary-opt args "-l" "--lex"))
-        (no-expand-p (get-binary-opt args "-n" "--no-expand")))
+        (no-expand-p (get-binary-opt args "-n" "--no-expand"))
+        (helpp       (get-binary-opt args "-h" "--help")))
+    (when helpp
+      (format t "~A~%" +help+)
+      (sb-ext:quit))
     (unless files
       (error 'cmacro.error:no-input-files))
     (if output-file
