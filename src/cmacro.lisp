@@ -56,7 +56,7 @@
   -n,--no-expand  Don't macroexpand, but remove macro definitions
   -h,--help       Print this text")
 
-(defun process-file (pathname lexp no-expand-p)
+(defun process-file (pathname lexp)
   (cond
     (lexp
      ;; Just lex the file
@@ -66,10 +66,9 @@
 (defun main (args)
   (let ((files       (mapcar #'parse-namestring
                              (files (cdr args)
-                                    '("-l" "--lex" "-n" "--no-expand"))))
+                                    '("-l" "--lex"))))
         (output-file (get-opt-value args "-o" "--output"))
         (lexp        (get-binary-opt args "-l" "--lex"))
-        (no-expand-p (get-binary-opt args "-n" "--no-expand"))
         (helpp       (get-binary-opt args "-h" "--help")))
     (when helpp
       (format t "~A~%" +help+)
