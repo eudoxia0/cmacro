@@ -53,6 +53,24 @@ macro forEach {
 }
 ```
 
+## `lambda`
+
+```c
+macro lambda {
+  case {
+    match {
+      lambda $(args) -> $(ret) $(body)
+    }
+    toplevel {
+      $(ret) $($lambda) $(args) $(body)
+    }
+    template {
+      $(@lambda 0)
+    }
+  }
+}
+```
+
 # Acknowledgments
 
 The [lex](http://www.quut.com/c/ANSI-C-grammar-l-2011.html) and
