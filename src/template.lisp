@@ -28,10 +28,11 @@
   (lambda (raw-text arg-text escapep start end)
     (let* ((pos (position #\/ arg-text))
            (label (subseq arg-text 0 pos))
-           (num (parse-integer (subseq arg-text (1+ pos)))))
+           (num-text (subseq arg-text (1+ pos)))
+           (num (if num-text (parse-integer num-text))))
       (make-instance 'getsym-tag
                      :label label
-                     :num num))))
+                     :num (if num num 0)))))
 
 (defmethod render-token ((token getsym-tag) context template)
   (print-data (cmacro.db:get-sym (label token) (num token)) t context))
