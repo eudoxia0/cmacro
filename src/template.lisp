@@ -26,15 +26,15 @@
 (set-mustache-character
   #\@
   (lambda (raw-text arg-text escapep start end)
-    (let* ((pos (position #\Space arg-text))
+    (let* ((pos (position #\/ arg-text))
            (label (subseq arg-text 0 pos))
            (num (parse-integer (subseq arg-text (1+ pos)))))
       (make-instance 'getsym-tag
-                     :label arg-text
+                     :label label
                      :num num))))
 
 (defmethod render-token ((token getsym-tag) context template)
-   (print-data (cmacro.db:get-sym (label token) (num token)) t context))
+  (print-data (cmacro.db:get-sym (label token) (num token)) t context))
 
 ;;; Accessing the database
 
