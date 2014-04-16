@@ -88,6 +88,6 @@ int main(int argc, char **argv)
 {
   int tok;
   while(tok = yylex()) {
-    printf("%s:%s\n", map_tok_type(tok), yytext);
+    printf("%s:%i:%s\n", map_tok_type(tok), yylineno, yytext);
   }
 }
