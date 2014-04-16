@@ -6,6 +6,8 @@
                 :with-output
                 :with-object
                 :encode-object-element)
+  (:import-from :split-sequence
+                :split-sequence)
   (:export :make-token
            :token-text
            :token-type
@@ -63,14 +65,19 @@
     '[three letter type identifier]:[text]'"
   (declare (type list lexemes))
   (remove-if #'(lambda (tok)  ;; I am not entirely sure why null tokens happen
-                 (null (token-type tok)))
+                 (or (null tok)
+                     (null (token-type tok))))
              (mapcar 
               #'(lambda (lexeme)
-                  (let ((tok-type (cdr (assoc (subseq lexeme 0 3)
-                                              +token-type-map+
-                                              :test #'equal)))
-                        (tok-text (subseq lexeme 4)))
-                    (make-token :type tok-type :text tok-text)))
+                  (let* ((split (split-sequence #\: lexeme))
+                         (tok-type (cdr (assoc (first split)
+                                               +token-type-map+
+                                               :test #'equal)))
+                         (tok-line (aif (second split)
+                                        (parse-integer it :junk-allowed t)))
+                         (tok-text (third split)))
+                    (if (and tok-type tok-text)
+                        (make-token :type tok-type :text tok-text))))
               lexemes)))
 
 (defun parse (tokens)
