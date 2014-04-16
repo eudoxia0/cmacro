@@ -59,7 +59,7 @@ macro forEach {
 macro lambda {
   case {
     match {
-      lambda $(args) -> $(ret) $(body)
+      $(args) -> $(ret) $(body)
     }
     toplevel {
       $(ret) $($lambda) $(args) $(body)
