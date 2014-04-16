@@ -132,13 +132,14 @@
 
 (defparameter *found* nil
   "t if a macro was expanded during the last macroexpansion.")
+(defparameter *toplevel-expansions* (list))
 
-(defun macroexpand-ast% (ast macros toplevel-expansions)
+(defun macroexpand-ast% (ast macros)
   (loop for sub-ast on ast collecting
     (let ((expression (first sub-ast)))
       (if (listp expression)
           ;; Recur
-          (macroexpand-ast% expression macros toplevel-expansions)
+          (macroexpand-ast% expression macros)
           ;; An ordinary expression, possibly an identifier
           (aif (macro-call-p expression macros)
                ;; Expand the macro
@@ -158,7 +159,7 @@
                                      (aif (getf it :bindings)
                                           (cdr it))))
                                    (void-token))))
-                        (push toplevel-render toplevel-expansions)
+                        (push toplevel-render *toplevel-expansions*)
                         (if template
                             (cmacro.parse:parse-data
                              (cmacro.template:render-template
@@ -172,9 +173,9 @@
                expression)))))
 
 (defun macroexpand-ast (ast macros)
-  (let* ((toplevel-expansions (list))
-         (ast (macroexpand-ast% ast macros toplevel-expansions)))
+  (let* ((ast (macroexpand-ast% ast macros)))
     (loop while *found* do
       (setf *found* nil)
-      (setf ast (macroexpand-ast% ast macros toplevel-expansions)))
+      (setf ast (macroexpand-ast% ast macros))
+      (print *toplevel-expansions*))
     ast))
