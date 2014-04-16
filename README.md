@@ -26,7 +26,7 @@ brew install sbcl
 macro aif {
   case {
     match {
-      aif $(cond:list)
+      $(cond)
     }
     template {
       typeof($(cond)) it = $(cond);
@@ -42,7 +42,7 @@ macro aif {
 macro forEach {
   case {
     match {
-      forEach($(item:ident),$(collection))
+      ($(item), $(collection))
     }
     template {
       for(typeof($(item)) $(item) = $(collection).begin();
