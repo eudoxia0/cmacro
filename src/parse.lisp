@@ -1,6 +1,11 @@
 (in-package :cl-user)
 (defpackage cmacro.parse
   (:use :cl :anaphora)
+  (:import-from :yason
+                :encode
+                :with-output
+                :with-object
+                :encode-object-element)
   (:export :make-token
            :token-text
            :token-type
@@ -8,7 +13,8 @@
            :ident-eql
            :parse-data
            :parse-pathname
-           :print-ast))
+           :print-ast
+           :ast-to-json))
 (in-package :cmacro.parse)
 
 (defparameter +token-type-map+
@@ -129,3 +135,13 @@
   (let ((stream (make-string-output-stream)))
     (print-expression ast stream)
     (get-output-stream-string stream)))
+
+(defmethod encode ((tok token) &optional (stream *standard-output*))
+  (with-output (stream)
+    (with-object ()
+      (encode-object-element "type" (symbol-name (token-type tok)))
+      (encode-object-element "text" (token-text tok)))))
+
+(defun ast-to-json (ast)
+  "What it says on the tin."
+  (encode ast))
