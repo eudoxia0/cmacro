@@ -16,7 +16,8 @@
            :parse-data
            :parse-pathname
            :print-ast
-           :ast-to-json))
+           :ast-to-json
+           :json-to-ast))
 (in-package :cmacro.parse)
 
 (defparameter +token-type-map+
@@ -151,4 +152,9 @@
 
 (defun ast-to-json (ast)
   "What it says on the tin."
-  (encode ast))
+  (let ((stream (make-string-output-stream)))
+    (encode ast stream)
+    (get-output-stream-string stream)))
+
+(defun json-to-ast (string)
+  (yason:parse string))
