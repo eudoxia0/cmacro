@@ -4,7 +4,9 @@
 (defpackage cmacro.db
   (:use :cl :anaphora)
   (:export :store
-           :retrieve))
+           :retrieve
+           :gen-sym
+           :get-sym))
 (in-package :cmacro.db)
 
 (defparameter *db* (make-hash-table :test #'equal))
@@ -24,3 +26,16 @@
   (aif (gethash key *db*)
        (setf (gethash key *db*) (- val it))
        (setf (gethash key *db*) (- 0 val))))
+
+(defparameter *symbol-index* 0)
+
+(defun make-sym (label n)
+  (format nil "cmacro_~A_~A" label n))
+
+(defun gen-sym (label)
+  (make-sym label (incf *symbol-index*)))
+
+(defun get-sym (label n)
+  (if (< (- *symbol-index* n) 1)
+      (make-sym label 0)
+      (make-sym label (- *symbol-index* n))))

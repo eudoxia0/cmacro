@@ -4,9 +4,43 @@
 ;; We aren't producing HTML
 (setf *char-to-escapes* "")
 
+;; Generate symbols
+
+(defclass gensym-tag (non-standalone-tag)
+  ((label :initarg :label :accessor label)))
+
+(set-mustache-character
+  #\$
+  (lambda (raw-text arg-text escapep start end)
+    (make-instance 'gensym-tag :label arg-text)))
+
+(defmethod render-token ((token gensym-tag) context template)
+   (print-data (cmacro.db:gen-sym (label token)) t context))
+
+;; Access generated symbols
+
+(defclass getsym-tag (non-standalone-tag)
+  ((label :initarg :label :accessor label)
+   (num   :initarg :num   :accessor num)))
+
+(set-mustache-character
+  #\@
+  (lambda (raw-text arg-text escapep start end)
+    (let* ((pos (position #\Space arg-text))
+           (label (subseq arg-text 0 pos))
+           (num (parse-integer (subseq arg-text (1+ pos)))))
+      (make-instance 'getsym-tag
+                     :label arg-text
+                     :num num))))
+
+(defmethod render-token ((token getsym-tag) context template)
+   (print-data (cmacro.db:get-sym (label token) (num token)) t context))
+
 ;;; Accessing the database
 
 ;; Storing
+
+#|
 (defclass store-tag (non-standalone-tag)
   ((db-key :initarg :db-key :accessor db-key)
    (data :initarg :store :accessor store)))
@@ -40,7 +74,7 @@
           (make-instance 'retrieve-tag :db-key db-key)))))
 
 (defmethod render-token ((token retrieve-tag) context template)
-  (print-data (cmacro.db:retrieve (db-key token) (default token)) t context))
+  (print-data (cmacro.db:retrieve (db-key token) (default token)) t context))|#
 
 (in-package :cl-user)
 (defpackage cmacro.template
