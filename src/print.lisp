@@ -1,8 +1,14 @@
 (in-package :cmacro.parse)
 
+(defun space-after-last-char-p (stream)
+  "Take a stream, and determine whether we should print a space before the next
+token."
+  t)
+
 (defun print-token (token stream)
   (if (and (not (separator-token-p token))
-           (not (parenp token)))
+           (not (parenp token))
+           (space-after-last-char-p stream))
     (write-char #\Space stream))
   ;; If it's a curly brace, also print a space before it
   (if (blockp token)
