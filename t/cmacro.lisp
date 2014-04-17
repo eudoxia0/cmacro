@@ -105,6 +105,7 @@
 
 ;; Macro definition
 
+#|
 (test macro-case
   (is
    (equalp
@@ -164,6 +165,7 @@
 "
        :toplevel nil
        :external nil))))))
+|#
 
 ;; Parsing cases and matching them
 (test parse-match-case
