@@ -14,6 +14,9 @@ QLSETUP = $(QLDIR)/setup.lisp
 
 LISP_QL = $(LISP) $(LISPOPTS) --load $(QLSETUP)
 
+PREFIX = /usr/local
+INSTALL_DIR = $(DESTDIR)$(PREFIX)/bin
+
 default: all
 
 $(QLDIR)/setup.lisp:
@@ -54,3 +57,12 @@ all: cmc
 
 clean:
 	rm -rf $(BUILD)
+
+install:
+	mkdir -p $(INSTALL_DIR)
+	install -m 755 cmc $(INSTALL_DIR)/cmc
+	install -m 755 grammar/cmc-lexer $(INSTALL_DIR)/cmc-lexer
+
+uninstall:
+	rm -f $(INSTALL_DIR)/cmc
+	rm -f $(INSTALL_DIR)/cmc-lexer
