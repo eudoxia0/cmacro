@@ -54,8 +54,11 @@
          (len-b (length ast-b)))
     (when (eql len-a len-b)
       ;; Compare individual items
-      t
-      )))        
+      (loop for i from 0 to (1- len-a) do
+        (if (not (token-equal (nth i ast-a)
+                              (nth i ast-b)))
+            (return nil)))
+        t)))
 
 (defun opening-token-p (tok)
   (member (token-text tok) +opening-separators+ :test #'equal))

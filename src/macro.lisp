@@ -131,6 +131,8 @@
           (return match)))))
 
 (defun external-macroexpansion (command bindings)
+  "Call an external command, pass it a JSON with the variable bindings, and
+parse the resulting JSON."
   (cmacro.parse:json-to-ast
    (trivial-shell:shell-command
     command
