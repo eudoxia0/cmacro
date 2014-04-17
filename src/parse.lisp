@@ -8,6 +8,8 @@
                 :encode-object-element)
   (:import-from :split-sequence
                 :split-sequence)
+  (:import-from :alexandria
+                :flatten)
   (:export :make-token
            :token-text
            :token-type
@@ -38,11 +40,22 @@
                (declare (ignore d))
                (write-string (token-text tok) stream))))
   (type nil :type symbol)
+  (line 0   :type integer)
   (text ""  :type string))
 
 (defun token-equal (a b)
   (and (eq (token-type a) (token-type b))
        (equal (token-text a) (token-text b))))
+
+(defun ast-equal (ast-a ast-b)
+  (let* ((ast-a (flatten ast-a))
+         (ast-b (flatten ast-b))
+         (len-a (length ast-a))
+         (len-b (length ast-b)))
+    (when (eql len-a len-b)
+      ;; Compare individual items
+      t
+      )))        
 
 (defun opening-token-p (tok)
   (member (token-text tok) +opening-separators+ :test #'equal))
@@ -78,7 +91,9 @@
                                         (parse-integer it :junk-allowed t)))
                          (tok-text (third split)))
                     (if (and tok-type tok-text)
-                        (make-token :type tok-type :text tok-text))))
+                        (make-token :type tok-type
+                                    :line tok-line
+                                    :text tok-text))))
               lexemes)))
 
 (defun parse (tokens)
