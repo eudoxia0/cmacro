@@ -69,6 +69,9 @@
 (defun separator-token-p (tok)
   (member (token-text tok) +separators+ :test #'equal))
 
+(defun parenp (tok)
+  (or (equal tok "(") (equal tok ")")))
+
 (defun blockp (tok)
   (or (equal (token-text tok) "{")
       (equal (token-text tok) "}")))
