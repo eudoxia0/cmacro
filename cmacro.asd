@@ -24,6 +24,7 @@
                 :components
                 ((:file "preprocess")
                  (:file "parse")
+                 (:file "print")
                  (:file "json")
                  (:file "var")
                  (:file "error")
