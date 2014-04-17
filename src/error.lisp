@@ -13,7 +13,7 @@
 (define-condition cmacro-error () ())
 
 (defparameter +bad-match-msg+
-  "Error trying to macroexpand '~A': The input didn't match any cases.")
+  "Error trying to macroexpand '~A' on line ~A: The input didn't match any cases.")
 
 (define-condition bad-macro-definition (cmacro-error)
   ((text :initarg :text :reader text))
@@ -30,7 +30,8 @@
      (let ((token (token condition)))
        (format stream
                +bad-match-msg+
-               (token-text token))))))
+               (token-text token)
+               (token-line token))))))
 
 (define-condition no-input-files (cmacro-error)
   ()
