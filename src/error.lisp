@@ -8,7 +8,8 @@
            :no-input-files))
 (in-package :cmacro.error)
 
-(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c) (sb-ext:quit -1)))
+(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
+                          (sb-ext:quit :unix-status -1)))
 
 (define-condition cmacro-error () ())
 
