@@ -5,7 +5,8 @@
                 :token-text)
   (:export :bad-macro-definition
            :bad-match
-           :no-input-files))
+           :no-input-files
+           :unknown-template-command))
 (in-package :cmacro.error)
 
 (setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
@@ -38,3 +39,9 @@
   ()
   (:report (lambda (condition stream)
              (format stream "No input files."))))
+
+(define-condition unknown-template-command (cmacro-error)
+  ((command :initarg :command :reader command))
+
+  (:report (lambda (condition stream)
+             (format "Unknown template command '~A'." (command condition)))))

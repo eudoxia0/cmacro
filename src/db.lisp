@@ -35,7 +35,7 @@
 (defun gen-sym (label)
   (make-sym label (incf *symbol-index*)))
 
-(defun get-sym (label n)
+(defun get-sym (label &optional (n 0))
   (if (< (- *symbol-index* n) 1)
       (make-sym label 0)
       (make-sym label (- *symbol-index* n))))
