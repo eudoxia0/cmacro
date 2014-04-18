@@ -65,7 +65,7 @@ macro lambda {
       $(ret) $($lambda) $(args) $(body)
     }
     template {
-      $(@lambda/0)
+      $(@lambda 0)
     }
   }
 }
