@@ -37,7 +37,7 @@
   (cdr (assoc type +var-type-map+ :test #'equal)))
 
 (defun extract-var (string)
-  (let ((split (split-sequence #\: (remove #\Space (remove #\" string)))))
+  (let ((split (split-sequence #\Space (remove #\" string))))
     (make-var :name (first split)
               :qualifiers (if (cdr split)
                             (append (list (map-var-type (cadr split)))
