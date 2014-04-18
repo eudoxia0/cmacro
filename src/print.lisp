@@ -11,31 +11,23 @@
   (vector-push-extend char buf))
 
 (defun buffer-write-string (buf string)
-  (let ((rest-string (subseq string 1)))
-    (vector-push-extend (elt string 0) buf (1+ (length string)))
-    (loop for char across rest-string do
-      (vector-push char buf))))
-
-(defun space-after-last-char-p (buffer)
-  "Take a buffer, and determine whether we should print a space before the next
-token."
-  (if (> (length buffer) 0)
-      (let ((last-char (elt buffer (1- (length buffer)))))
-        t)))
+  ;; Not the best solution, but the other one broke
+  (loop for char across string do
+    (vector-push-extend char buf)))
 
 (defun print-token (token buffer)
-  (if (or (identp token)
+  (if (or (and (not (separator-token-p token))
+               (not (parenp token)))
+          (identp token)
           ;; If it's a curly brace, also print a space before it
-          (blockp token)
-          (and (not (separator-token-p token))
-               (not (parenp token))
-               (space-after-last-char-p buffer)))
+          (blockp token))
     (buffer-write-char buffer #\Space))
   (buffer-write-string buffer
                        (token-text token))
   (when (or (blockp token)
             (and (eq (token-type token) :op)
-                 (equal (token-text token) ";")))
+                 (equal (token-text token) ";"))
+            (equal (token-text token) "/**/"))
     (buffer-write-char buffer #\Newline)))
 
 (defun print-expression (expression buffer)
