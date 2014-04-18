@@ -76,6 +76,9 @@
   (or (equal (token-text tok) "{")
       (equal (token-text tok) "}")))
 
+(defun identp (tok)
+  (eql (token-type tok) :ident))
+
 (defun ident-eql (tok text)
   (and (eq (token-type tok) :ident)
        (equal text (token-text tok))))
