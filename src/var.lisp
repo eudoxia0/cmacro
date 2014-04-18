@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage cmacro.var
-  (:use :cl)
+  (:use :cl :anaphora)
   (:import-from :alexandria
                 :flatten)
   (:import-from :split-sequence
@@ -34,14 +34,16 @@
     ("op"     . :op)))
 
 (defun map-var-type (type)
-  (cdr (assoc type +var-type-map+ :test #'equal)))
+  (aif (cdr (assoc type +var-type-map+ :test #'equal))
+       it
+       type))
 
 (defun extract-var (string)
   (let ((split (split-sequence #\Space (remove #\" string))))
     (make-var :name (first split)
               :qualifiers (if (cdr split)
-                            (append (list (map-var-type (cadr split)))
-                                    (cddr split))))))
+                              (append (list (map-var-type (cadr split)))
+                                      (cddr split))))))
 
 (defun restp (variable)
   (and (var-p variable)
@@ -66,10 +68,14 @@
         (if (listp node)
             (parse-template% node)
             (if (var-p node)
-                (cmacro.parse:make-token :type :ident
-                                         :text (format nil
-                                                       "{{~A}}"
-                                                       (var-name node)))
+                (progn
+                  (cmacro.parse:make-token :type :ident
+                                           :text (aif (var-qualifiers node)
+                                                      (format nil
+                                                              "{{~A~{ ~A~}}}"
+                                                              (var-name node)
+                                                              it)
+                                                      (format nil "{{~A}}" (var-name node)))))
                 node))))
 
 (defun parse-template (ast)
