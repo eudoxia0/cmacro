@@ -1,89 +1,42 @@
 ;;;; cl-mustache customizations
-(in-package :mustache)
-
-;; We aren't producing HTML
-(setf *char-to-escapes* "")
-
-;; Generate symbols
-
-(defclass gensym-tag (non-standalone-tag)
-  ((label :initarg :label :accessor label)))
-
-(set-mustache-character
-  #\$
-  (lambda (raw-text arg-text escapep start end)
-    (make-instance 'gensym-tag :label arg-text)))
-
-(defmethod render-token ((token gensym-tag) context template)
-   (print-data (cmacro.db:gen-sym (label token)) t context))
-
-;; Access generated symbols
-
-(defclass getsym-tag (non-standalone-tag)
-  ((label :initarg :label :accessor label)
-   (num   :initarg :num   :accessor num)))
-
-(set-mustache-character
-  #\@
-  (lambda (raw-text arg-text escapep start end)
-    (let* ((pos (position #\/ arg-text))
-           (label (subseq arg-text 0 pos))
-           (num-text (subseq arg-text (1+ pos)))
-           (num (if num-text (parse-integer num-text))))
-      (make-instance 'getsym-tag
-                     :label label
-                     :num (if num num 0)))))
-
-(defmethod render-token ((token getsym-tag) context template)
-  (print-data (cmacro.db:get-sym (label token) (num token)) t context))
-
-;;; Accessing the database
-
-;; Storing
-
-#|
-(defclass store-tag (non-standalone-tag)
-  ((db-key :initarg :db-key :accessor db-key)
-   (data :initarg :store :accessor store)))
-
-(set-mustache-character
-  #\<
-  (lambda (raw-text arg-text escapep start end)
-    (let* ((pos (position #\Space arg-text))
-           (db-key (subseq arg-text 0 pos))
-           (var-name (subseq arg-text (1+ pos))))
-    (make-instance 'store-tag :db-key db-key :data var-name))))
-
-(defmethod render-token ((token store-tag) context template)
-  ;; Extract the named variable and store it
-  (print-data "" t context))
-
-(defclass retrieve-tag (non-standalone-tag)
-  ((db-key :initarg :db-key :accessor db-key)
-   (default :initarg :default :accessor default :initform nil)))
-
-(set-mustache-character
-  #\>
-  (lambda (raw-text arg-text escapep start end)
-    (let ((pos (position #\Space arg-text)))
-      (if pos
-          ;; We have a default value
-          (let ((db-key (subseq arg-text 0 pos))
-                (default (subseq arg-text (1+ pos))))
-            (make-instance 'retrieve-tag :db-key db-key :default default))
-          ;; Just retrieve the db-key
-          (make-instance 'retrieve-tag :db-key db-key)))))
-
-(defmethod render-token ((token retrieve-tag) context template)
-  (print-data (cmacro.db:retrieve (db-key token) (default token)) t context))|#
-
 (in-package :cl-user)
 (defpackage cmacro.template
   (:use :cl)
   (:import-from :cmacro.var
                 :var-name)
+  (:import-from :mustache
+                :*char-to-escapes*
+                :command-tag
+                :non-standalone-tag
+                :set-mustache-character
+                :render-token
+                :print-data)
   (:export :render-template))
 (in-package :cmacro.template)
+;; We aren't producing HTML
+(setf *char-to-escapes* "")
+
+;; General command tag
+
+(defclass command-tag (non-standalone-tag)
+  ((command :initarg :command :accessor command)
+   (args    :initarg :args    :accessor args)))
+
+(set-mustache-character
+  #\@
+  (lambda (raw-text arg-text escapep start end)
+    (let ((split (split-sequence:split-sequence #\Space arg-text)))
+    (make-instance 'command-tag :command (first split) :args (rest split)))))
+
+(defmethod render-token ((token command-tag) context template)
+   (print-data (run-template-command (command token)
+                                     (args command))
+               t context))
+
+(defun run-template-command (command args)
+  (cond
+    )
+  )
 
 (defun render-template (template variables)
   (mustache:mustache-render-to-string
