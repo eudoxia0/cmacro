@@ -15,12 +15,21 @@
   (loop for char across string do
     (vector-push-extend char buf)))
 
+(defun space-after-last-char-p (buffer)
+  (when (> (length buffer) 0)
+    ;; We can query the last char
+    (let ((last-char (elt buffer (1- (length buffer)))))
+      nil)))
+
 (defun print-token (token buffer)
   (if (or (and (not (separator-token-p token))
-               (not (parenp token)))
+               (not (parenp token))
+               (not (equal (token-text token) ","))
+               (not (equal (token-text token) ";")))
           (identp token)
           ;; If it's a curly brace, also print a space before it
-          (blockp token))
+          (blockp token)
+          (space-after-last-char-p buffer))
     (buffer-write-char buffer #\Space))
   (buffer-write-string buffer
                        (token-text token))
