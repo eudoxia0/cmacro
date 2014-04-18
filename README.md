@@ -62,10 +62,10 @@ macro lambda {
       $(args) -> $(ret) $(body)
     }
     toplevel {
-      $(ret) $($lambda) $(args) $(body)
+      $(ret) $(@gensym lambda) $(args) $(body)
     }
     template {
-      $(@lambda 0)
+      $(@getsym lambda 0)
     }
   }
 }
