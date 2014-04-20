@@ -83,6 +83,11 @@ These use regular variable syntax but the text starts with a '@'.
 - `gensym <label>`: Generates a unique identifier associated with `label`.
 - `getsym <label> [n]`: Gets the latest identifier associated with `label`, or
   optionally the `n`-th last identifier.
+- `to-string <var>`: Since string literals in C can contain variable notation,
+  you have to explicity use this to stringify a variable. Note, also, that C
+  concatenates string that appear next to each other in the source.
+- `splice <var>`: If `var` is a block (ie `(...)`, `[...]`, `{...}`) this
+  expression removes the block separators, leaving just the block body.
 
 # Acknowledgments
 
