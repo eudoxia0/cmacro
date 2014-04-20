@@ -1,12 +1,17 @@
 macro forEach {
   case {
     match {
-      ($(item), $(collection))
+      ($(item), $(collection)) $(body)
     }
     template {
-      for(typeof($(item)) $(item) = $(collection).begin();
-          $(item) != $(collection).end();
-          ++$(item))
+      {
+        size_t index;
+        typeof($(collection)[0]) item;
+        for(index = 0, item = nth($(collection), 0);
+            index < length($(collection));
+            index++)
+        $(body)
+      }
     }
   }
 }
