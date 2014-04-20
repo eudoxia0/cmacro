@@ -71,6 +71,14 @@ macro lambda {
 }
 ```
 
+# Template operations
+
+These use regular variable syntax but the text starts with a '@'.
+
+- `gensym <label>`: Generates a unique identifier associated with `label`.
+- `getsym <label> [n]`: Gets the latest identifier associated with `label`, or
+  optionally the `n`-th last identifier.
+
 # Acknowledgments
 
 The [lex](http://www.quut.com/c/ANSI-C-grammar-l-2011.html) and
