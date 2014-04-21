@@ -23,6 +23,25 @@ brew install sbcl
 2. `make`
 3. `sudo make install`
 
+# What?
+
+A macro is a function that operates on parse trees rather than values.
+
+Macros are not primarily about safety and performance: They are about the
+programmer. Macros give you automation, plain and simple. They allow you to
+abstract away and remove repetition in places where a functional or
+object-oriented approach can't.
+
+# Why?
+
+There is a sweet spot between low-level performance and control and high-level
+metaprogramming that is not yet occupied by any
+language. [Rust](http://www.rust-lang.org/) seems to want to fill this, and I
+also approached this problem with
+[Hylas Lisp](https://github.com/eudoxia0/Hylas-Lisp), but I feel this approach
+of adding metaprogramming to C - A simple language, with a long history, that
+runs truly everywhere - would become useful.
+
 # Examples
 
 ## `lambda`
