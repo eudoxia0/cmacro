@@ -2,6 +2,13 @@
 
 # Usage
 
+Macros are written directly in the source, and the `cmc` program is used to
+process a file with macros to a macroexpanded file.
+
+```bash
+cmc code.cm -o code.c
+```
+
 # Installing and Using
 
 1. Install SBCL through your favorite package manager:
