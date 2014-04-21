@@ -25,12 +25,70 @@ brew install sbcl
 
 # What?
 
-A macro is a function that operates on parse trees rather than values.
+A macro is a function that operates on your code's abstract syntax tree rather
+than values. Macros in cmacro have nothing to do with the C preprocessor except
+they happen at compile time, and have no knowledge of run-time values.
 
-Macros are not primarily about safety and performance: They are about the
+In cmacro, a macro maps patterns in the code to templates. A macro may have
+multiple cases, each matching multiple patterns, but each producing code through
+the same template.
+
+Macros are not primarily about safety and performance[1]: They are about the
 programmer. Macros give you automation, plain and simple. They allow you to
 abstract away and remove repetition in places where a functional or
-object-oriented approach can't.
+object-oriented approach can't. For example, Common Lisp's
+[WITH-OPEN-FILE](http://clhs.lisp.se/Body/m_w_open.htm) macro helps with the
+common pattern of 'acquire a resource, apply something to it, and close
+it'. While this can be done in languages that support (And have simple syntax
+for) anonymous functions, macros help reduce this syntactico overhead.
+
+cmacro has a very lenient notion of C syntax, which means you can write macros
+to implement DSLs with any syntax you like. You could implement Lisp-like prefix
+notation, or a DSL for routing URLs, or the decorator pattern, for example.
+
+For a very simple example, this very simple macro matches anything of the form
+`unless <cond>`, where `<cond>` is any arbitrary expression, and performs a
+simple transformation:
+
+```c
+macro unless {
+  case {
+    match {
+      $(cond)
+    }
+    template
+      (!$(cond))
+    }
+  }
+}
+```
+
+With this definition, code like `unless(buffer.empty)` becomes `if(!(buffer.empty))`.
+
+A more complicated macro can match multiple patterns, or have multiple cases, like this:
+
+```c
+macro route {
+  /* Route all requests to 'url' to 'fn'. Optionally discriminate by HTTP method
+  (GET by default). */
+  case {
+    match {
+      $(url) => $(route)
+    }
+    template {
+      register_route($(url), $(route), HTTP_GET);
+    }
+  }
+  case {
+    match {
+      $(url) [$(method)] => $(route)
+    }
+    template {
+      register_route($(url), $(route), $(method));
+    }
+  }
+}
+```
 
 # Why?
 
