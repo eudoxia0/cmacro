@@ -27,6 +27,11 @@
     (let ((split (split-sequence:split-sequence #\Space arg-text)))
       (make-instance 'command-tag :command (first split) :args (rest split)))))
 
+(defparameter *variables* nil)
+
+(defun get-var-value (var)
+  (cdr (assoc var *variables* :test #'equal)))
+
 (defun run-template-command (command args)
   (cond
     ((equal command "gensym")
@@ -37,6 +42,8 @@
      (aif (second args)
           (cmacro.db:get-sym (first args) (parse-integer (second args)))
           (cmacro.db:get-sym (first args))))
+    ((equal command "to-string")
+     (format nil "~S" (get-var-value (first args))))
     (t
      (error 'cmacro.error:unknown-template-command :command command))))
 
@@ -46,8 +53,10 @@
                t context))
 
 (defun render-template (template variables)
-  (mustache:mustache-render-to-string
-   template
-   (loop for pair in variables collecting
-                               (cons (var-name (car pair))
-                                     (cmacro.parse:print-ast (cdr pair))))))
+  (let ((processed-vars (loop for pair in variables collecting
+                          (cons (var-name (car pair))
+                                (cmacro.parse:print-ast (cdr pair))))))
+    (setf *variables* processed-vars)
+    (prog1 (mustache:mustache-render-to-string
+            template processed-vars)
+      (setf *variables* nil))))
