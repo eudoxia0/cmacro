@@ -44,6 +44,14 @@
           (cmacro.db:get-sym (first args))))
     ((equal command "to-string")
      (format nil "~S" (get-var-value (first args))))
+    ((equal command "splice")
+     (let ((block (first (cmacro.parse:parse-data (get-var-value (first args))))))
+       (print block)
+       (cmacro.parse:print-ast
+        (if (listp block)
+            (append (list (cmacro.parse:make-token :type :op :text ""))
+                    (rest block))
+            block))))
     (t
      (error 'cmacro.error:unknown-template-command :command command))))
 

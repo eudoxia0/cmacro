@@ -9,4 +9,17 @@ macro f {
   }
 }
 
+macro g {
+  case {
+    match {
+      $(var)
+    }
+    template {
+      $(@splice var)
+    }
+  }
+}
+
 f x
+g (1, 2, 3)
+g 1
