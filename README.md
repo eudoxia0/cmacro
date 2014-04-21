@@ -93,12 +93,13 @@ macro route {
 # Why?
 
 There is a sweet spot between low-level performance and control and high-level
-metaprogramming that is not yet occupied by any
-language. [Rust](http://www.rust-lang.org/) seems to want to fill this, and I
-also approached this problem with
+metaprogramming that is not yet occupied by any language: Metaprogramming, being
+an inherently compile-time thing, can be done in the absence of automatic memory
+management or dynamic typing. [Rust](http://www.rust-lang.org/) seems to want to
+fill this, and I also approached this problem with
 [Hylas Lisp](https://github.com/eudoxia0/Hylas-Lisp), but I feel this approach
 of adding metaprogramming to C - A simple language, with a long history, that
-runs truly everywhere - would become useful.
+runs truly everywhere - can become useful.
 
 # Examples
 
@@ -120,7 +121,7 @@ macro lambda {
 }
 ```
 
-## Anaphoric if
+## Anaphoric `if`
 
 This stores the result of the condition in the variable `it`. See
 [Anaphora](http://common-lisp.net/project/anaphora/) for a collection of similar
