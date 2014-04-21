@@ -18,9 +18,27 @@ brew install sbcl
 
 # Examples
 
-## Lambdas
+## `lambda`
+
+```c
+macro lambda {
+  case {
+    match {
+      $(args) -> $(ret) $(body)
+    }
+    toplevel {
+      $(ret) $(@gensym lambda) $(args) $(body)
+    }
+    template {
+      $(@getsym lambda 0)
+    }
+  }
+}
+```
 
 ## Anaphoric if
+
+This stores the result of the condition in the variable `it`.
 
 ```c
 macro aif {
@@ -58,24 +76,6 @@ macro forEach {
 }
 ```
 
-## `lambda`
-
-```c
-macro lambda {
-  case {
-    match {
-      $(args) -> $(ret) $(body)
-    }
-    toplevel {
-      $(ret) $(@gensym lambda) $(args) $(body)
-    }
-    template {
-      $(@getsym lambda 0)
-    }
-  }
-}
-```
-
 # Template operations
 
 These use regular variable syntax but the text starts with a '@'.
@@ -99,7 +99,7 @@ posted by Jeff Lee in 1985, and rescued and updated to the recent standards by
 The syntax for macro definition was inspired by Mozilla's great
 [sweet.js](http://sweetjs.org/) library. Originally I considered multiple
 different ways of defining them, including external YAML files or just piping
-the AST to an XSLT program, but this seemed like the best way.
+the AST to an XSLT or similar program, but this seemed like the best way.
 
 The Makefile is largely based on that of
 [Dimitri Fontaine](http://tapoueh.org/)'s
