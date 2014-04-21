@@ -65,12 +65,13 @@ macro unless {
 
 With this definition, code like `unless(buffer.empty)` becomes `if(!(buffer.empty))`.
 
-A more complicated macro can match multiple patterns, or have multiple cases, like this:
+A more complicated macro can match multiple patterns, like the `route` macro
+which implements a DSL for defining routes in a hypothetical C web framework.
 
 ```c
 macro route {
-  /* Route all requests to 'url' to 'fn'. Optionally discriminate by HTTP method
-  (GET by default). */
+  /* Route all requests to 'url' to 'route'. Optionally discriminate by HTTP
+  method (GET by default). */
   case {
     match {
       $(url) => $(route)
@@ -91,6 +92,10 @@ macro route {
 ```
 
 # Why?
+
+Because a language without macros is a tool: You write application with it. A
+language with macros is building material: You shape it and grow it *into* your
+application.
 
 There is a sweet spot between low-level performance and control and high-level
 metaprogramming that is not yet occupied by any language: Metaprogramming, being
