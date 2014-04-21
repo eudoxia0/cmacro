@@ -122,7 +122,9 @@ macro lambda {
 
 ## Anaphoric if
 
-This stores the result of the condition in the variable `it`.
+This stores the result of the condition in the variable `it`. See
+[Anaphora](http://common-lisp.net/project/anaphora/) for a collection of similar
+anaphoric macros.
 
 ```c
 macro aif {
