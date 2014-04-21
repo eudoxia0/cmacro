@@ -260,6 +260,12 @@ macro b {
            (cmacro::extract-and-macroexpand
             (cmacro.preprocess::slurp-file
              (merge-pathnames #p"t/good-macros/lambda.c"
+                              +cmacro-path+))))))
+  (finishes
+   (print (cmacro.parse:print-ast
+           (cmacro::extract-and-macroexpand
+            (cmacro.preprocess::slurp-file
+             (merge-pathnames #p"t/good-macros/operators.c"
                               +cmacro-path+)))))))
 
 (run! 'tests)
