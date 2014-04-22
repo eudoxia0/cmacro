@@ -33,7 +33,7 @@ In cmacro, a macro maps patterns in the code to templates. A macro may have
 multiple cases, each matching multiple patterns, but each producing code through
 the same template.
 
-Macros are not primarily about safety and performance[1]: They are about the
+Macros are not primarily about safety and performance: They are about the
 programmer. Macros give you automation, plain and simple. They allow you to
 abstract away and remove repetition in places where a functional or
 object-oriented approach can't. For example, Common Lisp's
@@ -57,7 +57,7 @@ macro unless {
       $(cond)
     }
     template {
-      (!$(cond))
+      if(!$(cond))
     }
   }
 }
