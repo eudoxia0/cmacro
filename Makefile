@@ -14,6 +14,9 @@ QLSETUP = $(QLDIR)/setup.lisp
 
 LISP_QL = $(LISP) $(LISPOPTS) --load $(QLSETUP)
 
+ASDF_LINGUIST_URL = https://github.com/eudoxia0/asdf-linguist.git
+ASDF_LINGUIST = $(QLDIR)/local-projects/asdf-linguist
+
 PREFIX = /usr/local
 INSTALL_DIR = $(DESTDIR)$(PREFIX)/bin
 
@@ -41,6 +44,7 @@ buildapp: $(BUILD)/buildapp ;
 $(BUILD)/.reqs:
 	@echo "Downloading requirements"
 	$(LISP_QL) --eval '(ql:quickload :$(NAME))' --quit
+	git clone $(ASDF_LINGUIST_URL) $(ASDF_LINGUIST)
 	touch $@
 
 libs: $(BUILD)/.reqs ;
