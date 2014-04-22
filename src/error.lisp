@@ -44,4 +44,4 @@
   ((command :initarg :command :reader command))
 
   (:report (lambda (condition stream)
-             (format "Unknown template command '~A'." (command condition)))))
+             (format stream "Unknown template command '~A'." (command condition)))))
