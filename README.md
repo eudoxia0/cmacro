@@ -23,6 +23,12 @@ brew install sbcl
 2. `make`
 3. `sudo make install`
 
+## Build note
+
+[Buildapp](http://www.xach.com/lisp/buildapp/) doesn't work on older versions of
+SBCL, so you should probably build it from
+[source](https://github.com/sbcl/sbcl).
+
 # What?
 
 A macro is a function that operates on your code's abstract syntax tree rather
