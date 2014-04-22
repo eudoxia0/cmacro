@@ -168,6 +168,26 @@ macro forEach {
 }
 ```
 
+# Variables
+
+The syntax for variables is just a name followed by an optional,
+space-separatedl list of *qualifiers*, enclosed in the `$()` operator, eg:
+`$(var)`, `$(body ident)`, `$(arg const)`.
+
+## Qualifiers
+
+- None: The variable matches any expression.
+- `rest`: Match multiple expressions (Like C's `...`).
+- `ident`: Matches Identifiers.
+- `int`: Integers.
+- `float`: Floats.
+- `num`: Integers and floats.
+- `string`: String literals.
+- `const`: The equivalent of `(or int float string)`.
+- `op`: Operators.
+- `list`, `array`, `block`: Matches expressions of the form `(...)`, `[...]`,
+  `{...}`.
+
 # Template operations
 
 These use regular variable syntax but the text starts with a '@'.
