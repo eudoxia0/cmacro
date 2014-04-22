@@ -94,13 +94,24 @@ from a template clause, and turn them back to cl-mustache tags."
            (or (eq token-type :integer)
                (eq token-type :float)))))
 
-(defun match-var (var token)
+(defun eql-block-type (qualifier token-text)
+  (or (and (eq qualifier :list)
+           (equal token-text "("))
+      (and (eq qualifier :array)
+           (equal token-text "["))
+      (and (eq qualifier :block)
+           (equal token-text "{"))))
+
+(defun match-var (var input)
   (cond
     ((null (var-qualifiers var))
      ;; The variable accepts whatever
      t)
+    ((and (listp input) (first input))
+     (eql-block-type (first (var-qualifiers var))
+                     (token-text (first input))))
     ((eql-qualifier (first (var-qualifiers var))
-                    (token-type token))
+                    (token-type input))
      ;; Qualifier match
      t)
     (t nil)))
@@ -119,7 +130,7 @@ from a template clause, and turn them back to cl-mustache tags."
 (defun match% (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
-        ((and (atom pattern) (atom input) (not (var-p pattern))
+        ((and (atom pattern) (not (var-p pattern))
               (or (and (null pattern) (null input))
                   (match-token pattern input)))
          bindings)
