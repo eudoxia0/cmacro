@@ -56,7 +56,7 @@ macro unless {
     match {
       $(cond)
     }
-    template
+    template {
       (!$(cond))
     }
   }
