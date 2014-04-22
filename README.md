@@ -89,7 +89,12 @@ macro route {
     }
   }
 }
+
+// Usage with the lambda macro (See below)
+route "/profile/<user>" =>
+  lambda(Req* request) -> Resp { return Authenticate(request.user); }
 ```
+
 
 # Why?
 
