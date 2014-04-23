@@ -62,20 +62,20 @@ SYM [^ \t\v\n\f\,\;\(\)\[\]\{\}\.a-zA-Z_0-9]
 {HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
-({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{ return STRING_LITERAL; }
+L?\"(\\.|[^\\"])*\"                     { return STRING_LITERAL; }
 
 "..."                                   { return OPERATOR; }
 
-{WS}					{ /* whitespace separates tokens */ }
+{WS}					{ yylineno++; }
 {SEP}                                   { return OPERATOR; }
 {SYM}+                                  { return OPERATOR; }
 
 
 %%
 
-int yywrap(void)        /* called at end of input */
+int yywrap(void)
 {
-    return 1;           /* terminate now */
+    return 1;
 }
 
 void yyerror(const char *s)
