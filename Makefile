@@ -43,6 +43,7 @@ buildapp: $(BUILD)/buildapp ;
 
 $(BUILD)/.reqs:
 	@echo "Downloading requirements"
+	git clone $(ASDF_LINGUIST_URL) $(ASDF_LINGUIST)
 	$(LISP_QL) --eval '(ql:quickload :split-sequence)' \
 		   --eval '(ql:quickload :anaphora)' \
 		   --eval '(ql:quickload :alexandria)' \
@@ -50,7 +51,6 @@ $(BUILD)/.reqs:
 		   --eval '(ql:quickload :cl-mustache)' \
 		   --eval '(ql:quickload :yason)' \
 	           --eval '(load "$(NAME).asd")' --quit
-	git clone $(ASDF_LINGUIST_URL) $(ASDF_LINGUIST)
 	touch $@
 
 libs: $(BUILD)/.reqs ;
