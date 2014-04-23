@@ -74,7 +74,9 @@ test: libs
 		   --eval '(ql:quickload :yason)' \
 	           --eval '(load "$(NAME).asd")' \
 		   --eval '(ql:quickload :cl-test-more)' \
-	           --eval '(load "$(NAME)-test.asd")' --quit
+		   --eval '(ql:quickload :fiveam)' \
+	           --eval '(load "$(NAME)-test.asd")' \
+	           --eval '(load "t/$(NAME).lisp")' --quit
 
 clean:
 	rm -rf $(BUILD)
