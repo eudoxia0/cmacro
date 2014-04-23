@@ -43,7 +43,13 @@ buildapp: $(BUILD)/buildapp ;
 
 $(BUILD)/.reqs:
 	@echo "Downloading requirements"
-	$(LISP_QL) --eval '(ql:quickload :$(NAME))' --quit
+	$(LISP_QL) --eval '(ql:quickload :split-sequence)' \
+		   --eval '(ql:quickload :anaphora)' \
+		   --eval '(ql:quickload :alexandria)' \
+		   --eval '(ql:quickload :trivial-shell)' \
+		   --eval '(ql:quickload :cl-mustache)' \
+		   --eval '(ql:quickload :yason)' \
+	           --eval '(load "$(NAME).asd")' --quit
 	git clone $(ASDF_LINGUIST_URL) $(ASDF_LINGUIST)
 	touch $@
 
@@ -58,6 +64,19 @@ cmc: buildapp libs
 		    --entry cmacro:main
 
 all: cmc
+
+test: libs
+	$(LISP_QL) --eval '(ql:quickload :split-sequence)' \
+		   --eval '(ql:quickload :anaphora)' \
+		   --eval '(ql:quickload :alexandria)' \
+		   --eval '(ql:quickload :trivial-shell)' \
+		   --eval '(ql:quickload :cl-mustache)' \
+		   --eval '(ql:quickload :yason)' \
+	           --eval '(load "$(NAME).asd")' \
+		   --eval '(ql:quickload :cl-test-more)' \
+		   --eval '(ql:quickload :fiveam)' \
+	           --eval '(load "$(NAME)-test.asd")' \
+	           --eval '(load "t/$(NAME).lisp")' --quit
 
 clean:
 	rm -rf $(BUILD)
