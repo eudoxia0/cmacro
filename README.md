@@ -9,25 +9,18 @@ process a file with macros to a macroexpanded file.
 cmc code.cm -o code.c
 ```
 
-# Installing and Using
+# Installing
 
-1. Install SBCL through your favorite package manager:
+If you're running Arch or a similarly bleeding-edge distro, just install `sbcl`
+from Pacman and skip to step 4. Otherwise, you need to build SBCL[1]:
 
-```bash
-apt-get install sbcl
-pacman -S sbcl
-yum install sbcl
-brew install sbcl
-```
+1. Install git, curl and flex through your favorite package manager.
+2. `git clone git://git.code.sf.net/p/sbcl/sbcl`
+3. Build SBCL: `cd sbcl; sh make.sh`
+4. Build cmacro: `make`, `sudo make install`
 
-2. `make`
-3. `sudo make install`
-
-## Build note
-
-[Buildapp](http://www.xach.com/lisp/buildapp/) doesn't work on older versions of
-SBCL, so you should probably build it from
-[source](https://github.com/sbcl/sbcl).
+[1]: [Buildapp](http://www.xach.com/lisp/buildapp/) doesn't work on older
+versions of SBCL, and it is required to build the executable.
 
 # What?
 
