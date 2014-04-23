@@ -12,11 +12,13 @@ cmc code.cm -o code.c
 # Installing
 
 If you're running Arch or a similarly bleeding-edge distro, just install `sbcl`
-from Pacman and skip to step 4. Otherwise, you need to build SBCL[1]:
+from Pacman and skip to step 4. Otherwise, you need to manually download the
+latest SBCL[1].
 
+1. [Download SBCL](http://www.sbcl.org/platform-table.html)
+2. Unpack it, for example, through `bzip2 -cd sbcl-1.1.17-x86-linux-binary.tar.bz2 | tar xvf -`
 1. Install git, curl and flex through your favorite package manager.
-2. `git clone git://git.code.sf.net/p/sbcl/sbcl`
-3. Build SBCL: `cd sbcl; sh make.sh`
+3. Build SBCL: `cd <sbcl dir>; sudo sh install.sh`
 4. Build cmacro: `make`, `sudo make install`
 
 [1]: [Buildapp](http://www.xach.com/lisp/buildapp/) doesn't work on older
