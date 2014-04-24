@@ -52,6 +52,8 @@
             (append (list (cmacro.parse:make-token :type :op :text ""))
                     (rest block))
             block))))
+    ((equal command "embed")
+     (format nil "$(~{~A ~})" args))
     (t
      (error 'cmacro.error:unknown-template-command :command command))))
 
