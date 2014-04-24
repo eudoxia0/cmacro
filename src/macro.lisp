@@ -147,13 +147,14 @@ parse the resulting JSON."
   (let* ((template (macro-case-template (getf match :case)))
          (toplevel (macro-case-toplevel (getf match :case)))
          (external (macro-case-external (getf match :case)))
+         (bindings (aif (getf match :bindings)
+                        (cdr it)))
          (toplevel-render
            (if toplevel
                (cmacro.parse:parse-data
                 (cmacro.template:render-template
                  toplevel
-                 (aif (getf match :bindings)
-                      (cdr it))))
+                 bindings))
                (void-token))))
     (push toplevel-render *toplevel-expansions*)
     (if template
@@ -162,14 +163,12 @@ parse the resulting JSON."
         (cmacro.parse:parse-data
          (cmacro.template:render-template
           template
-          (aif (getf match :bindings)
-               (cdr it))))
+          bindings))
         ;; Call an external command, then parse the JSON
         ;; back to an AST
         (external-macroexpansion
          external
-         (aif (getf match :bindings)
-              (cdr it))))))
+         bindings))))
 
 (defun macroexpand-ast% (ast macros)
   (loop for sub-ast on ast collecting
