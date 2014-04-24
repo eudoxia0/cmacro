@@ -20,6 +20,18 @@ macro g {
   }
 }
 
+macro h {
+  case {
+    match {
+      $(var)
+    }
+    template {
+      $(var)($(@embed my-var int))
+    }
+  }
+}
+
 f x
 g (1, 2, 3)
 g 1
+h a
