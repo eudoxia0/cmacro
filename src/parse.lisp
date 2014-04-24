@@ -107,6 +107,7 @@
 
 (defun parse (tokens)
   "Parse a flat list of tokens into a nested data structure."
+  (declare (type list tokens))
   (let ((context (list nil)))
     (loop for tok in tokens do
       (if (separator-token-p tok)
@@ -127,7 +128,9 @@
 
 
 (defun parse-data (data)
+  (declare (type string data))
   (parse (process (cmacro.preprocess:process-data data))))
 
 (defun parse-pathname (pathname)
+  (declare (type pathname pathname))
   (parse (process (cmacro.preprocess:process-pathname pathname))))
