@@ -12,14 +12,14 @@ cmc code.cm -o code.c
 # Installing
 
 If you're running Arch or a similarly bleeding-edge distro, just install `sbcl`
-from Pacman and skip to step 4. Otherwise, you need to manually download the
+from Pacman and skip to step 5. Otherwise, you need to manually download the
 latest SBCL[1].
 
 1. [Download SBCL](http://www.sbcl.org/platform-table.html)
 2. Unpack it, for example, through `bzip2 -cd sbcl-1.1.17-x86-linux-binary.tar.bz2 | tar xvf -`
-1. Install git, curl and flex through your favorite package manager.
-3. Build SBCL: `cd <sbcl dir>; sudo sh install.sh`
-4. Build cmacro: `make`, `sudo make install`
+3. Install git, curl and flex through your favorite package manager.
+4. Build SBCL: `cd <sbcl dir>; sudo sh install.sh`
+5. Build cmacro: `make`, `sudo make install`
 
 [1]: [Buildapp](http://www.xach.com/lisp/buildapp/) doesn't work on older
 versions of SBCL, and it is required to build the executable.
@@ -99,7 +99,7 @@ route "/profile/<user>" =>
 
 # Why?
 
-Because a language without macros is a tool: You write application with it. A
+Because a language without macros is a tool: You write applications with it. A
 language with macros is building material: You shape it and grow it *into* your
 application.
 
@@ -177,7 +177,7 @@ macro forEach {
 # Variables
 
 The syntax for variables is just a name followed by an optional,
-space-separatedl list of *qualifiers*, enclosed in the `$()` operator, eg:
+space-separated list of *qualifiers*, enclosed in the `$()` operator, eg:
 `$(var)`, `$(body ident)`, `$(arg const)`.
 
 ## Qualifiers
