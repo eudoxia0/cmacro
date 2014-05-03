@@ -2,7 +2,8 @@
 (defpackage cmacro.error
   (:use :cl)
   (:import-from :cmacro.parse
-                :token-text)
+                :token-text
+                :token-line)
   (:export :bad-macro-definition
            :bad-match
            :no-input-files
