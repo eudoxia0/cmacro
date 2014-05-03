@@ -131,6 +131,8 @@ from a template clause, and turn them back to cl-mustache tags."
 (defun match% (pattern input &optional (bindings '(t)))
   (if bindings
       (cond
+        ((and (null pattern) (not (null input)))
+         nil)
         ((and (atom pattern) (not (var-p pattern))
               (or (and (null pattern) (null input))
                   (match-token pattern input)))
@@ -142,8 +144,9 @@ from a template clause, and turn them back to cl-mustache tags."
         ((listp pattern)
          (if (restp (first pattern))
              (append-rest-bindings (first pattern) input bindings)
-             (match% (rest pattern) (rest input)
-                     (match% (first pattern) (first input) bindings)))))))
+             (if (listp input)
+                 (match% (rest pattern) (rest input)
+                         (match% (first pattern) (first input) bindings))))))))
 
 (defun match (pattern input)
   (if (and (listp pattern) (listp input))
