@@ -101,7 +101,30 @@
        (cmacro.parse:make-token :type :integer :text "1")
        (cmacro.parse:make-token :type :integer :text "2")))
     (list t (list (make-var :name "my-var" :qualifiers (:integer))
-                  (cmacro.parse:make-token :type :integer :text "2")))))
+                  (cmacro.parse:make-token :type :integer :text "2"))))
+  (is
+    (cmacro.var:match
+      (list
+       (list
+        (cmacro.var:extract-var "first int")
+        (cmacro.var:extract-var "second int")))
+      (list
+       (list
+        (cmacro.parse:make-token :type :integer :text "1")
+        (cmacro.parse:make-token :type :integer :text "2"))))
+    (list t (list (make-var :name "first" :qualifiers (:integer))
+                  (make-var :name "second" :qualifiers (:integer))))))
+
+(test bad-pat-match
+  (is-false
+   (cmacro.var:match
+       (list
+        (list
+         (cmacro.var:extract-var "first int")))
+     (list
+      (list
+       (cmacro.parse:make-token :type :integer :text "1")
+       (cmacro.parse:make-token :type :integer :text "2"))))))
 
 ;; Macro definition
 
