@@ -31,7 +31,8 @@
     ("float"  . :float)
     ("num"    . :num)
     ("string" . :string)
-    ("op"     . :op)))
+    ("op"     . :op)
+    ("rest"   . :rest)))
 
 (defun map-var-type (type)
   (aif (cdr (assoc type +var-type-map+ :test #'equal))
