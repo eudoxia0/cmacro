@@ -1,9 +1,3 @@
-
-(in-package :cl-user)
-(defpackage cmacro-asd
-  (:use :cl :asdf))
-(in-package :cmacro-asd)
-
 (defsystem cmacro
   :version "0.1"
   :author "Fernando Borretti"
