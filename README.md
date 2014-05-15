@@ -41,15 +41,15 @@ object-oriented approach can't. For example, Common Lisp's
 [WITH-OPEN-FILE](http://clhs.lisp.se/Body/m_w_open.htm) macro helps with the
 common pattern of 'acquire a resource, apply something to it, and close
 it'. While this can be done in languages that support (And have simple syntax
-for) anonymous functions, macros help reduce this syntactico overhead.
+for) anonymous functions, macros help reduce this syntactic overhead.
 
 cmacro has a very lenient notion of C syntax, which means you can write macros
 to implement DSLs with any syntax you like. You could implement Lisp-like prefix
 notation, or a DSL for routing URLs, or the decorator pattern, for example.
 
-For a very simple example, this very simple macro matches anything of the form
-`unless <cond>`, where `<cond>` is any arbitrary expression, and performs a
-simple transformation:
+For a very simple example, this macro matches anything of the form `unless
+<cond>`, where `<cond>` is any arbitrary expression, and performs a simple
+transformation:
 
 ```c
 macro unless {
@@ -96,7 +96,6 @@ route "/profile/<user>" =>
   lambda(Req* request) -> Resp { return Authenticate(request.user); }
 ```
 
-
 # Why?
 
 Because a language without macros is a tool: You write applications with it. A
@@ -132,6 +131,16 @@ macro lambda {
 }
 ```
 
+Usage:
+
+```c
+/* Input */
+fn = lambda (int x, int y) -> int { return x + y; }
+
+/* After macroexpansion */
+int lambda0(int x, int y) { return x + y; }
+```
+
 ## Anaphoric `if`
 
 This stores the result of the condition in the variable `it`. See
@@ -149,6 +158,21 @@ macro aif {
       if(it)
     }
   }
+}
+```
+
+Usage:
+
+```c
+/* Input*/
+aif(get_buffer(a,b,c)) {
+  write_string(it, text);
+}
+
+/* After macroexpansion */
+typeof(get_buffer(a,b,c)) it = get_buffer(a,b,c);
+if(it) {
+  write_string(it, text);
 }
 ```
 
