@@ -1,7 +1,40 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
-  (:use :cl :esrap))
+  (:use :cl :esrap)
+  (:export :token-type
+           :token-line
+           :token-column
+           :token-text
+           :parse-string
+           :parse-pathname))
 (in-package :cmacro.parser)
+
+(defstruct (token
+            (:print-function
+             (lambda (tok stream d)
+               (declare (ignore d))
+               (write-string (token-text tok) stream))))
+  (type nil :type symbol)
+  (line 0   :type integer)
+  (column 0 :type integer)
+  (text ""  :type string))
+
+(defun token-equal (a b)
+  (and (eq (token-type a) (token-type b))
+       (equal (token-text a) (token-text b))))
+
+(defun ast-equal (ast-a ast-b)
+  (let* ((ast-a (flatten ast-a))
+         (ast-b (flatten ast-b))
+         (len-a (length ast-a))
+         (len-b (length ast-b)))
+    (when (eql len-a len-b)
+      ;; Compare individual items
+      (loop for i from 0 to (1- len-a) do
+        (if (not (token-equal (nth i ast-a)
+                              (nth i ast-b)))
+            (return nil)))
+        t)))
 
 ;;; Whitespace
 
@@ -108,3 +141,16 @@
 (defrule ast (+ (and (? whitespace) (or atom list array block)))
   (:lambda (items)
     (mapcar #'(lambda (item) (second item)) items)))
+
+(defun parse-string (string)
+  (parse 'ast string))
+
+(defun slurp-file (path)
+  ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
+  (with-open-file (stream path)
+    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
+      (setf (fill-pointer seq) (read-sequence seq stream))
+      seq)))
+
+(defun parse-pathname (pathname)
+  (parse 'ast (slurp-file pathname)))
