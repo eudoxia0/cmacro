@@ -2,18 +2,15 @@
   :version "0.1"
   :author "Fernando Borretti"
   :license "MIT"
-  :defsystem-depends-on (:asdf-linguist)
-  :depends-on (:split-sequence
+  :depends-on (:trivial-types
                :anaphora
-               :alexandria
-               :trivial-shell
                :esrap
-               :cl-mustache
                :yason)
   :components ((:module "src"
                 :serial t
                 :components
-                ((:file "parser"))))
+                ((:file "tokens")
+                 (:file "parser"))))
   :description "Lisp macros for C"
   :long-description
   #.(with-open-file (stream (merge-pathnames
