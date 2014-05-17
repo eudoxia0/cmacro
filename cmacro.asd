@@ -1,4 +1,4 @@
-(defsystem cmacro
+(asdf:defsystem cmacro
   :version "0.1"
   :author "Fernando Borretti"
   :license "MIT"
