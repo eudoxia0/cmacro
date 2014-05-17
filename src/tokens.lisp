@@ -54,8 +54,8 @@
 ;;; Token subclasses
 
 (defclass <number> (<text-token>) ())
-(defclass <integer> (<text-number>) ())
-(defclass <real> (<text-number>) ())
+(defclass <integer> (<number>) ())
+(defclass <real> (<number>) ())
 (defclass <string> (<text-token>) ())
 (defclass <operator> (<text-token>) ())
 
