@@ -54,7 +54,7 @@
      (:constant nil))
 
 (defrule string-char
-    (or escape-str*ing
+    (or escape-string
         (not-doublequote character)))
 
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
@@ -71,7 +71,21 @@
 
 ;;; Operators
 
-(defrule op-char (not alphanumeric))
+(defun group-separatorp (char)
+  (member char (list #\( #\) #\[ #\] #\{ #\}) :test #'char=))
+
+(defrule group-separator (group-separatorp character))
+
+(defrule op-char (not (or alphanumeric group-separator)))
 
 (defrule operator (+ op-char)
   (:lambda (list) (coerce list 'string)))
+
+;;; Structure
+
+(defrule atom (or integer string identifier operator))
+
+(defrule list (and #\( (* (and atom #\,)) #\))
+  (:destructure (op items cp)
+    (declare (ignore op cp))
+    items))
