@@ -9,17 +9,24 @@
            :parse-pathname))
 (in-package :cmacro.parser)
 
-(defstruct (token
-            (:print-function
-             (lambda (tok stream d)
-               (declare (ignore d))
-               (write-string (token-text tok) stream))))
-  (type nil :type symbol)
-  (line 0   :type integer)
-  (column 0 :type integer)
-  (text ""  :type string))
+(defclass <token> ()
+  ((type :initarg :type
+         :reader token-type
+         :type symbol)
+   (line :initarg :line
+         :reader token-line
+         :type integer)
+   (column :initarg :column
+           :reader token-column
+           :type integer)
+   (text :initarg :text
+         :reader token-text
+         :type string)))
 
-(defun token-equal (a b)
+(defmethod print-object ((tok <token>) stream)
+  (format stream "~A" (token-text tok)))
+
+(defmethod token-equal ((a <token>) (b <token>))
   (and (eq (token-type a) (token-type b))
        (equal (token-text a) (token-text b))))
 
