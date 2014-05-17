@@ -37,7 +37,7 @@
     (text o x digits)))
 
 (defrule dec (and (+ dec-digit))
-  (:destructure (digits)
+  (:lambda (digits)
     (text digits)))
 
 (defrule integer (and (or octal hex dec) (? integer-suffix))
@@ -54,10 +54,24 @@
      (:constant nil))
 
 (defrule string-char
-    (or escape-string
+    (or escape-str*ing
         (not-doublequote character)))
 
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
   (:destructure (prefix q1 string q2)
     (declare (ignore prefix q1 q2))
     (text string)))
+
+;;; Identifiers
+
+(defrule alphanumeric (alphanumericp character))
+
+(defrule identifier (+ (or alphanumeric #\_))
+  (:lambda (list) (coerce list 'string)))
+
+;;; Operators
+
+(defrule op-char (not alphanumeric))
+
+(defrule operator (+ op-char)
+  (:lambda (list) (coerce list 'string)))
