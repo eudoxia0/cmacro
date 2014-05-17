@@ -7,6 +7,7 @@
                :anaphora
                :alexandria
                :trivial-shell
+               :esrap
                :cl-mustache
                :yason)
   :components ((:module "grammar"
