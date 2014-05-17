@@ -85,7 +85,18 @@
 
 (defrule atom (or integer string identifier operator))
 
-(defrule list (and #\( (* (and atom (? #\,))) #\))
-  (:destructure (op items cp)
-    (declare (ignore op cp))
-    (mapcar #'(lambda (pair) (first pair)) items)))
+(defrule list (and #\( (* ast) #\))
+  (:destructure (open items close)
+    (first items)))
+
+(defrule array (and #\[ (* ast) #\])
+  (:destructure (open items close)
+    (first items)))
+
+(defrule block (and #\{ (* ast) #\})
+  (:destructure (open items close)
+    (first items)))
+
+(defrule ast (and (? whitespace) (+ (or list array block atom)))
+  (:destructure (ws content)
+    content))
