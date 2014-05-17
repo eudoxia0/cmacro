@@ -56,6 +56,7 @@
 (defclass <number> (<text-token>) ())
 (defclass <integer> (<number>) ())
 (defclass <real> (<number>) ())
+(defclass <identifier> (<text-token>) ())
 (defclass <string> (<text-token>) ())
 (defclass <operator> (<text-token>) ())
 

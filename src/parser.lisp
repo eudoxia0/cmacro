@@ -1,6 +1,12 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
   (:use :cl :esrap)
+  (:import-from :cmacro.tokens
+                :<integer>
+                :<identifier>
+                :<string>
+                :<operator>
+                :<variable>)
   (:export :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
@@ -45,7 +51,7 @@
 (defrule integer (and (or octal hex dec) (? integer-suffix))
   (:destructure (num suff)
     (declare (ignore suff))
-    num))
+    (make-instance '<integer> :text num)))
 
 ;;; Strings
 
@@ -62,14 +68,15 @@
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
   (:destructure (prefix q1 string q2)
     (declare (ignore prefix q1 q2))
-    (text string)))
+    (make-instance '<string> :text (text string))))
 
 ;;; Identifiers
 
 (defrule alphanumeric (alphanumericp character))
 
 (defrule identifier (+ (or alphanumeric #\_))
-  (:lambda (list) (coerce list 'string)))
+  (:lambda (list)
+    (make-instance '<identifier> :text (coerce list 'string))))
 
 ;;; Variables
 
@@ -89,7 +96,8 @@
 (defrule op-char (not (or alphanumeric group-separator)))
 
 (defrule operator (+ op-char)
-  (:lambda (list) (coerce list 'string)))
+  (:lambda (list)
+    (make-instance '<operator> :text (coerce list 'string))))
 
 ;;; Structure
 
