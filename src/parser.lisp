@@ -97,6 +97,6 @@
   (:destructure (open items close)
     (first items)))
 
-(defrule ast (and (? whitespace) (+ (or list array block atom)))
-  (:destructure (ws content)
-    content))
+(defrule ast (+ (and (? whitespace) (or list array block atom)))
+  (:lambda (items)
+    (mapcar #'(lambda (item) (second item)) items)))
