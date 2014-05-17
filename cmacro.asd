@@ -10,24 +10,10 @@
                :esrap
                :cl-mustache
                :yason)
-  :components ((:module "grammar"
-                :components
-                ((:flex "lexing" :output "lexing.yy")
-                 (:c->bin "lexing.yy" :output "cmc-lexer" :link ("fl"))))
-               (:module "src"
+  :components ((:module "src"
                 :serial t
                 :components
-                ((:file "preprocess")
-                 (:file "parse")
-                 (:file "parser")
-                 (:file "print")
-                 (:file "json")
-                 (:file "var")
-                 (:file "error")
-                 (:file "db")
-                 (:file "template")
-                 (:file "macro")
-                 (:file "cmacro"))))
+                ((:file "parser"))))
   :description "Lisp macros for C"
   :long-description
   #.(with-open-file (stream (merge-pathnames
