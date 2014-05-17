@@ -18,6 +18,7 @@
                 :components
                 ((:file "preprocess")
                  (:file "parse")
+                 (:file "parser")
                  (:file "print")
                  (:file "json")
                  (:file "var")
