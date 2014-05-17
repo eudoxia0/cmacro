@@ -19,12 +19,16 @@
 
 (defun line (position)
   "Line in *text* where `position` occurs."
-  (1+ (count #\Newline *text* :end position)))
+  (if *text*
+      (1+ (count #\Newline *text* :end position))
+      -1))
 
 (defun column (position)
   "Column in *text* where `position` occurs."
-  (- position (or (position #\Newline *text* :end position :from-end t)
-                  0)))
+  (if *text*
+      (- position (or (position #\Newline *text* :end position :from-end t)
+                      0))
+      -1))
 
 ;;; Whitespace
 
@@ -95,7 +99,7 @@
   (:lambda (list &bounds start-pos)
     (make-instance '<identifier>
                    :text (coerce list 'string)
-                   :pos (line start-pos))))
+                   :line (line start-pos))))
 
 ;;; Variables
 
@@ -140,9 +144,23 @@
   (:destructure (open items close)
     (cons :block (first items))))
 
-(defrule ast (+ (and (? whitespace) (or atom list array block)))
+(defrule ast (+ (and (? whitespace) (or macro atom list array block)))
   (:lambda (items)
     (mapcar #'(lambda (item) (second item)) items)))
+
+;;; Macro definitions
+
+(defrule macro-case (and (? whitespace) "case" (? whitespace) #\{
+                         ast (? whitespace) #\})
+  (:destructure (ws1 label ws2 open ast ws3 close)
+    (list :case ast)))
+
+(defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
+                    (+ macro-case) (? whitespace) #\})
+  (:destructure (label ws1 name ws2 open cases ws3 close)
+    (list :macro cases)))
+
+;;; Functions
 
 (defun parse-string% (string)
   (setf *text* string)
