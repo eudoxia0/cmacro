@@ -2,14 +2,16 @@
   :version "0.1"
   :author "Fernando Borretti"
   :license "MIT"
-  :depends-on (:trivial-types
+  :depends-on (:split-sequence
+               :trivial-types
                :anaphora
                :esrap
                :yason)
   :components ((:module "src"
                 :serial t
                 :components
-                ((:file "tokens")
+                ((:file "error")
+                 (:file "token")
                  (:file "parser"))))
   :description "Lisp macros for C"
   :long-description
