@@ -69,6 +69,14 @@
 (defrule identifier (+ (or alphanumeric #\_))
   (:lambda (list) (coerce list 'string)))
 
+;;; Variables
+
+(defrule var-char (not (or #\( #\))))
+
+(defrule variable (and #\$ #\( (+ var-char) #\))
+  (:destructure (dollar open text close)
+    (text text)))
+
 ;;; Operators
 
 (defun group-separatorp (char)
@@ -83,20 +91,20 @@
 
 ;;; Structure
 
-(defrule atom (or integer string identifier operator))
+(defrule atom (or  integer string identifier variable operator))
 
 (defrule list (and #\( (* ast) #\))
   (:destructure (open items close)
-    (first items)))
+    (cons :list (first items))))
 
 (defrule array (and #\[ (* ast) #\])
   (:destructure (open items close)
-    (first items)))
+    (cons :array (first items))))
 
 (defrule block (and #\{ (* ast) #\})
   (:destructure (open items close)
-    (first items)))
+    (cons :block (first items))))
 
-(defrule ast (+ (and (? whitespace) (or list array block atom)))
+(defrule ast (+ (and (? whitespace) (or atom list array block)))
   (:lambda (items)
     (mapcar #'(lambda (item) (second item)) items)))
