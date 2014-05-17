@@ -1,47 +1,9 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
   (:use :cl :esrap)
-  (:export :token-type
-           :token-line
-           :token-column
-           :token-text
-           :parse-string
+  (:export :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
-
-(defclass <token> ()
-  ((type :initarg :type
-         :reader token-type
-         :type symbol)
-   (line :initarg :line
-         :reader token-line
-         :type integer)
-   (column :initarg :column
-           :reader token-column
-           :type integer)
-   (text :initarg :text
-         :reader token-text
-         :type string)))
-
-(defmethod print-object ((tok <token>) stream)
-  (format stream "~A" (token-text tok)))
-
-(defmethod token-equal ((a <token>) (b <token>))
-  (and (eq (token-type a) (token-type b))
-       (equal (token-text a) (token-text b))))
-
-(defun ast-equal (ast-a ast-b)
-  (let* ((ast-a (flatten ast-a))
-         (ast-b (flatten ast-b))
-         (len-a (length ast-a))
-         (len-b (length ast-b)))
-    (when (eql len-a len-b)
-      ;; Compare individual items
-      (loop for i from 0 to (1- len-a) do
-        (if (not (token-equal (nth i ast-a)
-                              (nth i ast-b)))
-            (return nil)))
-        t)))
 
 ;;; Whitespace
 
