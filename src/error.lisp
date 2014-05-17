@@ -1,19 +1,25 @@
 (in-package :cl-user)
 (defpackage cmacro.error
   (:use :cl)
-  (:import-from :cmacro.parse
-                :token-text
-                :token-line)
-  (:export :bad-macro-definition
-           :bad-match
-           :no-input-files
-           :unknown-template-command))
+  (:export :parser-error))
 (in-package :cmacro.error)
 
-(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
-                          (sb-ext:quit :unix-status -1)))
+;(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
+;                          (sb-ext:quit :unix-status -1)))
 
 (define-condition cmacro-error () ())
+
+(define-condition parser-error (cmacro-error)
+  ((text :initarg :text :reader text :type string)
+   (line :initarg :line :reader line :type integer)
+   (column :initarg :column :reader column :type integer))
+
+  (:report
+   (lambda (condition stream)
+     (format stream "~&Parsing error at line ~A, column ~A: ~&~A"
+             (line condition)
+             (column condition)
+             (text condition)))))
 
 (defparameter +bad-match-msg+
   "Error trying to macroexpand '~A' on line ~A: The input didn't match any cases.")

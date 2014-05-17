@@ -1,11 +1,11 @@
 (in-package :cl-user)
-(defpackage :cmacro.tokens
+(defpackage :cmacro.token
   (:use :cl)
   (:import-from :trivial-types
                 :proper-list)
   (:export :<token>
+           :token-position
            :token-line
-           :token-column
            :token-text
            :<number>
            :<integer>
@@ -15,17 +15,14 @@
            :<variable>
            :var-name
            :var-qualifiers))
-(in-package :cmacro.tokens)
+(in-package :cmacro.token)
 
 ;;; Tokens
 
 (defclass <token> ()
   ((line :initarg :line
          :reader token-line
-         :type integer)
-   (column :initarg :column
-           :reader token-column
-           :type integer)))
+         :type integer)))
 
 (defclass <text-token> (<token>)
   ((text :initarg :text

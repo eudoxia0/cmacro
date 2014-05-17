@@ -1,15 +1,30 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
   (:use :cl :esrap)
-  (:import-from :cmacro.tokens
+  (:import-from :cmacro.token
                 :<integer>
                 :<identifier>
                 :<string>
                 :<operator>
                 :<variable>)
+  (:import-from :split-sequence
+                :split-sequence)
   (:export :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
+
+(defparameter *text* nil
+  "The current string being parsed. This is only used to find line numbers,
+  which esrap doesn't keep track of (Just the absolute position).")
+
+(defun line (position)
+  "Line in *text* where `position` occurs."
+  (1+ (count #\Newline *text* :end position)))
+
+(defun column (position)
+  "Column in *text* where `position` occurs."
+  (- position (or (position #\Newline *text* :end position :from-end t)
+                  0)))
 
 ;;; Whitespace
 
@@ -49,9 +64,9 @@
     (text digits)))
 
 (defrule integer (and (or octal hex dec) (? integer-suffix))
-  (:destructure (num suff)
+  (:destructure (num suff &bounds start-pos)
     (declare (ignore suff))
-    (make-instance '<integer> :text num)))
+    (make-instance '<integer> :text num :line (line start-pos))))
 
 ;;; Strings
 
@@ -67,24 +82,32 @@
 
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
   (:destructure (prefix q1 string q2)
-    (declare (ignore prefix q1 q2))
-    (make-instance '<string> :text (text string))))
+    (declare (ignore prefix q1 q2 &bounds start-pos))
+    (make-instance '<string>
+                   :text (text string)
+                   :line (line start-pos))))
 
 ;;; Identifiers
 
 (defrule alphanumeric (alphanumericp character))
 
 (defrule identifier (+ (or alphanumeric #\_))
-  (:lambda (list)
-    (make-instance '<identifier> :text (coerce list 'string))))
+  (:lambda (list &bounds start-pos)
+    (make-instance '<identifier>
+                   :text (coerce list 'string)
+                   :pos (line start-pos))))
 
 ;;; Variables
 
 (defrule var-char (not (or #\( #\))))
 
 (defrule variable (and #\$ #\( (+ var-char) #\))
-  (:destructure (dollar open text close)
-    (text text)))
+  (:destructure (dollar open text close &bounds start-pos)
+    (let ((split (split-sequence #\Space (text text))))
+      (make-instance '<variable>
+                     :name (first split)
+                     :qualifiers (rest split)
+                     :line (line start-pos)))))
 
 ;;; Operators
 
@@ -96,8 +119,10 @@
 (defrule op-char (not (or alphanumeric group-separator)))
 
 (defrule operator (+ op-char)
-  (:lambda (list)
-    (make-instance '<operator> :text (coerce list 'string))))
+  (:lambda (list &bounds start-pos)
+    (make-instance '<operator>
+                   :text (coerce list 'string)
+                   :line (line start-pos))))
 
 ;;; Structure
 
@@ -119,8 +144,21 @@
   (:lambda (items)
     (mapcar #'(lambda (item) (second item)) items)))
 
+(defun parse-string% (string)
+  (setf *text* string)
+  (prog1 (parse 'ast string)
+    (setf *text* nil)))
+
 (defun parse-string (string)
-  (parse 'ast string))
+  (handler-bind ((esrap-error
+                   #'(lambda (condition)
+                       (let ((text (esrap-error-text condition))
+                             (position (esrap-error-position condition)))
+                         (error 'cmacro.error:parser-error
+                                :text text
+                                :line (line position)
+                                :column (column position))))))
+    (parse-string% string)))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
@@ -130,4 +168,4 @@
       seq)))
 
 (defun parse-pathname (pathname)
-  (parse 'ast (slurp-file pathname)))
+  (parse-string 'ast (slurp-file pathname)))
