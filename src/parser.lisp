@@ -85,7 +85,7 @@
 
 (defrule atom (or integer string identifier operator))
 
-(defrule list (and #\( (* (and atom #\,)) #\))
+(defrule list (and #\( (* (and atom (? #\,))) #\))
   (:destructure (op items cp)
     (declare (ignore op cp))
-    items))
+    (mapcar #'(lambda (pair) (first pair)) items)))
