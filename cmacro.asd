@@ -12,6 +12,7 @@
                 :components
                 ((:file "error")
                  (:file "token")
+                 (:file "macro")
                  (:file "parser"))))
   :description "Lisp macros for C"
   :long-description
