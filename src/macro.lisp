@@ -10,7 +10,11 @@
   (:import-from :trivial-types
                 :proper-list)
   (:export :<macro-case>
-           :<macro>))
+           :case-match
+           :case-template
+           :case-toplevel-template
+           :<macro>
+           :macro-cases))
 (in-package :cmacro.macro)
 
 (defclass <macro-case> ()
