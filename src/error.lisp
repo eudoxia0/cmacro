@@ -4,8 +4,8 @@
   (:export :parser-error))
 (in-package :cmacro.error)
 
-;(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
-;                          (sb-ext:quit :unix-status -1)))
+(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
+                          (sb-ext:quit :unix-status -1)))
 
 (define-condition cmacro-error () ())
 
@@ -16,10 +16,14 @@
 
   (:report
    (lambda (condition stream)
-     (format stream "~&Parsing error at line ~A, column ~A: ~&~A"
+     (format stream "~&Parsing error at line ~A, column ~A: ~&~A~&"
              (line condition)
              (column condition)
-             (text condition)))))
+             (text condition))
+     (loop for i from 1 to (1- (column condition)) do
+       (write-char #\~ stream))
+     (write-char #\^ stream)
+     (terpri stream))))
 
 (defparameter +bad-match-msg+
   "Error trying to macroexpand '~A' on line ~A: The input didn't match any cases.")
