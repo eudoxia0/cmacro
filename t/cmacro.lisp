@@ -41,4 +41,12 @@
           (token-text (parse 'cmacro.parser::string
                              "\"test \\\"inner string\\\"  test\"")))))
 
+(test identifier-parsing
+  (is
+   (equal "test"
+          (token-text (parse 'cmacro.parser::identifier "test"))))
+  (is
+   (equal "c_function01"
+          (token-text (parse 'cmacro.parser::identifier "c_function01")))))
+
 (run! 'tests)

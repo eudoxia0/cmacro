@@ -98,7 +98,7 @@
 (defrule identifier (+ (or alphanumeric #\_))
   (:lambda (list &bounds start-pos)
     (make-instance '<identifier>
-                   :text (coerce list 'string)
+                   :text (text list)
                    :line (line start-pos))))
 
 ;;; Variables
