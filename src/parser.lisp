@@ -1,14 +1,17 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
   (:use :cl :esrap)
+  (:import-from :split-sequence
+                :split-sequence)
   (:import-from :cmacro.token
                 :<integer>
                 :<identifier>
                 :<string>
                 :<operator>
                 :<variable>)
-  (:import-from :split-sequence
-                :split-sequence)
+  (:import-from :cmacro.macro
+                :<macro-case>
+                :<macro>)
   (:export :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
@@ -154,7 +157,7 @@
   `(defrule ,rule-name (and (? whitespace) ,rule-string (? whitespace) #\{
                             ast (? whitespace) #\})
      (:destructure (ws1 label ws2 open ast ws3 close)
-       (list ,(intern rule-string :keyword) ast))))
+       ast)))
 
 (define-case-rule macro-match "match")
 (define-case-rule macro-template "template")
@@ -164,12 +167,15 @@
                          (* macro-match) macro-template (? macro-toplevel)
                          (? whitespace) #\})
   (:destructure (ws1 label ws2 open match template toplevel ws3 close)
-    (list :case match template toplevel)))
+    (make-instance '<macro-case>
+                   :match match
+                   :template template
+                   :toplevel-template toplevel)))
 
 (defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
                     (+ macro-case) (? whitespace) #\})
   (:destructure (label ws1 name ws2 open cases ws3 close)
-    (list :macro cases)))
+    (make-instance '<macro> :cases cases)))
 
 ;;; Functions
 
