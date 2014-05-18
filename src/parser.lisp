@@ -78,17 +78,17 @@
   (not (eql #\" char)))
 
 (defrule escape-string (and #\\ #\")
-     (:constant nil))
+  (:constant "\\\""))
 
 (defrule string-char
     (or escape-string
         (not-doublequote character)))
 
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
-  (:destructure (prefix q1 string q2)
-    (declare (ignore prefix q1 q2 &bounds start-pos))
+  (:destructure (prefix q1 string q2 &bounds start-pos)
+    (declare (ignore prefix q1 q2))
     (make-instance '<string>
-                   :text (text string)
+                   :text (concatenate 'string q1 (text string) q2)
                    :line (line start-pos))))
 
 ;;; Identifiers
