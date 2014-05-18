@@ -150,10 +150,21 @@
 
 ;;; Macro definitions
 
+(defmacro define-case-rule (rule-name rule-string)
+  `(defrule ,rule-name (and (? whitespace) ,rule-string (? whitespace) #\{
+                            ast (? whitespace) #\})
+     (:destructure (ws1 label ws2 open ast ws3 close)
+       (list ,(intern rule-string :keyword) ast))))
+
+(define-case-rule macro-match "match")
+(define-case-rule macro-template "template")
+(define-case-rule macro-toplevel "toplevel")
+
 (defrule macro-case (and (? whitespace) "case" (? whitespace) #\{
-                         ast (? whitespace) #\})
-  (:destructure (ws1 label ws2 open ast ws3 close)
-    (list :case ast)))
+                         (* macro-match) macro-template (? macro-toplevel)
+                         (? whitespace) #\})
+  (:destructure (ws1 label ws2 open match template toplevel ws3 close)
+    (list :case match template toplevel)))
 
 (defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
                     (+ macro-case) (? whitespace) #\})
