@@ -7,6 +7,7 @@
            :token-position
            :token-line
            :token-text
+           :<void-token>
            :<number>
            :<integer>
            :<real>
@@ -23,6 +24,8 @@
   ((line :initarg :line
          :reader token-line
          :type integer)))
+
+(defclass <void-token> (<token>) ())
 
 (defclass <text-token> (<token>)
   ((text :initarg :text

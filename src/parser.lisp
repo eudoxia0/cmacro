@@ -4,6 +4,7 @@
   (:import-from :split-sequence
                 :split-sequence)
   (:import-from :cmacro.token
+                :<void-token>
                 :<integer>
                 :<identifier>
                 :<string>
@@ -11,7 +12,8 @@
                 :<variable>)
   (:import-from :cmacro.macro
                 :<macro-case>
-                :<macro>)
+                :<macro>
+                :macro-name)
   (:export :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
@@ -175,7 +177,8 @@
 (defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
                     (+ macro-case) (? whitespace) #\})
   (:destructure (label ws1 name ws2 open cases ws3 close)
-    (make-instance '<macro> :cases cases)))
+    (make-instance '<macro> :name name
+                            :cases cases)))
 
 ;;; Functions
 
@@ -193,7 +196,23 @@
                                 :text text
                                 :line (line position)
                                 :column (column position))))))
-    (parse-string% string)))
+    (let ((ast (parse-string% string))
+          (table (make-hash-table)))
+      ;; Go through the AST, looking for instances of macros, removing them from
+      ;; the tree and and adding them to a hash table. Then return the table and
+      ;; AST.
+      (flet ((extract-macros (ast)
+               (loop for sub-ast on ast collecting
+                     (let ((node (first sub-ast)))
+                       (if (listp node)
+                           (extract-macros ast)
+                           (if (eq (type-of node) '<macro>)
+                               (progn
+                                 (setf (gethash (macro-name node) table)
+                                       node)
+                                 (make-instance '<void-token>))
+                               node))))))
+        (list (extract-macros ast) table)))))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html

@@ -14,6 +14,7 @@
            :case-template
            :case-toplevel-template
            :<macro>
+           :macro-name
            :macro-cases))
 (in-package :cmacro.macro)
 
@@ -26,6 +27,9 @@
                       :initarg :toplevel-template)))
 
 (defclass <macro> ()
-  ((cases :reader macro-cases
+  ((name :reader macro-name
+         :initarg :name
+         :type string)
+   (cases :reader macro-cases
           :initarg :cases
           :type (proper-list <macro-case))))
