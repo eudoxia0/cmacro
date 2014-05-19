@@ -14,12 +14,16 @@
                 :var-group-p)
   (:import-from :cmacro.macro
                 :<macro-case>
-                :case-match))
+                :case-match)
+  (:export :match-bindings
+           :match-length))
 (in-package :cmacro.pattern)
 
-(defmethod var-p ((token <token>))
-  "Is the token a variable?"
-  (eq (type-of token) '<variable>))
+(defun var-p (pattern)
+  (eq (type-of pattern) '<variable>))
+
+(defun rest-p (pattern)
+  (and (var-p pattern) (var-rest-p pattern)))
 
 (defmethod match-group ((var <variable>) list)
   "Groups are lists, arrays and blocks. This checks whether var matches list."
@@ -51,3 +55,44 @@
   (if (var-p pattern)
       (match-var pattern input)
       (token-equal pattern input)))
+
+(defun append-bindings (pattern input bindings)
+  (append bindings (list (list pattern input))))
+
+(defun append-rest-bindings (pattern input bindings)
+  (append-bindings pattern (if (atom input) (list input) input) bindings))
+
+(defun match% (pattern input &optional (bindings '(t)))
+  (if bindings
+      (cond
+        ((and (atom pattern) (atom input) (not (var-p pattern))
+              (match-token pattern input))
+         bindings)
+        ((rest-p pattern)
+         (append-rest-bindings pattern input bindings))
+        ((var-p pattern)
+         (append-bindings pattern input bindings))
+        ((listp pattern)
+         (if (rest-p (first pattern))
+             (append-rest-bindings (first pattern) input bindings)
+             (match% (rest pattern) (rest input)
+                     (match% (first pattern) (first input) bindings)))))))
+
+(defclass <match> ()
+  ((bindings :initarg :bindings
+             :reader match-bindings)
+   (length :initarg :length
+           :reader match-length
+           :type integer)))
+
+(defun match (pattern input)
+  (let ((bindings
+          (if (and (listp pattern) (listp input))
+              (if (> (length pattern) (length input))
+                  nil
+                  (match% pattern (subseq input 0 (length pattern))))
+              (match% pattern input))))
+    (when bindings
+      (make-instance '<match>
+                     :bindings (rest bindings)
+                     :length (length pattern)))))
