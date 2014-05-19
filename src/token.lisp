@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage :cmacro.token
-  (:use :cl)
+  (:use :cl :anaphora)
   (:import-from :trivial-types
                 :proper-list)
   (:import-from :split-sequence
@@ -10,6 +10,7 @@
            :token-line
            :token-text
            :token-equal
+           :list-type
            :<void-token>
            :<number>
            :<integer>
@@ -56,6 +57,13 @@
                               (nth i ast-b)))
             (return nil)))
         t)))
+
+(defparameter +group-types+ (list :list :array :block))
+
+(defun list-type (list)
+  (aif (first list)
+       (and (keywordp it)
+            (first (member it +group-types+)))))
 
 ;;; Token subclasses
 
