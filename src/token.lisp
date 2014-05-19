@@ -22,7 +22,11 @@
            :var-name
            :var-rest-p
            :var-qualifiers
-           :make-variable))
+           :make-variable
+           :var-list-p
+           :var-array-p
+           :var-block-p
+           :var-group-p))
 (in-package :cmacro.token)
 
 ;;; Tokens
@@ -95,3 +99,15 @@
                  :name name
                  :restp restp
                  :qualifiers (remove-duplicates args))))
+
+(defmethod var-list-p ((var <variable>))
+  (member "list" (var-qualifiers var) :test #'equal))
+
+(defmethod var-array-p ((var <variable>))
+  (member "array" (var-qualifiers var) :test #'equal))
+
+(defmethod var-block-p ((var <variable>))
+  (member "block" (var-qualifiers var) :test #'equal))
+
+(defmethod var-group-p ((var <variable>))
+  (or (var-list-p var) (var-array-p var) (var-block-p var)))
