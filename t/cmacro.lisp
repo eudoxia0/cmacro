@@ -65,6 +65,10 @@
 
 (test match-groups
   (is-true (match-group (make-variable "test list")
+                        (list :list)))
+  (is-false (match-group (make-variable "test array")
+                         (list :list)))
+  (is-true (match-group (make-variable "test group")
                         (list :list))))
 
 (run! 'parser)
