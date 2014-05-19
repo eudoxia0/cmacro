@@ -14,7 +14,10 @@
                 :<macro-case>
                 :<macro>
                 :macro-name)
-  (:export :parse-string
+  (:export :<result>
+           :result-ast
+           :result-macros
+           :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
 
@@ -180,6 +183,14 @@
     (make-instance '<macro> :name name
                             :cases cases)))
 
+;;; Data
+
+(defclass <result> ()
+  ((ast :reader result-ast
+        :initarg :ast)
+   (macros :reader result-macros
+           :initarg :macros)))
+
 ;;; Functions
 
 (defun parse-string% (string)
@@ -212,7 +223,7 @@
                                        node)
                                  (make-instance '<void-token>))
                                node))))))
-        (list (extract-macros ast) table)))))
+        (make-instance '<result> :ast (extract-macros ast) :macros table)))))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
