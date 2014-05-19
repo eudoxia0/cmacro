@@ -44,3 +44,8 @@
     (t
      ;; Didn't match anything
      nil)))
+
+(defmethod match-token ((pattern <token>) input)
+  (if (var-p pattern)
+      (match-var pattern input)
+      (token-equal pattern input)))
