@@ -4,15 +4,22 @@
   (:import-from :esrap
                 :parse)
   (:import-from :cmacro.token
-                :token-text))
+                :<identifier>
+                :<variable>
+                :token-text
+                :make-variable)
+  (:import-from :cmacro.pattern
+                :match-group
+                :match-var
+                :match-token))
 (in-package :cmacro-test)
 
 (defparameter +cmacro-path+
   (asdf:component-pathname (asdf:find-system :cmacro-test)))
 
-(def-suite tests
-  :description "General tests.")
-(in-suite tests)
+(def-suite parser
+  :description "Parsing tests.")
+(in-suite parser)
 
 (test integer-parsing
   (is
@@ -44,4 +51,21 @@
    (equal "c_function01"
           (token-text (parse 'cmacro.parser::identifier "c_function01")))))
 
-(run! 'tests)
+(def-suite pattern-matcher
+  :description "Pattern matching tests.")
+(in-suite pattern-matcher)
+
+(test match-tokens
+  (is-true (match-var (make-variable "test")
+                      nil))
+  (is-true (match-var (make-variable "test")
+                      (make-instance '<identifier> :text "1")))
+  (is-true (match-var (make-variable "test")
+                      (list 1 2 3))))
+
+(test match-groups
+  (is-true (match-group (make-variable "test list")
+                        (list :list))))
+
+(run! 'parser)
+(run! 'pattern-matcher)
