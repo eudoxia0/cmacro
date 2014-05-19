@@ -71,5 +71,13 @@
   (is-true (match-group (make-variable "test group")
                         (list :list))))
 
+(test match-token
+  (is-true (match-token (make-variable "test")
+                        nil))
+  (is-true (match-token (make-instance '<identifier> :text "1")
+                        (make-instance '<identifier> :text "1")))
+  (is-false (match-token (make-instance '<identifier> :text "1")
+                         (make-instance '<identifier> :text "2"))))
+
 (run! 'parser)
 (run! 'pattern-matcher)

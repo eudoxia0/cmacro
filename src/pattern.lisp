@@ -3,6 +3,7 @@
   (:use :cl :anaphora)
   (:import-from :cmacro.token
                 :<token>
+                :token-equal
                 :<variable>
                 :var-rest-p
                 :var-qualifiers
@@ -18,7 +19,7 @@
 
 (defmethod var-p ((token <token>))
   "Is the token a variable?"
-  (is (type-of token) '<variable>))
+  (eq (type-of token) '<variable>))
 
 (defmethod match-group ((var <variable>) list)
   "Groups are lists, arrays and blocks. This checks whether var matches list."
