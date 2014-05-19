@@ -24,10 +24,11 @@
   "Groups are lists, arrays and blocks. This checks whether var matches list."
   (let ((list-type (list-type list)))
     (when list-type
-      (or (var-group-p var)
-          (and (var-list-p var) (eq list-type :list))
-          (and (var-array-p var) (eq list-type :array))
-          (and (var-block-p var) (eq list-type :block))))))
+      (if (or (var-group-p var)
+              (and (var-list-p var) (eq list-type :list))
+              (and (var-array-p var) (eq list-type :array))
+              (and (var-block-p var) (eq list-type :block)))
+          t))))
 
 (defmethod match-var ((var <variable>) input)
   (cond

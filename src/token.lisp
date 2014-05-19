@@ -101,13 +101,14 @@
                  :qualifiers (remove-duplicates args))))
 
 (defmethod var-list-p ((var <variable>))
-  (member "list" (var-qualifiers var) :test #'equal))
+  (if (member "list" (var-qualifiers var) :test #'equal) t))
 
 (defmethod var-array-p ((var <variable>))
-  (member "array" (var-qualifiers var) :test #'equal))
+  (if (member "array" (var-qualifiers var) :test #'equal) t))
 
 (defmethod var-block-p ((var <variable>))
-  (member "block" (var-qualifiers var) :test #'equal))
+  (if (member "block" (var-qualifiers var) :test #'equal) t))
 
 (defmethod var-group-p ((var <variable>))
-  (or (var-list-p var) (var-array-p var) (var-block-p var)))
+  "The variable matches any kind of group: Lists, arrays and blocks."
+  (if (member "group" (var-qualifiers var) :test #'equal) t))
