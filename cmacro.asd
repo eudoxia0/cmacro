@@ -13,7 +13,8 @@
                 ((:file "error")
                  (:file "token")
                  (:file "macro")
-                 (:file "parser"))))
+                 (:file "parser")
+                 (:file "pattern"))))
   :description "Lisp macros for C"
   :long-description
   #.(with-open-file (stream (merge-pathnames
