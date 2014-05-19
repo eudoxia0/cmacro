@@ -1,9 +1,3 @@
-;;;; This file provides the core functionality of cmacro. It handles the
-;;;; following:
-;;;; * Extraction of `macro` forms from the AST
-;;;; * Searching the AST for macro calls
-;;;; * Macro expansion
-
 (in-package :cl-user)
 (defpackage cmacro.macro
   (:use :cl :anaphora)

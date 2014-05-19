@@ -1,15 +1,15 @@
 (in-package :cl-user)
 (defpackage :cmacro.parser
   (:use :cl :esrap)
-  (:import-from :split-sequence
-                :split-sequence)
   (:import-from :cmacro.token
+                :token-text
                 :<void-token>
                 :<integer>
                 :<identifier>
                 :<string>
                 :<operator>
-                :<variable>)
+                :<variable>
+                :make-variable)
   (:import-from :cmacro.macro
                 :<macro-case>
                 :<macro>
@@ -115,11 +115,7 @@
 
 (defrule variable (and #\$ #\( (+ var-char) #\))
   (:destructure (dollar open text close &bounds start-pos)
-    (let ((split (split-sequence #\Space (text text))))
-      (make-instance '<variable>
-                     :name (first split)
-                     :qualifiers (rest split)
-                     :line (line start-pos)))))
+    (make-variable (text text))))
 
 ;;; Operators
 
@@ -180,7 +176,7 @@
 (defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
                     (+ macro-case) (? whitespace) #\})
   (:destructure (label ws1 name ws2 open cases ws3 close)
-    (make-instance '<macro> :name name
+    (make-instance '<macro> :name (token-text name)
                             :cases cases)))
 
 ;;; Data
@@ -208,7 +204,7 @@
                                 :line (line position)
                                 :column (column position))))))
     (let ((ast (parse-string% string))
-          (table (make-hash-table)))
+          (table (make-hash-table :test #'equal)))
       ;; Go through the AST, looking for instances of macros, removing them from
       ;; the tree and and adding them to a hash table. Then return the table and
       ;; AST.

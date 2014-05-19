@@ -3,19 +3,25 @@
   (:use :cl)
   (:import-from :trivial-types
                 :proper-list)
+  (:import-from :split-sequence
+                :split-sequence)
   (:export :<token>
            :token-position
            :token-line
            :token-text
+           :token-equal
            :<void-token>
            :<number>
            :<integer>
            :<real>
+           :<identifier>
            :<string>
            :<operator>
            :<variable>
            :var-name
-           :var-qualifiers))
+           :var-rest-p
+           :var-qualifiers
+           :make-variable))
 (in-package :cmacro.token)
 
 ;;; Tokens
@@ -35,7 +41,7 @@
 (defmethod print-object ((tok <text-token>) stream)
   (format stream "~A" (token-text tok)))
 
-(defmethod token-equal ((a <text-token>) (b <token>))
+(defmethod token-equal ((a <text-token>) (b <text-token>))
   (equal (token-text a) (token-text b)))
 
 (defun ast-equal (ast-a ast-b)
@@ -66,6 +72,18 @@
   ((name :initarg :name
          :reader var-name
          :type string)
+   (restp :initarg :restp
+          :reader var-rest-p
+          :type boolean)
    (qualifiers :initarg :qualifiers
                :reader var-qualifiers
                :type (proper-list string))))
+
+(defun make-variable (text)
+  (let* ((args (split-sequence #\Space text))
+         (name (pop args))
+         (restp (if (member "rest" args :test #'equal) t)))
+  (make-instance '<variable>
+                 :name name
+                 :restp restp
+                 :qualifiers (remove-duplicates args))))
