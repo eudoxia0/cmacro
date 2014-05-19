@@ -17,6 +17,7 @@
   (:export :<result>
            :result-ast
            :result-macros
+           :extract-macros
            :parse-string
            :parse-pathname))
 (in-package :cmacro.parser)
@@ -179,14 +180,6 @@
     (make-instance '<macro> :name (token-text name)
                             :cases cases)))
 
-;;; Data
-
-(defclass <result> ()
-  ((ast :reader result-ast
-        :initarg :ast)
-   (macros :reader result-macros
-           :initarg :macros)))
-
 ;;; Functions
 
 (defun parse-string% (string)
@@ -203,23 +196,35 @@
                                 :text text
                                 :line (line position)
                                 :column (column position))))))
-    (let ((ast (parse-string% string))
-          (table (make-hash-table :test #'equal)))
-      ;; Go through the AST, looking for instances of macros, removing them from
-      ;; the tree and and adding them to a hash table. Then return the table and
-      ;; AST.
-      (flet ((extract-macros (ast)
-               (loop for sub-ast on ast collecting
-                     (let ((node (first sub-ast)))
-                       (if (listp node)
-                           (extract-macros ast)
-                           (if (eq (type-of node) '<macro>)
-                               (progn
-                                 (setf (gethash (macro-name node) table)
-                                       node)
-                                 (make-instance '<void-token>))
-                               node))))))
-        (make-instance '<result> :ast (extract-macros ast) :macros table)))))
+    (parse-string% string)))
+
+;;; Extract macros
+
+(defun extract-macros (ast)
+  (let ((table (make-hash-table :test #'equal)))
+    ;; Go through the AST, looking for instances of macros, removing them from
+    ;; the tree and and adding them to a hash table. Then return the table and
+    ;; AST.
+    (flet ((extract-macros% (ast)
+             (loop for sub-ast on ast collecting
+               (let ((node (first sub-ast)))
+                 (if (listp node)
+                     (extract-macros% ast)
+                     (if (eq (type-of node) '<macro>)
+                         (progn
+                           (setf (gethash (macro-name node) table)
+                                 node)
+                           (make-instance '<void-token>))
+                         node))))))
+      (make-instance '<result>
+                     :ast (extract-macros ast)
+                     :macros table))))
+
+(defclass <result> ()
+  ((ast :reader result-ast
+        :initarg :ast)
+   (macros :reader result-macros
+           :initarg :macros)))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
