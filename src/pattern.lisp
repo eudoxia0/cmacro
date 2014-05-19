@@ -28,3 +28,19 @@
           (and (var-list-p list) (eq list-type :list))
           (and (var-array-p list) (eq list-type :array))
           (and (var-block-p list) (eq list-type :block))))))
+
+(defmethod match-var ((var <variable>) input)
+  (cond
+    ((null (var-qualifiers var))
+     ;; The variable accepts whatever
+     t)
+    ((and (listp input) (first input))
+     ;; Match the variable to the list
+     (match-group var input))
+    ;((eql-qualifier (first (var-qualifiers var))
+    ;                (token-type input))
+    ; ;; Qualifier match
+    ; t)
+    (t
+     ;; Didn't match anything
+     nil)))
