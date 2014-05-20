@@ -1,37 +1,14 @@
-;;;; cl-mustache customizations
 (in-package :cl-user)
 (defpackage cmacro.template
   (:use :cl :anaphora)
-  (:import-from :cmacro.var
-                :var-name)
-  (:import-from :mustache
-                :*char-to-escapes*
-                :non-standalone-tag
-                :set-mustache-character
-                :render-token
-                :print-data)
+  (:import-from :cmacro.token
+                :<variable>
+                :var-name
+                :var-p)
   (:export :render-template))
 (in-package :cmacro.template)
-;; We aren't producing HTML
-(setf *char-to-escapes* "")
 
-;; General command tag
-
-(defclass command-tag (non-standalone-tag)
-  ((command :initarg :command :accessor command)
-   (args    :initarg :args    :accessor args)))
-
-(set-mustache-character
-  #\@
-  (lambda (raw-text arg-text escapep start end)
-    (let ((split (split-sequence:split-sequence #\Space arg-text)))
-      (make-instance 'command-tag :command (first split) :args (rest split)))))
-
-(defparameter *variables* nil)
-
-(defun get-var-value (var)
-  (cdr (assoc var *variables* :test #'equal)))
-
+#|
 (defun run-template-command (command args)
   (cond
     ((equal command "gensym")
@@ -55,18 +32,26 @@
     ((equal command "embed")
      (format nil "$(~{~A ~})" args))
     (t
-     (error 'cmacro.error:unknown-template-command :command command))))
+     (error 'cmacro.error:unknown-template-command :command command))))|#
 
-(defmethod render-token ((token command-tag) context template)
-   (print-data (run-template-command (command token)
-                                     (args token))
-               t context))
+(defmethod get-var ((var <variable>) bindings)
+  (cadr (assoc var bindings :test #'(lambda (v1 v2) (equal (var-name v1)
+                                                           (var-name v2))))))
 
-(defun render-template (template variables)
-  (let ((processed-vars (loop for pair in variables collecting
-                          (cons (var-name (car pair))
-                                (cmacro.parse:print-ast (cdr pair))))))
-    (setf *variables* processed-vars)
-    (prog1 (mustache:mustache-render-to-string
-            template processed-vars)
-      (setf *variables* nil))))
+(defmethod render-var ((var <variable>) bindings)
+  (aif (get-var var bindings)
+       it
+       (error 'cmacro.error:unknown-var :var-name (var-name var))))
+
+(defmethod render-template-expression ((var <variable>) bindings)
+  (if (var-command-p var)
+      (render-command (var-name var) (var-qualifiers var) bindings)
+      (render-var var bindings)))
+
+(defun render-template (ast bindings)
+  (loop for node in ast collecting
+        (if (listp node)
+            (render-template node bindings)
+            (if (var-p node)
+                (render-template-expression node bindings)
+                node))))
