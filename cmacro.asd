@@ -15,6 +15,7 @@
                  (:file "macro")
                  (:file "parser")
                  (:file "pattern")
+                 (:file "db")
                  (:file "template"))))
   :description "Lisp macros for C"
   :long-description
