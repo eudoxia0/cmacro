@@ -26,7 +26,8 @@
            :var-list-p
            :var-array-p
            :var-block-p
-           :var-group-p))
+           :var-group-p
+           :var-command-p))
 (in-package :cmacro.token)
 
 ;;; Tokens
