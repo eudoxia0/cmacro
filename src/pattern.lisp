@@ -16,10 +16,16 @@
                 :var-array-p
                 :var-block-p
                 :var-group-p)
+  (:import-from :cmacro.macro
+                :<macro-case>
+                :case-match
+                :<macro>
+                :macro-cases)
   (:export :match-bindings
            :match-length
            :equal-bindings
-           :match))
+           :match
+           :match-macro))
 (in-package :cmacro.pattern)
 
 ;;; Bindings
@@ -114,3 +120,17 @@
       (make-instance '<match>
                      :bindings (bindings->hash-table (rest bindings))
                      :length (if (listp pattern) (length pattern) 1)))))
+
+;; Match against a macro
+
+(defmethod match-case ((case <macro-case>) input)
+  (loop for case in (case-match case) do
+    (aif (match case input)
+         (return (list :match it :case case))))
+  nil)
+
+(defmethod match-macro ((macro <macro>) input)
+  (loop for case in (macro-cases macro) do
+    (aif (match-case case input)
+         (return it)))
+  nil)
