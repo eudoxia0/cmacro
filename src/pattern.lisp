@@ -5,6 +5,7 @@
                 :<token>
                 :token-equal
                 :<variable>
+                :var-name
                 :var-rest-p
                 :var-qualifiers
                 :list-type
@@ -16,14 +17,31 @@
                 :<macro-case>
                 :case-match)
   (:export :match-bindings
-           :match-length))
+           :match-length
+           :equal-bindings
+           :match))
 (in-package :cmacro.pattern)
+
+;;; Utility functions
 
 (defun var-p (pattern)
   (eq (type-of pattern) '<variable>))
 
 (defun rest-p (pattern)
   (and (var-p pattern) (var-rest-p pattern)))
+
+(defun atomic-var-p (pattern)
+  (and (var-p pattern) (not (rest-p pattern))))
+
+;;; Bindings
+
+(defun append-bindings (pattern input bindings)
+  (append bindings (list (list pattern input))))
+
+(defun append-rest-bindings (pattern input bindings)
+  (append-bindings pattern (if (atom input) (list input) input) bindings))
+
+;;; Pattern matching
 
 (defmethod match-group ((var <variable>) list)
   "Groups are lists, arrays and blocks. This checks whether var matches list."
@@ -33,16 +51,18 @@
               (and (var-list-p var) (eq list-type :list))
               (and (var-array-p var) (eq list-type :array))
               (and (var-block-p var) (eq list-type :block)))
-          t))))
+          list))))
 
-(defmethod match-var ((var <variable>) input)
+(defmethod match-var ((var <variable>) input bindings)
   (cond
     ((null (var-qualifiers var))
      ;; The variable accepts whatever
-     t)
+     (append-bindings var input bindings))
     ((and (listp input) (first input))
      ;; Match the variable to the list
-     (match-group var input))
+     (if (match-group var input)
+         (append-bindings var input bindings)
+         nil))
     ;((eql-qualifier (first (var-qualifiers var))
     ;                (token-type input))
     ; ;; Qualifier match
@@ -51,32 +71,26 @@
      ;; Didn't match anything
      nil)))
 
-(defmethod match-token ((pattern <token>) input)
-  (if (var-p pattern)
-      (match-var pattern input)
-      (token-equal pattern input)))
-
-(defun append-bindings (pattern input bindings)
-  (append bindings (list (list pattern input))))
-
-(defun append-rest-bindings (pattern input bindings)
-  (append-bindings pattern (if (atom input) (list input) input) bindings))
-
 (defun match% (pattern input &optional (bindings '(t)))
   (if bindings
-      (cond
-        ((and (atom pattern) (atom input) (not (var-p pattern))
-              (match-token pattern input))
-         bindings)
-        ((rest-p pattern)
-         (append-rest-bindings pattern input bindings))
-        ((var-p pattern)
-         (append-bindings pattern input bindings))
-        ((listp pattern)
-         (if (rest-p (first pattern))
-             (append-rest-bindings (first pattern) input bindings)
-             (match% (rest pattern) (rest input)
-                     (match% (first pattern) (first input) bindings)))))))
+      (if (atom pattern)
+          (if (var-p pattern)
+              ;; Variable: Is it atomic or rest?
+              (if (rest-p pattern)
+                  ;; Match the rest of the input
+                  (append-rest-bindings pattern input bindings)
+                  ;; Look at the variable's qualifiers and match it
+                  (match-var pattern input bindings))
+              ;; Just a token. Does it equal the input?
+              (if (and (null pattern) (null input))
+                  bindings
+                  (and (atom input)
+                       (if (token-equal pattern input)
+                           bindings))))
+          (if (rest-p (first pattern))
+              (append-rest-bindings (first pattern) input bindings)
+              (match% (rest pattern) (rest input)
+                      (match% (first pattern) (first input) bindings))))))
 
 (defclass <match> ()
   ((bindings :initarg :bindings
@@ -84,6 +98,21 @@
    (length :initarg :length
            :reader match-length
            :type integer)))
+
+(defun bindings->hash-table (bindings)
+  (let ((table (make-hash-table :test #'equal)))
+    (loop for (variable value) in bindings do
+      (setf (gethash (var-name variable) table)
+            value))
+    table))
+
+(defun equal-bindings (table-a table-b)
+  (if (eql (hash-table-size table-a) (hash-table-size table-b))
+      (progn
+        (loop for key being the hash-keys of table-a do
+          (unless (equal (gethash key table-a) (gethash key table-b))
+            (return nil)))
+        t)))
 
 (defun match (pattern input)
   (let ((bindings
@@ -94,5 +123,5 @@
               (match% pattern input))))
     (when bindings
       (make-instance '<match>
-                     :bindings (rest bindings)
-                     :length (length pattern)))))
+                     :bindings (bindings->hash-table (rest bindings))
+                     :length (if (listp pattern) (length pattern) 1)))))
