@@ -6,12 +6,16 @@
                 :<identifier>
                 :token-text
                 :token-line)
+  (:import-from :cmacro.macro
+                :case-template)
   (:import-from :cmacro.pattern
                 :match-macro
                 :<match>
                 :match-length
                 :match-bindings
-                :match-case))
+                :match-case)
+  (:import-from :cmacro.template
+                :render-template))
 (in-package :cmacro.macroexpand)
 
 (defparameter *found* nil
@@ -23,7 +27,10 @@
        (gethash (token-text token) macros) t))
 
 (defmethod expand ((match <match>))
-  t)
+  (let* ((bindings (match-bindings match))
+         (new-ast  (render-template (case-template (match-case match))
+                                    bindings)))
+    new-ast))
 
 (defmethod macroexpand-ast% (ast macros)
   (loop for sub-ast on ast collecting
