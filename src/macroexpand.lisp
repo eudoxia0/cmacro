@@ -12,6 +12,7 @@
 
 (defparameter *found* nil
   "Was a macro found during the last macroexpansion?")
+(defparameter *toplevel-expansions* (list))
 
 (defmethod macro-call-p ((token <token>) macros)
   (and (subtypep (type-of token) '<identifier>)
@@ -38,3 +39,13 @@
                            :line (token-line node)))
                ;; Not a macro, let it go
                node)))))
+
+(defun macroexpand-ast (ast macros)
+  (let* ((ast (macroexpand-ast% ast macros)))
+    (loop while *found* do
+      (setf *found* nil)
+      (setf ast (macroexpand-ast% ast macros))
+      ;; Insert toplevel expansions
+      (setf ast (append *toplevel-expansions* ast))
+      (setf *toplevel-expansions* (list)))
+    ast))
