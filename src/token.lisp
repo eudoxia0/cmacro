@@ -100,6 +100,17 @@
                  :restp restp
                  :qualifiers (remove-duplicates args))))
 
+;;; Utility functions
+
+(defun var-p (pattern)
+  (eq (type-of pattern) '<variable>))
+
+(defun rest-p (pattern)
+  (and (var-p pattern) (var-rest-p pattern)))
+
+(defun atomic-var-p (pattern)
+  (and (var-p pattern) (not (rest-p pattern))))
+
 (defmethod var-list-p ((var <variable>))
   (if (member "list" (var-qualifiers var) :test #'equal) t))
 
@@ -111,4 +122,8 @@
 
 (defmethod var-group-p ((var <variable>))
   "The variable matches any kind of group: Lists, arrays and blocks."
-  (if (member "group" (var-qualifiers var) :test #'equal) t))
+  (if (member "group" (var-qualifiers var) :test #'equal) t))  
+
+(defmethod var-command-p ((var <variable>))
+  "Is the variable a template command?"
+  (char= #\@ (elt (var-name var) 0)))

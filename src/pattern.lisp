@@ -9,29 +9,18 @@
                 :var-rest-p
                 :var-qualifiers
                 :list-type
+                :var-p
+                :rest-p
+                :atomic-var-p
                 :var-list-p
                 :var-array-p
                 :var-block-p
                 :var-group-p)
-  (:import-from :cmacro.macro
-                :<macro-case>
-                :case-match)
   (:export :match-bindings
            :match-length
            :equal-bindings
            :match))
 (in-package :cmacro.pattern)
-
-;;; Utility functions
-
-(defun var-p (pattern)
-  (eq (type-of pattern) '<variable>))
-
-(defun rest-p (pattern)
-  (and (var-p pattern) (var-rest-p pattern)))
-
-(defun atomic-var-p (pattern)
-  (and (var-p pattern) (not (rest-p pattern))))
 
 ;;; Bindings
 
