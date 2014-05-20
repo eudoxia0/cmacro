@@ -8,10 +8,14 @@
                 :<variable>
                 :token-text
                 :make-variable)
+  (:import-from :cmacro.parser
+                :parse-string
+                :parse-pathname)
   (:import-from :cmacro.pattern
-                :match-group
-                :match-var
-                :match-token))
+                :match
+                :<match>
+                :match-bindings
+                :equal-bindings))
 (in-package :cmacro-test)
 
 (defparameter +cmacro-path+
@@ -55,29 +59,30 @@
   :description "Pattern matching tests.")
 (in-suite pattern-matcher)
 
-(test match-tokens
-  (is-true (match-var (make-variable "test")
-                      nil))
-  (is-true (match-var (make-variable "test")
-                      (make-instance '<identifier> :text "1")))
-  (is-true (match-var (make-variable "test")
-                      (list 1 2 3))))
+(defun matches (pattern input bindings)
+  (let ((match (match pattern input))
+        (bindings (cmacro.pattern::bindings->hash-table bindings)))
+    (if match
+        (equal-bindings (match-bindings match) bindings))))
 
-(test match-groups
-  (is-true (match-group (make-variable "test list")
-                        (list :list)))
-  (is-false (match-group (make-variable "test array")
-                         (list :list)))
-  (is-true (match-group (make-variable "test group")
-                        (list :list))))
+(test match-atom
+  (is-true
+    (matches (make-variable "test")
+             (make-instance '<identifier> :text "1")
+             (list (list (make-variable "test") 1))))
+  (is-true
+    (matches (make-instance '<identifier> :text "1")
+             (make-instance '<identifier> :text "1")
+             (list)))
+  (is-false
+    (matches (make-instance '<identifier> :text "1")
+             (make-instance '<identifier> :text "2")
+             (list))))
 
-(test match-token
-  (is-true (match-token (make-variable "test")
-                        nil))
-  (is-true (match-token (make-instance '<identifier> :text "1")
-                        (make-instance '<identifier> :text "1")))
-  (is-false (match-token (make-instance '<identifier> :text "1")
-                         (make-instance '<identifier> :text "2"))))
+(test match-expression
+  (matches (parse-string "1 2 $(var)")
+           (parse-string "1 2 3")
+           (list (list (make-variable "test") 3))))
 
 (run! 'parser)
 (run! 'pattern-matcher)
