@@ -15,7 +15,9 @@
                 :match
                 :<match>
                 :match-bindings
-                :equal-bindings))
+                :equal-bindings)
+  (:import-from :cmacro.template
+                :render-template))
 (in-package :cmacro-test)
 
 (defparameter +cmacro-path+
@@ -84,5 +86,28 @@
            (parse-string "1 2 3")
            (list (list (make-variable "test") 3))))
 
+(def-suite templates
+  :description "Pattern matching tests.")
+(in-suite templates)
+
+(test variable-replacement
+  (is (equal
+       (render-template (list (make-variable "test"))
+                        (list (list (make-variable "test") 1)))
+       (list 1))))
+
+(test gen-get-sym
+  (is (equal
+       (render-template (list (make-variable "@gensym label"))
+                        (list))
+       (list "cmacro_label_1")))
+  (is (equal
+       (render-template (list (make-variable "@getsym label"))
+                        (list))
+       (list "cmacro_label_1")))
+  (finishes
+    (setf cmacro.db::*symbol-index* 0)))
+
 (run! 'parser)
 (run! 'pattern-matcher)
+(run! 'templates)
