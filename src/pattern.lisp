@@ -21,11 +21,13 @@
                 :case-match
                 :<macro>
                 :macro-cases)
-  (:export :match-bindings
-           :match-length
-           :equal-bindings
+  (:export :equal-bindings
            :match
-           :match-macro))
+           :match-macro
+           :<match>
+           :match-bindings
+           :match-length
+           :match-macro-case))
 (in-package :cmacro.pattern)
 
 ;;; Bindings
@@ -87,13 +89,6 @@
               (match% (rest pattern) (rest input)
                       (match% (first pattern) (first input) bindings))))))
 
-(defclass <match> ()
-  ((bindings :initarg :bindings
-             :reader match-bindings)
-   (length :initarg :length
-           :reader match-length
-           :type integer)))
-
 (defun bindings->hash-table (bindings)
   (let ((table (make-hash-table :test #'equal)))
     (loop for (variable value) in bindings do
@@ -117,16 +112,28 @@
                   (match% pattern (subseq input 0 (length pattern))))
               (match% pattern input))))
     (when bindings
-      (make-instance '<match>
-                     :bindings (bindings->hash-table (rest bindings))
-                     :length (if (listp pattern) (length pattern) 1)))))
+      (list :bindings (bindings->hash-table (rest bindings))
+            :length (if (listp pattern) (length pattern) 1)))))
 
-;; Match against a macro
+;;; Match against a macro
+
+(defclass <match> ()
+  ((bindings :initarg :bindings
+             :reader match-bindings)
+   (length :initarg :length
+           :reader match-length
+           :type integer)
+   (case :initarg :case
+         :reader match-macro-case
+         :type <macro-case>)))
 
 (defmethod match-case ((case <macro-case>) input)
   (loop for case in (case-match case) do
     (aif (match case input)
-         (return (list :match it :case case))))
+         (return (make-instance '<match>
+                                :bindings (getf it :bindings)
+                                :length (getf it :length)
+                                :case case))))
   nil)
 
 (defmethod match-macro ((macro <macro>) input)

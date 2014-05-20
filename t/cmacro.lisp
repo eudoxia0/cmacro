@@ -65,7 +65,7 @@
   (let ((match (match pattern input))
         (bindings (cmacro.pattern::bindings->hash-table bindings)))
     (if match
-        (equal-bindings (match-bindings match) bindings))))
+        (equal-bindings (getf match :bindings) bindings))))
 
 (test match-atom
   (is-true

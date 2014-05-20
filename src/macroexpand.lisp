@@ -7,7 +7,11 @@
                 :token-text
                 :token-line)
   (:import-from :cmacro.pattern
-                :match-macro))
+                :match-macro
+                :<match>
+                :match-length
+                :match-bindings
+                :match-case))
 (in-package :cmacro.macroexpand)
 
 (defparameter *found* nil
@@ -17,6 +21,9 @@
 (defmethod macro-call-p ((token <token>) macros)
   (and (subtypep (type-of token) '<identifier>)
        (gethash (token-text token) macros) t))
+
+(defmethod expand ((match <match>))
+  t)
 
 (defmethod macroexpand-ast% (ast macros)
   (loop for sub-ast on ast collecting
@@ -30,9 +37,13 @@
                (aif (match-macro it (rest sub-ast))
                     ;; The macro matches one of the clauses, so we replace the
                     ;; part of `sub-ast` that matched with the macro output
+                    ;; `match-macro` produces a <match> object, see pattern.lisp
                     (progn
                       (setf *found* t)
-                      )
+                      ;; Erase the length of the match from the AST
+                      (setf sub-ast (nthcdr (match-length it) sub-ast))
+                      ;; Replace it with the macroexpansion
+                      (expand it))
                     ;; The macro didn't match. Signal an error.
                     (error 'cmacro.error:bad-match
                            :name (token-text node)
