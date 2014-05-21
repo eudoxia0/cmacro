@@ -170,9 +170,9 @@
 (defrule preproc-char (not #\Newline))
 
 (defrule preproc (and #\# (* preproc-char) #\Newline)
-  (:lambda (items &bounds start-pos)
+  (:destructure (hash chars newline &bounds start-pos)
     (make-instance '<preproc>
-                   :text (text items)
+                   :text (concatenate 'string "#" (text chars))
                    :line (line start-pos))))
 
 ;;; Structure
