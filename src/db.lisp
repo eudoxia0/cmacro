@@ -4,6 +4,8 @@
   (:export :gen-sym
            :get-sym))
 (in-package :cmacro.db)
+
+
 (defparameter *symbol-index* 0)
 
 (defun make-sym (label n)

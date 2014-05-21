@@ -39,12 +39,13 @@
 (defmethod expand ((match <match>))
   (let* ((bindings (match-bindings match))
          (macro-case (match-macro-case match))
+         (toplevel-ast (aif (case-toplevel-template macro-case)
+                            (render-template it bindings)))
          (new-ast  (render-template (case-template macro-case)
                                     bindings)))
-    (aif (case-toplevel-template macro-case)
+    (aif toplevel-ast
          (setf *toplevel-expansions*
-               (append *toplevel-expansions*
-                       (render-template it bindings))))
+               (append *toplevel-expansions* it)))
     new-ast))
 
 (defmethod macroexpand-ast% (ast macros)
