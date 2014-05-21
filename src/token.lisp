@@ -50,19 +50,6 @@
 (defmethod token-equal ((a <text-token>) (b <text-token>))
   (equal (token-text a) (token-text b)))
 
-(defun ast-equal (ast-a ast-b)
-  (let* ((ast-a (flatten ast-a))
-         (ast-b (flatten ast-b))
-         (len-a (length ast-a))
-         (len-b (length ast-b)))
-    (when (eql len-a len-b)
-      ;; Compare individual items
-      (loop for i from 0 to (1- len-a) do
-        (if (not (token-equal (nth i ast-a)
-                              (nth i ast-b)))
-            (return nil)))
-        t)))
-
 (defparameter +group-types+ (list :list :array :block))
 
 (defun list-type (list)
