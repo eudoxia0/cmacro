@@ -29,7 +29,8 @@
            :var-array-p
            :var-block-p
            :var-group-p
-           :var-command-p))
+           :var-command-p
+           :var-has-qualifier))
 (in-package :cmacro.token)
 
 ;;; Tokens
@@ -120,3 +121,6 @@
 (defmethod var-command-p ((var <variable>))
   "Is the variable a template command?"
   (char= #\@ (elt (var-name var) 0)))
+
+(defmethod var-has-qualifier ((var <variable>) (qualifier string))
+  (member qualifier (var-qualifiers var) :test #'equal))

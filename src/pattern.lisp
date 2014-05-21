@@ -4,6 +4,13 @@
   (:import-from :cmacro.token
                 :<token>
                 :token-equal
+                :<number>
+                :<integer>
+                :<real>
+                :<identifier>
+                :<character>
+                :<string>
+                :<operator>
                 :<variable>
                 :var-name
                 :var-rest-p
@@ -15,7 +22,8 @@
                 :var-list-p
                 :var-array-p
                 :var-block-p
-                :var-group-p)
+                :var-group-p
+                :var-has-qualifier)
   (:import-from :cmacro.macro
                 :<macro-case>
                 :case-match
@@ -50,6 +58,12 @@
               (and (var-block-p var) (eq list-type :block)))
           list))))
 
+(defmacro qualifier-match (var input types qualifier)
+  `(and (var-has-qualifier ,var ,qualifier)
+        (or ,@(mapcar #'(lambda (type)
+                          `(typep ,input ',type))
+                      types))))
+
 (defmethod match-var ((var <variable>) input bindings)
   (cond
     ((null (var-qualifiers var))
@@ -60,10 +74,14 @@
      (if (match-group var input)
          (append-bindings var input bindings)
          nil))
-    ;((eql-qualifier (first (var-qualifiers var))
-    ;                (token-type input))
-    ; ;; Qualifier match
-    ; t)
+    ;; Atomic qualifier matches
+    ((or (qualifier-match var input (<identifier>) "ident")
+         (qualifier-match var input (<integer>) "int")
+         (qualifier-match var input (<real>) "float")
+         (qualifier-match var input (<integer> <float>) "num")
+         (qualifier-match var input (<string>) "string")
+         (qualifier-match var input (<integer> <float> <string>) "const"))
+     (append-bindings var input bindings))
     (t
      ;; Didn't match anything
      nil)))

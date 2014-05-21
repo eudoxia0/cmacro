@@ -102,7 +102,7 @@
                    :text (text items)
                    :line (line start-pos))))
 
-(defrule number (or integer real))
+(defrule number (or real integer))
 
 ;;; Strings and Characters
 
