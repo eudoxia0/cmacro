@@ -4,7 +4,6 @@ LISPOPTS = --no-sysinit --no-userinit
 BUILD = build
 
 NAME = cmacro
-LEXER = grammar/cmc-lexer
 BUILDAPP = $(BUILD)/buildapp
 
 QLDIR = $(BUILD)/quicklisp
@@ -13,9 +12,6 @@ QLFILE = $(QLDIR)/quicklisp.lisp
 QLSETUP = $(QLDIR)/setup.lisp
 
 LISP_QL = $(LISP) $(LISPOPTS) --load $(QLSETUP)
-
-ASDF_LINGUIST_URL = https://github.com/eudoxia0/asdf-linguist.git
-ASDF_LINGUIST = $(QLDIR)/local-projects/asdf-linguist
 
 PREFIX = /usr/local
 INSTALL_DIR = $(DESTDIR)$(PREFIX)/bin
@@ -43,19 +39,17 @@ buildapp: $(BUILD)/buildapp ;
 
 $(BUILD)/.reqs:
 	@echo "Downloading requirements"
-	git clone $(ASDF_LINGUIST_URL) $(ASDF_LINGUIST)
 	$(LISP_QL) --eval '(ql:quickload :split-sequence)' \
+		   --eval '(ql:quickload :trivial-types)' \
 		   --eval '(ql:quickload :anaphora)' \
-		   --eval '(ql:quickload :alexandria)' \
-		   --eval '(ql:quickload :trivial-shell)' \
-		   --eval '(ql:quickload :cl-mustache)' \
+		   --eval '(ql:quickload :esrap)' \
 		   --eval '(ql:quickload :yason)' \
 	           --eval '(load "$(NAME).asd")' --quit
 	touch $@
 
 libs: $(BUILD)/.reqs ;
 
-cmc: buildapp libs
+cmc: quicklisp libs buildapp
 	@echo "Building $(NAME)"
 	$(BUILDAPP) --output $@ \
 		    --asdf-path . \
@@ -77,7 +71,6 @@ clean:
 install:
 	mkdir -p $(INSTALL_DIR)
 	install -m 755 cmc $(INSTALL_DIR)/cmc
-	install -m 755 grammar/cmc-lexer $(INSTALL_DIR)/cmc-lexer
 
 uninstall:
 	rm -f $(INSTALL_DIR)/cmc
