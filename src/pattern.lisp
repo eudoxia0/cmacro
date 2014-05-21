@@ -69,7 +69,6 @@
      nil)))
 
 (defun match% (pattern input &optional (bindings '(t)))
-  (print bindings)
   (if bindings
       (if (atom pattern)
           (if (var-p pattern)
