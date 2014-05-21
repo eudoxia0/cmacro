@@ -13,7 +13,7 @@
                 :<match>
                 :match-length
                 :match-bindings
-                :match-case)
+                :match-macro-case)
   (:import-from :cmacro.template
                 :render-template)
   (:import-from :cmacro.parser
@@ -37,7 +37,7 @@
 
 (defmethod expand ((match <match>))
   (let* ((bindings (match-bindings match))
-         (new-ast  (render-template (case-template (match-case match))
+         (new-ast  (render-template (case-template (match-macro-case match))
                                     bindings)))
     new-ast))
 
@@ -78,7 +78,7 @@
     ast))
 
 (defmethod macroexpand-result ((result <result>))
-  (macroexpand-ast (result-ast) (result-macros)))
+  (macroexpand-ast (result-ast result) (result-macros result)))
 
 (defun macroexpand-string (str)
   (macroexpand-result (extract-macros (parse-string str))))
