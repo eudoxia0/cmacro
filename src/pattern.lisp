@@ -69,6 +69,7 @@
      nil)))
 
 (defun match% (pattern input &optional (bindings '(t)))
+  (print bindings)
   (if bindings
       (if (atom pattern)
           (if (var-p pattern)
@@ -81,10 +82,14 @@
               ;; Just a token. Does it equal the input?
               (if (and (null pattern) (null input))
                   bindings
-                  (and (atom input)
-                       (if (token-equal pattern input)
-                           bindings
-                           nil))))
+                  (if (atom input)
+                       (if (and (subtypep (type-of pattern) '<token>)
+                                (subtypep (type-of input) '<token>))
+                           (if (token-equal pattern input)
+                               bindings)
+                           (if (and (keywordp pattern) (keywordp input)
+                                    (eql pattern input))
+                               bindings)))))
           (if (rest-p (first pattern))
               (append-rest-bindings (first pattern) input bindings)
               (match% (rest pattern) (rest input)

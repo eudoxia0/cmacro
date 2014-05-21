@@ -23,7 +23,8 @@
           (cons (var-name var) (var-qualifiers var))))
 
 (defun print-list (list stream)
-  (loop for item in list do
+  (print-expression (first list) stream)
+  (loop for item in (rest list) do
     (unless (eq (type-of item) '<operator>)
       (write-char #\Space stream))
     (print-expression item stream)))
