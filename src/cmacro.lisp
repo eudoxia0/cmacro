@@ -4,6 +4,12 @@
   (:export :main))
 (in-package :cmacro)
 
+(defun quit ()
+  (sb-ext:exit :code -1))
+
+(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
+                          (quit)))
+
 (defun get-opt (args boolean options)
   (first
    (remove-if #'null
@@ -38,7 +44,8 @@
                      (first sub-args))))))
 
 (defun process-file (pathname)
-  (format t "~&Processing: ~A." pathname))
+  (format t "~&Processing: ~A." pathname)
+  "output")
 
 (defparameter +help+ 
 "Usage: cmc [file]* [option]*
@@ -55,7 +62,7 @@
         (helpp       (get-binary-opt args "-h" "--help")))
     (when helpp
       (format t "~A~%" +help+)
-      (sb-ext:quit))
+      (quit))
     (unless files
       (error 'cmacro.error:no-input-files))
     (if output-file

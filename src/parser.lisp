@@ -234,4 +234,4 @@
       seq)))
 
 (defun parse-pathname (pathname)
-  (parse-string 'ast (slurp-file pathname)))
+  (parse-string (slurp-file pathname)))
