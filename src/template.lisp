@@ -52,8 +52,7 @@
      (error 'cmacro.error:unknown-template-command :command command))))
 
 (defmethod get-var ((var <variable>) bindings)
-  (cadr (assoc var bindings :test #'(lambda (v1 v2) (equal (var-name v1)
-                                                           (var-name v2))))))
+  (gethash (var-name var) bindings))
 
 (defmethod render-var ((var <variable>) bindings)
   (aif (get-var var bindings)

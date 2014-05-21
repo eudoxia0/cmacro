@@ -4,5 +4,5 @@
   (:export :print-ast))
 (in-package :cmacro.printer)
 
-(defun print-ast (ast stream)
+(defun print-ast (ast)
   (format nil "~A" ast))

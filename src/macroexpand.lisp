@@ -31,9 +31,9 @@
   "Was a macro found during the last macroexpansion?")
 (defparameter *toplevel-expansions* (list))
 
-(defmethod macro-call-p ((token <token>) macros)
+(defun macro-call-p (token macros)
   (and (subtypep (type-of token) '<identifier>)
-       (gethash (token-text token) macros) t))
+       (gethash (token-text token) macros)))
 
 (defmethod expand ((match <match>))
   (let* ((bindings (match-bindings match))

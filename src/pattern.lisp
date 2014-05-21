@@ -83,7 +83,8 @@
                   bindings
                   (and (atom input)
                        (if (token-equal pattern input)
-                           bindings))))
+                           bindings
+                           nil))))
           (if (rest-p (first pattern))
               (append-rest-bindings (first pattern) input bindings)
               (match% (rest pattern) (rest input)
@@ -128,16 +129,14 @@
          :type <macro-case>)))
 
 (defmethod match-case ((case <macro-case>) input)
-  (loop for case in (case-match case) do
-    (aif (match case input)
+  (loop for case-match in (case-match case) do
+    (aif (match case-match input)
          (return (make-instance '<match>
                                 :bindings (getf it :bindings)
                                 :length (getf it :length)
-                                :case case))))
-  nil)
+                                :case case)))))
 
 (defmethod match-macro ((macro <macro>) input)
   (loop for case in (macro-cases macro) do
     (aif (match-case case input)
-         (return it)))
-  nil)
+         (return it))))

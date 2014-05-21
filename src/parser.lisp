@@ -130,7 +130,7 @@
 
 (defrule group-separator (group-separatorp character))
 
-(defrule op-char (not (or alphanumeric group-separator)))
+(defrule op-char (not (or alphanumeric group-separator whitespace)))
 
 (defrule operator (+ op-char)
   (:lambda (list &bounds start-pos)
@@ -142,16 +142,16 @@
 
 (defrule atom (or  integer string identifier variable operator))
 
-(defrule list (and #\( (* ast) #\))
-  (:destructure (open items close)
+(defrule list (and #\( (* ast) (? whitespace) #\))
+  (:destructure (open items ws close)
     (cons :list (first items))))
 
-(defrule array (and #\[ (* ast) #\])
-  (:destructure (open items close)
+(defrule array (and #\[ (* ast) (? whitespace) #\])
+  (:destructure (open items ws close)
     (cons :array (first items))))
 
-(defrule block (and #\{ (* ast) #\})
-  (:destructure (open items close)
+(defrule block (and #\{ (* ast) (? whitespace) #\})
+  (:destructure (open items ws close)
     (cons :block (first items))))
 
 (defrule ast (+ (and (? whitespace) (or macro atom list array block)))
@@ -219,19 +219,19 @@
     ;; Go through the AST, looking for instances of macros, removing them from
     ;; the tree and and adding them to a hash table. Then return the table and
     ;; AST.
-    (flet ((extract-macros% (ast)
-             (loop for sub-ast on ast collecting
-               (let ((node (first sub-ast)))
-                 (if (listp node)
-                     (extract-macros% ast)
-                     (if (eq (type-of node) '<macro>)
-                         (progn
-                           (setf (gethash (macro-name node) table)
-                                 node)
-                           (make-instance '<void-token>))
-                         node))))))
+    (labels ((extract-macros% (ast)
+               (loop for sub-ast on ast collecting
+                 (let ((node (first sub-ast)))
+                   (if (listp node)
+                       (extract-macros% node)
+                       (if (eq (type-of node) '<macro>)
+                           (progn
+                             (setf (gethash (macro-name node) table)
+                                   node)
+                             (make-instance '<void-token>))
+                           node))))))
       (make-instance '<result>
-                     :ast (extract-macros ast)
+                     :ast (extract-macros% ast)
                      :macros table))))
 
 (defun slurp-file (path)
