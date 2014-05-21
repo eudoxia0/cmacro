@@ -41,7 +41,12 @@
 
 ;;; Whitespace
 
-(defrule whitespace (+ (or #\Space #\Tab #\Newline #\Linefeed))
+(defparameter +whitespace-chars+
+  (list #\Space #\Tab #\Newline #\Linefeed #\Backspace
+        #\Page #\Return #\Rubout))
+
+(defrule whitespace (+ (or #\Space #\Tab #\Newline #\Linefeed #\Backspace
+                           #\Page #\Return #\Rubout))
   (:constant nil))
 
 ;;; Numbers
@@ -187,6 +192,9 @@
   (prog1 (parse 'ast string)
     (setf *text* nil)))
 
+(defun preprocess-string (string)
+  (string-trim +whitespace-chars+ string))
+
 (defun parse-string (string)
   (handler-bind ((esrap-error
                    #'(lambda (condition)
@@ -196,7 +204,7 @@
                                 :text text
                                 :line (line position)
                                 :column (column position))))))
-    (parse-string% string)))
+    (parse-string% (preprocess-string string))))
 
 ;;; Extract macros
 
