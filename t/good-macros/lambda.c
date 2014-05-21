@@ -13,6 +13,5 @@ macro lambda {
 }
 
 int main() {
-  lambda args -> ret body;
   lambda (int a, int b) -> int { return a + b; };
 }

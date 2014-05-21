@@ -7,7 +7,8 @@
                 :token-text
                 :token-line)
   (:import-from :cmacro.macro
-                :case-template)
+                :case-template
+                :case-toplevel-template)
   (:import-from :cmacro.pattern
                 :match-macro
                 :<match>
@@ -37,8 +38,13 @@
 
 (defmethod expand ((match <match>))
   (let* ((bindings (match-bindings match))
-         (new-ast  (render-template (case-template (match-macro-case match))
+         (macro-case (match-macro-case match))
+         (new-ast  (render-template (case-template macro-case)
                                     bindings)))
+    (aif (case-toplevel-template macro-case)
+         (setf *toplevel-expansions*
+               (append *toplevel-expansions*
+                       (render-template it bindings))))
     new-ast))
 
 (defmethod macroexpand-ast% (ast macros)
