@@ -18,6 +18,7 @@
                  (:file "db")
                  (:file "template")
                  (:file "macroexpand")
+                 (:file "printer")
                  (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description

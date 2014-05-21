@@ -1,6 +1,10 @@
 (in-package :cl-user)
 (defpackage cmacro
   (:use :cl :anaphora)
+  (:import-from :cmacro.macroexpand
+                :macroexpand-pathname)
+  (:import-from :cmacro.printer
+                :print-ast)
   (:export :main))
 (in-package :cmacro)
 
@@ -44,8 +48,7 @@
                      (first sub-args))))))
 
 (defun process-file (pathname)
-  (format t "~&Processing: ~A." pathname)
-  "output")
+  (print-ast (macroexpand-pathname pathname)))
 
 (defparameter +help+ 
 "Usage: cmc [file]* [option]*
