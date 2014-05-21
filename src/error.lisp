@@ -57,4 +57,5 @@
 (define-condition no-input-files (cmacro-error)
   ()
   (:report (lambda (condition stream)
+             (declare (ignore condition))
              (format stream "No input files."))))

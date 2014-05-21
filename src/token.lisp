@@ -79,14 +79,15 @@
                :reader var-qualifiers
                :type (proper-list string))))
 
-(defun make-variable (text)
+(defun make-variable (text &optional (line -1))
   (let* ((args (split-sequence #\Space text))
          (name (pop args))
          (restp (if (member "rest" args :test #'equal) t)))
   (make-instance '<variable>
                  :name name
                  :restp restp
-                 :qualifiers (remove-duplicates args))))
+                 :qualifiers (remove-duplicates args)
+                 :line line)))
 
 ;;; Utility functions
 

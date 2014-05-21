@@ -100,7 +100,7 @@
 
 (defrule string (and (? (or "u8" "u" "U" "L")) #\" (* string-char) #\")
   (:destructure (prefix q1 string q2 &bounds start-pos)
-    (declare (ignore prefix q1 q2))
+    (declare (ignore prefix))
     (make-instance '<string>
                    :text (concatenate 'string q1 (text string) q2)
                    :line (line start-pos))))
@@ -121,7 +121,8 @@
 
 (defrule variable (and #\$ #\( (+ var-char) #\))
   (:destructure (dollar open text close &bounds start-pos)
-    (make-variable (text text))))
+    (declare (ignore dollar open close))
+    (make-variable (text text) (line start-pos))))
 
 ;;; Operators
 
@@ -144,14 +145,17 @@
 
 (defrule list (and #\( (* ast) (? whitespace) #\))
   (:destructure (open items ws close)
+    (declare (ignore open ws close))
     (cons :list (first items))))
 
 (defrule array (and #\[ (* ast) (? whitespace) #\])
   (:destructure (open items ws close)
+    (declare (ignore open ws close))
     (cons :array (first items))))
 
 (defrule block (and #\{ (* ast) (? whitespace) #\})
   (:destructure (open items ws close)
+    (declare (ignore open ws close))
     (cons :block (first items))))
 
 (defrule ast (+ (and (? whitespace) (or macro atom list array block)))
@@ -164,6 +168,7 @@
   `(defrule ,rule-name (and (? whitespace) ,rule-string (? whitespace) #\{
                             ast (? whitespace) #\})
      (:destructure (ws1 label ws2 open ast ws3 close)
+       (declare (ignore ws1 label ws2 open ws3 close))
        ast)))
 
 (define-case-rule macro-match "match")
@@ -174,6 +179,7 @@
                          (* macro-match) macro-template (? macro-toplevel)
                          (? whitespace) #\})
   (:destructure (ws1 label ws2 open match template toplevel ws3 close)
+    (declare (ignore ws1 label ws2 open ws3 close))
     (make-instance '<macro-case>
                    :match match
                    :template template
@@ -182,6 +188,7 @@
 (defrule macro (and "macro" (? whitespace) identifier (? whitespace) #\{
                     (+ macro-case) (? whitespace) #\})
   (:destructure (label ws1 name ws2 open cases ws3 close)
+    (declare (ignore label ws1 ws2 open ws3 close))
     (make-instance '<macro> :name (token-text name)
                             :cases cases)))
 
