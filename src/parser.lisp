@@ -5,6 +5,7 @@
                 :token-text
                 :<void-token>
                 :<integer>
+                :<real>
                 :<identifier>
                 :<character>
                 :<string>
@@ -87,6 +88,21 @@
     (declare (ignore suff))
     (make-instance '<integer> :text num :line (line start-pos))))
 
+(defrule sign (or #\+ #\-))
+
+(defrule real (and (? sign)                 ;; Sign
+                   (* dec-digit)            ;; Integer part
+                   (and #\.                 ;; Fractional part
+                        (? (or #\e #\E)) ;; Exponent
+                        (? sign)
+                        dec))
+  (:lambda (items &bounds start-pos)
+    (make-instance '<real>
+                   :text (text items)
+                   :line (line start-pos))))
+
+(defrule number (or integer real))
+
 ;;; Strings and Characters
 
 (defun not-doublequote (char)
@@ -150,7 +166,7 @@
 
 ;;; Structure
 
-(defrule atom (or integer character string identifier variable operator))
+(defrule atom (or number character string identifier variable operator))
 
 (defrule list (and #\( (* ast) (? whitespace) #\))
   (:destructure (open items ws close)
