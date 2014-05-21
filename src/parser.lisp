@@ -199,8 +199,20 @@
   (prog1 (parse 'ast string)
     (setf *text* nil)))
 
+(defun remove-backslash-escapes (string)
+  (let* ((target (concatenate 'string (string #\\) (string #\Newline)))
+         (str string)
+         (pos (search target string)))
+    (loop while pos do
+      (setf str (concatenate 'string
+                             (subseq str 0 pos)
+                             (subseq str (+ 2 pos))))
+      (setf pos (search target str)))
+    str))
+
 (defun preprocess-string (string)
-  (string-trim +whitespace-chars+ string))
+  (remove-backslash-escapes
+   (string-trim +whitespace-chars+ string)))
 
 (defun parse-string (string)
   (handler-bind ((esrap-error
