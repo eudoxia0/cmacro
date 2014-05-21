@@ -6,6 +6,7 @@
                 :<void-token>
                 :<integer>
                 :<identifier>
+                :<character>
                 :<string>
                 :<operator>
                 :<variable>
@@ -86,7 +87,7 @@
     (declare (ignore suff))
     (make-instance '<integer> :text num :line (line start-pos))))
 
-;;; Strings
+;;; Strings and Characters
 
 (defun not-doublequote (char)
   (not (eql #\" char)))
@@ -102,6 +103,14 @@
   (:destructure (prefix q1 string q2 &bounds start-pos)
     (declare (ignore prefix))
     (make-instance '<string>
+                   :text (concatenate 'string q1 (text string) q2)
+                   :line (line start-pos))))
+
+;; TODO: This is stupid
+(defrule char (and (? (or "u8" "u" "U" "L")) #\' (* string-char) #\')
+  (:destructure (prefix q1 string q2 &bounds start-pos)
+    (declare (ignore prefix))
+    (make-instance '<character>
                    :text (concatenate 'string q1 (text string) q2)
                    :line (line start-pos))))
 
@@ -141,7 +150,7 @@
 
 ;;; Structure
 
-(defrule atom (or  integer string identifier variable operator))
+(defrule atom (or integer character string identifier variable operator))
 
 (defrule list (and #\( (* ast) (? whitespace) #\))
   (:destructure (open items ws close)

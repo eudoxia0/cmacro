@@ -16,6 +16,7 @@
            :<integer>
            :<real>
            :<identifier>
+           :<character>
            :<string>
            :<operator>
            :<variable>
@@ -63,6 +64,7 @@
 (defclass <integer> (<number>) ())
 (defclass <real> (<number>) ())
 (defclass <identifier> (<text-token>) ())
+(defclass <character> (<text-token>) ())
 (defclass <string> (<text-token>) ())
 (defclass <operator> (<text-token>) ())
 
