@@ -2,7 +2,10 @@
 (defpackage cmacro.error
   (:use :cl)
   (:export :parser-error
-           :unknown-var))
+           :bad-match
+           :unknown-var
+           :unknown-template-command
+           :no-input-files))
 (in-package :cmacro.error)
 
 (setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
@@ -30,20 +33,15 @@
   "Error trying to macroexpand '~A' on line ~A: The input didn't match any cases.")
 
 (define-condition bad-match (cmacro-error)
-  ((token :initarg :token :reader token))
+  ((macro-name :initarg :name :reader macro-name :type string)
+   (line :initarg :line :reader line :type integer))
 
   (:report
    (lambda (condition stream)
-     (let ((token (token condition)))
-       (format stream
-               +bad-match-msg+
-               (token-text token)
-               (token-line token))))))
-
-(define-condition no-input-files (cmacro-error)
-  ()
-  (:report (lambda (condition stream)
-             (format stream "No input files."))))
+     (format stream
+             +bad-match-msg+
+             (macro-name condition)
+             (line condition)))))
 
 (define-condition unknown-var (cmacro-error)
   ((var-name :initarg :var-name :reader var-name))
@@ -58,3 +56,8 @@
 
   (:report (lambda (condition stream)
              (format stream "Unknown template command '~A'." (command condition)))))
+
+(define-condition no-input-files (cmacro-error)
+  ()
+  (:report (lambda (condition stream)
+             (format stream "No input files."))))
