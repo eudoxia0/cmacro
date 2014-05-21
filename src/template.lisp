@@ -2,6 +2,7 @@
 (defpackage cmacro.template
   (:use :cl :anaphora)
   (:import-from :cmacro.token
+                :<identifier>
                 :<variable>
                 :var-name
                 :var-p
@@ -42,12 +43,15 @@
 (defun render-command (command args bindings)
   (cond
     ((equal command "@gensym")
-     (gen-sym (first args)))
+     (make-instance '<identifier>
+                    :text (gen-sym (first args))))
     ((equal command "@getsym")
      ;; Get a symbol from a label, an optional `n` places back
-     (aif (second args)
-          (get-sym (first args) (parse-integer (second args)))
-          (get-sym (first args))))
+     (make-instance '<identifier>
+                    :text
+                    (aif (second args)
+                         (get-sym (first args) (parse-integer (second args)))
+                         (get-sym (first args)))))
     (t
      (error 'cmacro.error:unknown-template-command :command command))))
 

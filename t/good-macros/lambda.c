@@ -3,11 +3,11 @@ macro lambda {
     match {
       $(args) -> $(ret) $(body)
     }
-    toplevel {
-      $(ret) $(@gensym lambda) $(args) $(body)
-    }
     template {
       $(@getsym lambda 0)
+    }
+    toplevel {
+      $(ret) $(@gensym lambda) $(args) $(body)
     }
   }
 }
