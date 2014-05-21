@@ -10,6 +10,7 @@
                 :<character>
                 :<string>
                 :<operator>
+                :<preproc>
                 :<variable>
                 :make-variable)
   (:import-from :cmacro.macro
@@ -164,9 +165,19 @@
                    :text (coerce list 'string)
                    :line (line start-pos))))
 
+;;; Preprocessor directives
+
+(defrule preproc-char (not #\Newline))
+
+(defrule preproc (and #\# (* preproc-char) #\Newline)
+  (:lambda (items &bounds start-pos)
+    (make-instance '<preproc>
+                   :text (text items)
+                   :line (line start-pos))))
+
 ;;; Structure
 
-(defrule atom (or number character string identifier variable operator))
+(defrule atom (or number char string preproc identifier variable operator))
 
 (defrule list (and #\( (* ast) (? whitespace) #\))
   (:destructure (open items ws close)

@@ -19,6 +19,7 @@
            :<character>
            :<string>
            :<operator>
+           :<preproc>
            :<variable>
            :var-name
            :var-rest-p
@@ -67,6 +68,7 @@
 (defclass <character> (<text-token>) ())
 (defclass <string> (<text-token>) ())
 (defclass <operator> (<text-token>) ())
+(defclass <preproc> (<text-token>) ())
 
 ;;; Variables
 
