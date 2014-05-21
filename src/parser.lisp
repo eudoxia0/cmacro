@@ -200,6 +200,12 @@
 
 ;;; Extract macros
 
+(defclass <result> ()
+  ((ast :reader result-ast
+        :initarg :ast)
+   (macros :reader result-macros
+           :initarg :macros)))
+
 (defun extract-macros (ast)
   (let ((table (make-hash-table :test #'equal)))
     ;; Go through the AST, looking for instances of macros, removing them from
@@ -219,12 +225,6 @@
       (make-instance '<result>
                      :ast (extract-macros ast)
                      :macros table))))
-
-(defclass <result> ()
-  ((ast :reader result-ast
-        :initarg :ast)
-   (macros :reader result-macros
-           :initarg :macros)))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html

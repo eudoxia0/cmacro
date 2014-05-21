@@ -15,7 +15,16 @@
                 :match-bindings
                 :match-case)
   (:import-from :cmacro.template
-                :render-template))
+                :render-template)
+  (:import-from :cmacro.parser
+                :parse-string
+                :parse-pathname
+                :extract-macros
+                :<result>
+                :result-ast
+                :result-macros)
+  (:export :macroexpand-string
+           :macroexpand-pathname))
 (in-package :cmacro.macroexpand)
 
 (defparameter *found* nil
@@ -67,3 +76,12 @@
       (setf ast (append *toplevel-expansions* ast))
       (setf *toplevel-expansions* (list)))
     ast))
+
+(defmethod macroexpand-result ((result <result>))
+  (macroexpand-ast (result-ast) (result-macros)))
+
+(defun macroexpand-string (str)
+  (macroexpand-result (extract-macros (parse-string str))))
+
+(defun macroexpand-pathname (pathname)
+  (macroexpand-result (extract-macros (parse-pathname pathname))))
