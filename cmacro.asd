@@ -17,7 +17,8 @@
                  (:file "pattern")
                  (:file "db")
                  (:file "template")
-                 (:file "macroexpand"))))
+                 (:file "macroexpand")
+                 (:file "cmacro"))))
   :description "Lisp macros for C"
   :long-description
   #.(with-open-file (stream (merge-pathnames

@@ -4,17 +4,6 @@
   (:export :main))
 (in-package :cmacro)
 
-(defun extract-and-macroexpand (data)
-  (destructuring-bind (ast macros) 
-      (cmacro.macro:extract-macro-definitions (cmacro.parse:parse-data data))
-    (cmacro.macro:macroexpand-ast ast macros)))
-
-(defun macroexpand-data (data)
-  (cmacro.parse:print-ast (extract-and-macroexpand data)))
-
-(defun macroexpand-pathname (pathname)
-  (macroexpand-data (cmacro.preprocess::slurp-file pathname)))
-
 (defun get-opt (args boolean options)
   (first
    (remove-if #'null
@@ -48,29 +37,21 @@
                      ;; It's a file
                      (first sub-args))))))
 
+(defun process-file (pathname)
+  (format t "~&Processing: ~A." pathname))
+
 (defparameter +help+ 
 "Usage: cmc [file]* [option]*
 
   -o, --output    Path to the output file
-  -l,--lex        Dump the tokens (Without macroexpanding)
   -n,--no-expand  Don't macroexpand, but remove macro definitions
   -h,--help       Print this text")
-
-(defun process-file (pathname lexp)
-  (cond
-    (lexp
-     ;; Just lex the file
-     (format nil "~{~A~%~}"
-             (cmacro.preprocess:process-pathname pathname)))
-    (t
-     (macroexpand-pathname pathname)))) 
 
 (defun main (args)
   (let ((files       (mapcar #'parse-namestring
                              (files (cdr args)
-                                    '("-l" "--lex"))))
+                                    (list "-n" "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
-        (lexp        (get-binary-opt args "-l" "--lex"))
         (helpp       (get-binary-opt args "-h" "--help")))
     (when helpp
       (format t "~A~%" +help+)
@@ -85,10 +66,10 @@
                          :if-does-not-exist :create
                          :if-exists :supersede)
           (loop for file in files do
-            (write-string (process-file file lexp)
+            (write-string (process-file file)
                           stream)))
         ;; Write to stdout
         (progn
           (loop for file in files do
-            (write-string (process-file file lexp)))
-          (terpri)))))
+            (write-string (process-file file)))))
+    (terpri)))
