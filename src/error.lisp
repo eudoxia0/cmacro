@@ -3,6 +3,7 @@
   (:use :cl)
   (:export :parser-error
            :bad-match
+           :bad-import
            :unknown-var
            :unknown-template-command
            :no-input-files))
@@ -39,6 +40,13 @@
              +bad-match-msg+
              (macro-name condition)
              (line condition)))))
+
+(define-condition bad-import (cmacro-error)
+  ((line :initarg :line :reader line :type integer))
+
+  (:report
+   (lambda (condition stream)
+     (format stream "Bad cmacro_import call at line ~A." (line condition)))))
 
 (define-condition unknown-var (cmacro-error)
   ((var-name :initarg :var-name :reader var-name))

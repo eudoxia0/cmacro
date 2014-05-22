@@ -2,7 +2,10 @@
 (defpackage :cmacro.parser
   (:use :cl :esrap)
   (:import-from :cmacro.token
+                :<text-token>
                 :token-text
+                :token-line
+                :token-equal
                 :<void-token>
                 :<integer>
                 :<real>
@@ -41,6 +44,13 @@
       (- position (or (position #\Newline *text* :end position :from-end t)
                       0))
       -1))
+
+(defun slurp-file (path)
+  ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
+  (with-open-file (stream path)
+    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
+      (setf (fill-pointer seq) (read-sequence seq stream))
+      seq)))
 
 ;;; Whitespace
 
@@ -250,6 +260,31 @@
   (remove-backslash-escapes
    (string-trim +whitespace-chars+ string)))
 
+(defun string-text (str)
+  "Remove the quotes around a string."
+  (subseq str 1 (1- (length str))))
+
+(defun include-files (ast)
+  "Go through the ast, looking for calls to the 'cmacro_import' macro."
+  (loop for sub-ast on ast collecting
+    (let ((node (first sub-ast)))
+      (if (listp node)
+          (include-files node)
+          (if (and (typep node '<text-token>)
+                   (token-equal node (make-instance '<identifier>
+                                                    :text "cmacro_import")))
+              (progn
+                (let ((path (second sub-ast)))
+                  ;; Remove the macro
+                  (setf sub-ast (cddr sub-ast))
+                  (if (typep path '<string>)
+                      (parse-string
+                       (slurp-file (parse-namestring (string-text
+                                                      (token-text path)))))
+                      (error 'cmacro.error:bad-import
+                             :line (token-line node)))))
+              node)))))
+
 (defun parse-string (string)
   (handler-bind ((esrap-error
                    #'(lambda (condition)
@@ -259,7 +294,7 @@
                                 :text text
                                 :line (line position)
                                 :column (column position))))))
-    (parse-string% (preprocess-string string))))
+    (include-files (parse-string% (preprocess-string string)))))
 
 ;;; Extract macros
 
@@ -288,13 +323,6 @@
       (make-instance '<result>
                      :ast (extract-macros% ast)
                      :macros table))))
-
-(defun slurp-file (path)
-  ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
-  (with-open-file (stream path)
-    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
-      (setf (fill-pointer seq) (read-sequence seq stream))
-      seq)))
 
 (defun parse-pathname (pathname)
   (parse-string (slurp-file pathname)))
