@@ -1,5 +1,5 @@
 (asdf:defsystem cmacro
-  :version "0.1"
+  :version "0.2"
   :author "Fernando Borretti"
   :license "MIT"
   :depends-on (:split-sequence
