@@ -135,10 +135,12 @@ Usage:
 
 ```c
 /* Input */
-fn = lambda (int x, int y) -> int { return x + y; }
+fn = lambda (int x, int y) -> int { return x + y; };
 
 /* After macroexpansion */
-int lambda0(int x, int y) { return x + y; }
+int cmacro_lambda_0(int x, int y) { return x + y; }
+
+fn = cmacro_lambda_0;
 ```
 
 ## Anaphoric `if`
