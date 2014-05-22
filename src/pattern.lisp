@@ -44,7 +44,8 @@
   (append bindings (list (list pattern input))))
 
 (defun append-rest-bindings (pattern input bindings)
-  (append-bindings pattern (if (atom input) (list input) input) bindings))
+  (append-bindings pattern (list :splice
+                                 (if (atom input) (list input) input)) bindings))
 
 ;;; Pattern matching
 

@@ -69,9 +69,19 @@
       (render-var var bindings)))
 
 (defun render-template (ast bindings)
-  (loop for node in ast collecting
-        (if (listp node)
-            (render-template node bindings)
-            (if (var-p node)
-                (render-template-expression node bindings)
-                node))))
+  (loop for sub-ast on ast collecting
+    (let ((node (first sub-ast)))
+      (if (listp node)
+          (render-template node bindings)
+          (if (var-p node)
+              (let ((out (render-template-expression node bindings)))
+                (if (and (listp out)
+                         (keywordp (first out))
+                         (eql (first out) :splice))
+                    ;; Splice out into sub-ast
+                    (progn
+                      (setf sub-ast (append (first (rest out))
+                                            (rest sub-ast)))
+                      (first sub-ast))
+                    out))
+              node)))))
