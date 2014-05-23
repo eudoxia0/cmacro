@@ -9,29 +9,16 @@ macro f {
   }
 }
 
-macro g {
-  case {
-    match {
-      $(var)
-    }
-    template {
-      $(@splice var)
-    }
-  }
-}
-
 macro h {
   case {
     match {
       $(var)
     }
     template {
-      $(var)($(@embed my-var int))
+      $(@embed my-var int)
     }
   }
 }
 
 f x
-g (1, 2, 3)
-g 1
 h a
