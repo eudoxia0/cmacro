@@ -7,6 +7,7 @@
                 :<void-token>
                 :<operator>
                 :<variable>
+                :<preproc>
                 :var-name
                 :var-qualifiers)
   (:export :print-ast))
@@ -14,6 +15,10 @@
 
 (defmethod print-token ((tok <text-token>) stream)
   (write-string (token-text tok) stream))
+
+(defmethod print-token ((tok <preproc>) stream)
+  (write-string (token-text tok) stream)
+  (write-char #\Newline stream))
 
 (defmethod print-token ((tok <void-token>) stream)
   t)
@@ -35,16 +40,18 @@
     (:block . (#\{ . #\}))))
 
 (defun print-group (group-type list stream)
-  (let* ((separators (cdr (assoc group-type +group-separators+)))
-         (open (car separators))
-         (close (cdr separators)))
-    (write-char open stream)
-    (when (eq group-type :block)
-      (write-char #\Newline stream))
-    (print-list list stream)
-    (when (eq group-type :block)
-      (write-char #\Newline stream))
-    (write-char close stream)))
+  (flet ((block-extra ()
+           (when (eq group-type :block)
+             (write-char #\Newline stream))))
+    (let* ((separators (cdr (assoc group-type +group-separators+)))
+           (open (car separators))
+           (close (cdr separators)))
+      (write-char open stream)
+      (block-extra)
+      (print-list list stream)
+      (block-extra)
+      (write-char close stream)
+      (block-extra))))
 
 (defun print-expression (ast stream)
   (when ast
