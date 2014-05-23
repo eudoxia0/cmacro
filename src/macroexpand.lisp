@@ -75,13 +75,13 @@
                node)))))
 
 (defun macroexpand-ast (ast macros)
-  (let* ((ast (macroexpand-ast% ast macros)))
+  (let ((ast (macroexpand-ast% ast macros)))
     (loop while *found* do
       (setf *found* nil)
-      (setf ast (macroexpand-ast% ast macros))
       ;; Insert toplevel expansions
       (setf ast (append *toplevel-expansions* ast))
-      (setf *toplevel-expansions* (list)))
+      (setf *toplevel-expansions* (list))
+      (setf ast (macroexpand-ast% ast macros)))
     ast))
 
 (defmethod macroexpand-result ((result <result>))
