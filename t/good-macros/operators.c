@@ -9,6 +9,13 @@ macro f {
   }
 }
 
+macro g {
+  case {
+    match { $(var) }
+    template { $(@conc 1 var 3) }
+  }
+}
+
 macro h {
   case {
     match {
@@ -21,4 +28,5 @@ macro h {
 }
 
 f x
+g 2
 h a
