@@ -2,6 +2,7 @@
 (defpackage cmacro.template
   (:use :cl :anaphora)
   (:import-from :cmacro.token
+                :token-text
                 :<identifier>
                 :<string>
                 :<variable>
@@ -49,6 +50,16 @@
     ((equal command "@embed")
      (make-instance '<identifier>
                     :text (format nil "$(~{~A~#[~:; ~]~})" args)))
+    ((equal command "@conc")
+     (let* ((components (loop for arg in args collecting
+                          (aif (gethash arg bindings)
+                               (token-text it)
+                               arg)))
+            (text (reduce #'(lambda (str-a str-b)
+                              (concatenate 'string str-a str-b))
+                          components)))
+            (make-instance '<identifier>
+                           :text text)))
     (t
      (error 'cmacro.error:unknown-template-command :command command))))
 
