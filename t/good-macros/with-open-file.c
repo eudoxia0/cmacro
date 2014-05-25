@@ -3,7 +3,7 @@
 macro withOpenFile {
   case {
     match {
-      ($(stream-name), $(pathname string), $(direction string))
+      ($(stream-name ident), $(pathname string), $(direction string))
         $(body block)
     }
     template {
