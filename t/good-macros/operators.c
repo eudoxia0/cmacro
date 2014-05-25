@@ -27,6 +27,18 @@ macro h {
   }
 }
 
+macro i {
+  case {
+    match {
+      $(list list)
+    }
+    template {
+      $(@splice list)
+    }
+  }
+}
+
 f x
 g 2
 h a
+i (1,2,3)
