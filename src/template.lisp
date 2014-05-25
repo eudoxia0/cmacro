@@ -50,6 +50,9 @@
     ((equal command "@embed")
      (make-instance '<identifier>
                     :text (format nil "$(~{~A~#[~:; ~]~})" args)))
+    ((equal command "@splice")
+     (list :splice (rest (get-var (make-variable (first args))
+                                  bindings))))
     ((equal command "@conc")
      (let* ((components (loop for arg in args collecting
                           (aif (gethash arg bindings)
