@@ -12,7 +12,7 @@ macro recur {
       ($(first) $(others rest))
     }
     template {
-      $(first) (recur ($(others)))
+      recur($(first)) (recur ($(others)))
     }
   }
 }

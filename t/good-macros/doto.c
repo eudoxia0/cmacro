@@ -12,7 +12,7 @@ macro recur_doto {
       ($(obj) $(fn) $(args list); $(others rest))
     }
     template {
-      recur_doto($(obj) $(fn) ($(args list));)
+      recur_doto($(obj) $(fn) $(args list);)
       recur_doto($(obj) $(others))
     }
   }

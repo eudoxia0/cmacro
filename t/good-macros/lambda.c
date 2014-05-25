@@ -16,7 +16,8 @@ macro lambda {
 }
 
 int main() {
-  int array[] = {423, 61, 957, 133, 969, 829, 821, 390, 704, 596};
+  int array[] = {423, 61, 957, 133, 969,
+                 829, 821, 390, 704, 596};
   
   qsort(array, 10, sizeof(int),
         lambda (const void* a, const void* b) -> int
