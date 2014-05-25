@@ -1,46 +1,21 @@
 macro tup {
   case {
     match {
-      ($(a))
-    }
-    template {
-      $(@getsym tup1)
-    }
-    toplevel {
-      typedef struct { $(a) first; } $(@gensym tup1);
-    }
-  }
-  case {
-    match {
       ($(a), $(b))
     }
     template {
-      $(@getsym tup2)
-    }
-    toplevel {
-      typedef struct { $(a) first; $(b) second; } $(@gensym tup2);
-    }
-  }
-  case {
-    match {
-      ($(a), $(b), $(c))
-    }
-    template {
-      $(@getsym tup3)
-    }
-    toplevel {
-      typedef struct { $(a) first; $(b) second; $(c) third; } $(@gensym tup3);
+      struct { $(a) first; $(b) second; }
     }
   }
 }
 
-typedef tup(double, double, double) triple;
+typedef tup(int, int) pair;
 
-triple origin() {
-  return (triple){0, 0, 0};
+pair divrem(int n, int d) {
+  return (pair){n/d, n%d};
 }
 
 int main() {
-  tup(int,int) pair = {1, 2};
-  return pair.second + origin().third;
+  pair division = divrem(10,7);
+  return division.second;
 }
