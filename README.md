@@ -143,6 +143,23 @@ int cmacro_lambda_0(int x, int y) { return x + y; }
 fn = cmacro_lambda_0;
 ```
 
+A more complicated example, using the `qsort` function:
+
+```c
+int main() {
+  int array[] = {423, 61, 957, 133, 969,
+                 829, 821, 390, 704, 596};
+  
+  qsort(array, 10, sizeof(int),
+        lambda (const void* a, const void* b) -> int
+        { return *(int*)a - *(int*)b; });
+  for(size_t i = 0; i < 10; i++){
+    printf("%i ", array[i]);
+  }
+  return 0;
+}
+```
+
 ## Anaphoric `if`
 
 This stores the result of the condition in the variable `it`. See
