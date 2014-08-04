@@ -19,6 +19,6 @@ int main() {
 
 int main () {
   typeof(10) a = 10;
-  typeof(3.14) b= 3.14;
+  typeof(3.14) b = 3.14;
   return a;
 }
