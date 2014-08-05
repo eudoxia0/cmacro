@@ -7,6 +7,7 @@
                 :<identifier>
                 :<variable>
                 :token-text
+                :token-equal
                 :make-variable)
   (:import-from :cmacro.parser
                 :parse-string
@@ -97,14 +98,16 @@
        (list 1))))
 
 (test gen-get-sym
-  (is (equal
-       (render-template (list (make-variable "@gensym label"))
-                        (list))
-       (list "cmacro_label_1")))
-  (is (equal
-       (render-template (list (make-variable "@getsym label"))
-                        (list))
-       (list "cmacro_label_1")))
+  (is (token-equal
+       (first (render-template (list (make-variable "@gensym label"))
+                               (list)))
+       (make-instance '<identifier>
+                      :text "cmacro_label_1")))
+  (is (token-equal
+       (first (render-template (list (make-variable "@getsym label"))
+                               (list)))
+       (make-instance '<identifier>
+                      :text "cmacro_label_1")))
   (finishes
     (setf cmacro.db::*symbol-index* 0)))
 
