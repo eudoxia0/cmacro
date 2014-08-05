@@ -11,7 +11,9 @@
 (defun quit ()
   (sb-ext:exit :code -1))
 
-(setf *debugger-hook* #'(lambda (c h) (format t "~A~&" c)
+(setf *debugger-hook* #'(lambda (c h)
+                          (declare (ignore h))
+                          (format t "~A~&" c)
                           (quit)))
 
 (defun get-opt (args boolean options)

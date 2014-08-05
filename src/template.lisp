@@ -37,7 +37,8 @@
      (make-instance '<identifier>
                     :text
                     (aif (second args)
-                         (get-sym (first args) (parse-integer (second args)))
+                         (get-sym (first args)
+                                  (parse-integer (second args)))
                          (get-sym (first args)))))
     ((equal command "@to-string")
      (make-instance '<string>

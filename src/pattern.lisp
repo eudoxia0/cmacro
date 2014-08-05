@@ -79,9 +79,9 @@
     ((or (qualifier-match var input (<identifier>) "ident")
          (qualifier-match var input (<integer>) "int")
          (qualifier-match var input (<real>) "float")
-         (qualifier-match var input (<integer> <float>) "num")
+         (qualifier-match var input (<integer> <real>) "num")
          (qualifier-match var input (<string>) "string")
-         (qualifier-match var input (<integer> <float> <string>) "const"))
+         (qualifier-match var input (<integer> <real> <string>) "const"))
      (append-bindings var input bindings))
     (t
      ;; Didn't match anything
