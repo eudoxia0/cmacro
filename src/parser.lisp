@@ -181,6 +181,7 @@
 
 (defrule preproc (and #\# (* preproc-char) #\Newline)
   (:destructure (hash chars newline &bounds start-pos)
+    (declare (ignore hash newline))
     (make-instance '<preproc>
                    :text (concatenate 'string "#" (text chars))
                    :line (line start-pos))))
