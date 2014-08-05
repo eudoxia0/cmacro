@@ -106,10 +106,10 @@ There is a sweet spot between low-level performance and control and high-level
 metaprogramming that is not yet occupied by any language: Metaprogramming, being
 an inherently compile-time thing, can be done in the absence of automatic memory
 management or dynamic typing. [Rust](http://www.rust-lang.org/) seems to want to
-fill this, and I also approached this problem with
-[Hylas Lisp](https://github.com/eudoxia0/Hylas-Lisp), but I feel this approach
-of adding metaprogramming to C - A simple language, with a long history, that
-runs truly everywhere - can become useful.
+fill this spot, and I also approached this problem with
+[Corvus](https://github.com/eudoxia0/corvus), but I feel this approach of adding
+metaprogramming to C - A simple language, with a long history, that runs truly
+everywhere - can become useful.
 
 # Examples
 
