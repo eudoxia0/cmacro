@@ -22,9 +22,15 @@ $(QLDIR)/setup.lisp:
 	@echo "Install Quicklisp"
 	mkdir -p $(QLDIR)
 	curl -o $(QLFILE) $(QLURL)
+ifdef PROXY
+	$(LISP) $(LISPOPTS) --load $(QLFILE) \
+	  --eval '(quicklisp-quickstart:install :path "$(QLDIR)" :proxy "$(PROXY)")' \
+          --quit
+else
 	$(LISP) $(LISPOPTS) --load $(QLFILE) \
 	  --eval '(quicklisp-quickstart:install :path "$(QLDIR)")' \
           --quit
+endif
 	rm $(QLFILE)
 
 quicklisp: $(QLDIR)/setup.lisp ;
