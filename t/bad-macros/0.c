@@ -1,3 +1,0 @@
-macro a {
-  case
-}
