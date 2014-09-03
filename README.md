@@ -1,5 +1,7 @@
 # cmacro: Lisp macros for C
 
+**For a collection of useful macros, see the associated [Magma](https://github.com/eudoxia0/magma) project**
+
 # Usage
 
 Macros are written directly in the source, and the `cmc` program is used to
