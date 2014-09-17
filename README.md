@@ -8,7 +8,7 @@ Macros are written directly in the source, and the `cmc` program is used to
 process a file with macros to a macroexpanded file.
 
 ```bash
-cmc code.cm -o code.c
+cmc code_with_macros.c -o macroexpanded_code.c
 ```
 
 # Installing
