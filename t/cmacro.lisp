@@ -37,7 +37,7 @@
 (test string-parsing
   (is (equal "\"test\"" (token-text (parse 'cmacro.parser::string "\"test\""))))
   (is (equal "\"test \\\"inner string\\\"  test\""
-             (token-text (parse 'cmacro.parser::string 
+             (token-text (parse 'cmacro.parser::string
                                 "\"test \\\"inner string\\\"  test\"")))))
 
 (test identifier-parsing

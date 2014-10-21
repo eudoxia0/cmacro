@@ -52,7 +52,7 @@
 (defun process-file (pathname)
   (print-ast (macroexpand-pathname pathname)))
 
-(defparameter +help+ 
+(defparameter +help+
 "Usage: cmc [file]* [option]*
 
   -o, --output    Path to the output file

@@ -116,7 +116,7 @@
 
 (defmethod var-group-p ((var <variable>))
   "The variable matches any kind of group: Lists, arrays and blocks."
-  (if (member "group" (var-qualifiers var) :test #'equal) t))  
+  (if (member "group" (var-qualifiers var) :test #'equal) t))
 
 (defmethod var-command-p ((var <variable>))
   "Is the variable a template command?"
