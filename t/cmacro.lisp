@@ -82,7 +82,10 @@
 (test variable-replacement
   (is (equal
        (render-template (list (make-variable "test"))
-                        (list (list (make-variable "test") 1)))
+                        (let ((table (make-hash-table :test #'equal)))
+                          (setf (gethash "test" table)
+                                1)
+                          table))
        (list 1))))
 
 (test gen-get-sym
