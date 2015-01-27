@@ -1,5 +1,7 @@
 # cmacro: Lisp macros for C
 
+[![Build Status](https://travis-ci.org/eudoxia0/cmacro.svg)](https://travis-ci.org/eudoxia0/cmacro)
+
 **For a collection of useful macros, see the associated [Magma](https://github.com/eudoxia0/magma) project**
 
 # Usage
