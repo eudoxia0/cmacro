@@ -17,6 +17,7 @@ script:
                    (declare (ignore c h))
                    (uiop:quit -1)))'
        -e '(ql:quickload :cmacro-test)'
+  - make
 
 notifications:
   email:
