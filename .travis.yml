@@ -1,4 +1,5 @@
 language: common-lisp
+sudo: required
 
 env:
   matrix:
