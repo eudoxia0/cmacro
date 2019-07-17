@@ -9,7 +9,7 @@
 (in-package :cmacro)
 
 (defun quit ()
-  (sb-ext:exit :code -1))
+  (uiop:quit -1))
 
 (setf *debugger-hook* #'(lambda (c h)
                           (declare (ignore h))
