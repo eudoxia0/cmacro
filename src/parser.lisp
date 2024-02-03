@@ -94,10 +94,10 @@
   (:lambda (digits)
     (text digits)))
 
-(defrule integer (and (or octal hex dec) (? integer-suffix))
-  (:destructure (num suff &bounds start-pos)
+(defrule integer (and (? sign) (or octal hex dec) (? integer-suffix))
+  (:destructure (sign num suff &bounds start-pos)
     (declare (ignore suff))
-    (make-instance '<integer> :text num :line (line start-pos))))
+    (make-instance '<integer> :text (text sign num) :line (line start-pos))))
 
 (defrule sign (or #\+ #\-))
 
