@@ -277,7 +277,7 @@
               (progn
                 (let ((path (second sub-ast)))
                   ;; Remove the macro
-                  (setf sub-ast (cddr sub-ast))
+                  (setf sub-ast (cdr sub-ast))
                   (if (typep path '<string>)
                       (parse-string
                        (slurp-file (parse-namestring (string-text
