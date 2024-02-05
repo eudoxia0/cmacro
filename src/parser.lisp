@@ -167,7 +167,7 @@
 
 (defrule group-separator (group-separatorp character))
 
-(defrule op-char (not (or alphanumeric group-separator whitespace)))
+(defrule op-char (not (or alphanumeric group-separator whitespace #\$ #\@)))
 
 (defrule operator (+ op-char)
   (:lambda (list &bounds start-pos)
