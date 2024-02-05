@@ -2,7 +2,8 @@
 (defpackage cmacro
   (:use :cl :anaphora)
   (:import-from :cmacro.macroexpand
-                :macroexpand-pathname)
+                :macroexpand-pathname
+                :macronoexpand-pathname)
   (:import-from :cmacro.printer
                 :print-ast)
   (:export :main))
@@ -49,13 +50,15 @@
                      ;; It's a file
                      (first sub-args))))))
 
-(defun process-file (pathname)
-  (print-ast (macroexpand-pathname pathname)))
+(defun process-file (no-expand pathname)
+  (if no-expand
+    (print-ast (macronoexpand-pathname pathname))
+    (print-ast (macroexpand-pathname pathname))))
 
 (defparameter +help+
 "Usage: cmc [file]* [option]*
 
-  -o, --output    Path to the output file
+  -o,--output     Path to the output file
   -n,--no-expand  Don't macroexpand, but remove macro definitions
   -h,--help       Print this text")
 
@@ -64,6 +67,7 @@
                              (files (cdr args)
                                     (list "-n" "--no-expand"))))
         (output-file (get-opt-value args "-o" "--output"))
+        (no-expand   (get-binary-opt args "-n" "--no-expand"))
         (helpp       (get-binary-opt args "-h" "--help")))
     (when helpp
       (format t "~A~%" +help+)
@@ -78,10 +82,10 @@
                          :if-does-not-exist :create
                          :if-exists :supersede)
           (loop for file in files do
-            (write-string (process-file file)
+            (write-string (process-file no-expand file)
                           stream)))
         ;; Write to stdout
         (progn
           (loop for file in files do
-            (write-string (process-file file)))))
+            (write-string (process-file no-expand file)))))
     (terpri)))

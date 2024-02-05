@@ -92,3 +92,6 @@
 
 (defun macroexpand-pathname (pathname)
   (macroexpand-result (extract-macros (parse-pathname pathname))))
+
+(defun macronoexpand-pathname (pathname)
+  (result-ast (extract-macros (parse-pathname pathname))))
